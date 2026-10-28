@@ -1,3 +1,7 @@
 # andreev.uz
 
-Главная страница andreev.uz. Деплой: Cloudflare Workers (static assets), автосборка из ветки main.
+Главная страница andreev.uz.
+
+- Хостинг: Cloudflare Workers (static assets), Worker `andreev`
+- Деплой: автоматически при пуше в `main`
+- Домен: andreev.uz (www → редирект на корень)

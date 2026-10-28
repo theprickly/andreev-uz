@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>andreev.uz</title>
+<meta name="theme-color" content="#0b0b0f">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230b0b0f'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Arial,sans-serif' font-weight='700' font-size='36' fill='%23f2efe6'%3Ea%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;background:#0b0b0f;overflow:hidden;touch-action:none}
+canvas{position:fixed;inset:0;display:block}
+h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<h1>andreev.uz</h1>
+<script>
+(()=>{
+const INK='#f2efe6',ACC='#c6ff3d',cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let dpr=1,P=[],S=2,R=100,mx=-1e5,my=-1e5,last=performance.now();
+function build(){
+ dpr=Math.min(devicePixelRatio||1,2);const W=innerWidth,H=innerHeight;
+ cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+ const o=document.createElement('canvas');o.width=cv.width;o.height=cv.height;const g=o.getContext('2d');
+ const f=s=>'700 '+s+'px Unbounded,system-ui,sans-serif';
+ let fs=Math.min(W*.2,H*.3)*dpr;g.font=f(fs);
+ let a=g.measureText('andreev').width,b=g.measureText('.uz').width;const m=cv.width*.86;
+ if(a+b>m){fs*=m/(a+b);g.font=f(fs);a=g.measureText('andreev').width;b=g.measureText('.uz').width}
+ const x0=(cv.width-a-b)/2,y0=cv.height*.5;g.textBaseline='middle';
+ g.fillStyle=INK;g.fillText('andreev',x0,y0);g.fillStyle=ACC;g.fillText('.uz',x0+a,y0);
+ const gap=Math.max(Math.round(3*dpr),Math.round(fs/42)),d=g.getImageData(0,0,o.width,o.height).data,old=P;P=[];
+ for(let y=0;y<o.height;y+=gap)for(let x=0;x<o.width;x+=gap){const i=(y*o.width+x)*4;
+  if(d[i+3]>140){const p=old[P.length];P.push({x:p?p.x:Math.random()*cv.width,y:p?p.y:Math.random()*cv.height,tx:x,ty:y,vx:0,vy:0,a:d[i]<220})}}
+ S=Math.max(1.4*dpr,gap*.55);R=fs*.55;
+ if(reduce){P.forEach(p=>{p.x=p.tx;p.y=p.ty});draw()}
+}
+function draw(){ctx.clearRect(0,0,cv.width,cv.height);
+ ctx.fillStyle=INK;for(const p of P)if(!p.a)ctx.fillRect(p.x,p.y,S,S);
+ ctx.fillStyle=ACC;for(const p of P)if(p.a)ctx.fillRect(p.x,p.y,S,S)}
+function step(t){let r=R;
+ if(performance.now()-last>4000){const s=t/1000;mx=cv.width/2+Math.cos(s*.6)*cv.width*.34;my=cv.height*.5+Math.sin(s*1.2)*cv.height*.07;r=R*.5}
+ const r2=r*r,k=6*dpr;
+ for(const p of P){const dx=p.x-mx,dy=p.y-my,q=dx*dx+dy*dy;
+  if(q<r2){const d=Math.sqrt(q)||1,f=(1-d/r)*k;p.vx+=dx/d*f;p.vy+=dy/d*f}
+  p.vx+=(p.tx-p.x)*.05;p.vy+=(p.ty-p.y)*.05;p.vx*=.84;p.vy*=.84;p.x+=p.vx;p.y+=p.vy}
+ draw();requestAnimationFrame(step)}
+addEventListener('pointermove',e=>{mx=e.clientX*dpr;my=e.clientY*dpr;last=performance.now()});
+addEventListener('pointerleave',()=>{mx=my=-1e5;last=performance.now()});
+addEventListener('pointerup',e=>{if(e.pointerType==='touch')mx=my=-1e5});
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(build,150)});
+(document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{build();if(!reduce)requestAnimationFrame(step)});
+})();
+</script>
+</body>
+</html>

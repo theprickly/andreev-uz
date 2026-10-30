@@ -1,0 +1,32 @@
+{
+ "id": "./",
+ "name": "VSplanet · Обмани смерть. Укради жизнь",
+ "short_name": "VSplanet · Эдди",
+ "description": "Книжный спецпроект VSplanet. Перевод Александра Суменко для VSplanet.net. Полная книга с закладками и чтением без сети.",
+ "lang": "ru",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#0b0908",
+ "theme_color": "#0b0908",
+ "icons": [
+  {
+   "src": "assets/icons/vs-icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "assets/icons/vs-icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "assets/icons/vs-icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}

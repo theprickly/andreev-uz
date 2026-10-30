@@ -48,7 +48,9 @@ def parse_title(raw):
     if ':' in name and re.match(r'(?i)\s*(от (?:автора|переводчика)|предислов|вступлен|введени|пролог|эпилог|благодарн|послеслов)', name.split(':', 1)[1]):
         name = name.split(':', 1)[1].strip()
     name = re.sub(r'^(Эпилог)[,.:]\s*', r'\1: ', name)
-    return 'extra', None, part, name[:1].upper() + name[1:]
+    name = name[:1].upper() + name[1:]
+    if re.fullmatch(r'(?i)от (переводчика|автора|редакции)', name): name = name[:3] + name[3:].lower()
+    return 'extra', None, part, name
 
 ARCHIVE_HINT = re.compile(r'(?i)(продолжаем (?:публик|перевод)|публикуем (?:перевод|продолжение)|предыдущ\w+ глав|следующ\w+ глав|читайте (?:в|на)|все главы|начало (?:перевода|книги)|перевод книги|продолжение следует|альтернативная ссылка)')
 VIDEO = re.compile(r'(?i)youtu|vimeo|rutube|video|видео')
@@ -123,6 +125,7 @@ def chapter_html(raw):
                 body = body.replace('\x00LOST\x00', '')
             body = re.sub(r'^(?:<br>\s*)+|(?:\s*<br>)+$', '', body)
             txt = plain(body)
+            if len(txt) < 300 and re.match(r'(?i)(?:альтернативн\w+ ссылк\w*|обсуждение(?: на)? VS)\b', txt): continue   # ссылки на зеркала видео
             if t in ('h1', 'h2', 'h3', 'h4'):
                 if txt: blocks.append(('h3', body)); continue
             if t in ('ul', 'ol'):

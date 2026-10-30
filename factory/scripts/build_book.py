@@ -31,8 +31,8 @@ BASE = cfg.get('base_url', f'https://andreev.uz/{cfg["slug"]}/')
 import themes
 TH = themes.resolve(cfg)
 cfg['accent'] = TH['accent']; cfg.setdefault('cover_bg', TH['bg'])
-theme_css = (f'<style id="theme">:root{{--accent:{TH["accent"]};--accent-hi:{TH["accent_hi"]};--accent-deep:{TH["accent_deep"]};--accent-ink:{TH["accent_ink"]};'
-             f'--bg:{TH["bg"]};--surface:{TH["surface"]};--surface-2:{TH["surface_2"]};--reader-bg-night:{TH["reader_bg"]}' + (f';--accent-fill:{TH["accent_fill"]}' if TH.get('accent_fill') else '') + '}</style>')
+theme_css = (f'<style id="theme">html:root{{--accent:{TH["accent"]};--accent-hi:{TH["accent_hi"]};--accent-deep:{TH["accent_deep"]};--accent-ink:{TH["accent_ink"]};'
+             f'--bg:{TH["bg"]};--surface:{TH["surface"]};--surface-2:{TH["surface_2"]};--reader-bg-night:{TH["reader_bg"]}' + f';--accent-fill:{TH.get("accent_fill", "var(--accent)")}' + '}</style>')
 E = lambda s: html.escape(str(s), quote=True)
 
 shutil.rmtree(dst, ignore_errors=True)

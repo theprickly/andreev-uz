@@ -84,6 +84,7 @@ def page(title, body, epub_type='chapter', extra_head=''):
 
 def build(cfg, b, images_dir, cover_path, target):
     TITLE, SUB, CREDIT = cfg['title'], cfg.get('subtitle', ''), cfg['credit']
+    SUBT = f'<dc:title id="t2">{escape(SUB)}</dc:title><meta refines="#t2" property="title-type">subtitle</meta>' if SUB else ''
     global ARCHIVE_YEAR
     ARCHIVE_YEAR = ' · ' + str(cfg['archive_year']) if cfg.get('archive_year') else ''
     OUT = tempfile.mkdtemp()
@@ -131,7 +132,7 @@ def build(cfg, b, images_dir, cover_path, target):
     # title page
     tp = f'''<section class="title-page" epub:type="titlepage">
     <p class="tp-author">{escape(cfg["author"])}</p>{CO}
-    <p class="tp-title">{TITLE}</p><p class="tp-sub">{SUB}</p>
+    <p class="tp-title">{TITLE}</p>{f"<p class=\"tp-sub\">{SUB}</p>" if SUB else ""}
     <p class="tp-credit">{CREDIT}</p>
     <p class="tp-imprint">{IMPRINT}</p>
     </section>'''
@@ -170,7 +171,7 @@ def build(cfg, b, images_dir, cover_path, target):
     <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
     <dc:identifier id="bookid">{uid}</dc:identifier>
     <dc:title id="t1">{TITLE}</dc:title><meta refines="#t1" property="title-type">main</meta>
-    <dc:title id="t2">{SUB}</dc:title><meta refines="#t2" property="title-type">subtitle</meta>
+    {SUBT}
     {PEOPLE}
     <dc:publisher>VSplanet.net</dc:publisher>
     <dc:language>ru</dc:language>

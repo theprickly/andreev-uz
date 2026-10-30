@@ -17,7 +17,10 @@ GLOSS = []
 _gp = pathlib.Path(__file__).resolve().parents[1] / 'glossary.json'
 if _gp.exists():
     for e in json.loads(_gp.read_text())['entries']:
-        for v in e['variants']: GLOSS.append((re.compile(r'(?<![А-Яа-яЁё])' + re.escape(v) + r'(?=[а-яё]{0,4}(?![А-Яа-яЁё]))'), v, e['canonical']))
+        pairs = [(v, e['canonical']) for v in e['variants']]
+        if e.get('common'):   # нарицательное слово: правим и строчную, и заглавную форму
+            pairs += [(v[0].upper() + v[1:], e['canonical'][0].upper() + e['canonical'][1:]) for v in e['variants']]
+        for v, cn in pairs: GLOSS.append((re.compile(r'(?<![А-Яа-яЁё])' + re.escape(v) + r'(?=[а-яё]{0,4}(?![А-Яа-яЁё]))'), v, cn))
 
 class Log:
     def __init__(self): self.items = []; self.flags = []; self.counts = {}

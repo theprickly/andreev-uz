@@ -10,7 +10,7 @@ import base64, html, json, pathlib, re, shutil, sys
 from PIL import Image
 
 ROOT = pathlib.Path(sys.argv[1]).resolve()
-SLUGS = sys.argv[2:] or ['eddie', 'hart', 'jericho', 'wcw', 'heenan', 'lesnar', 'booker', 'flair']
+SLUGS = sys.argv[2:] or ['eddie', 'hart', 'jericho', 'wcw', 'heenan', 'lesnar', 'booker', 'flair', 'piper', 'holly', 'goldust', 'booker-royalty']
 T = pathlib.Path(__file__).resolve().parents[1] / 'template'
 OUT = ROOT / 'books'; (OUT / 'covers').mkdir(parents=True, exist_ok=True)
 BASE = 'https://andreev.uz/books/'
@@ -18,7 +18,9 @@ E = lambda s: html.escape(str(s), quote=True)
 
 # О каких годах рассказывает книга — для ленты эпох (приблизительно, по содержанию)
 ERAS = {'heenan': (1944, 2002), 'hart': (1957, 2007), 'booker': (1965, 1993), 'eddie': (1967, 2005),
-        'lesnar': (1977, 2010), 'wcw': (1988, 2001), 'jericho': (1999, 2008), 'flair': (1949, 1985)}
+        'lesnar': (1977, 2010), 'wcw': (1988, 2001), 'jericho': (1999, 2008), 'flair': (1949, 1985),
+        'piper': (1954, 2002), 'holly': (1970, 2012), 'goldust': (1969, 2010), 'booker-royalty': (2001, 2006)}
+ERA_LABEL = {'booker': 'Букер Т (1-я книга)', 'booker-royalty': 'Букер Т (2-я книга)', 'goldust': 'Голдаст'}
 TAGLINE = {
     'eddie': 'О семье Герреро, зависимости и пути к титулу чемпиона WWE.',
     'hart': 'Подземелье Стю, Монреальская подстава и жизнь, которую не придумать сценаристам.',
@@ -26,7 +28,11 @@ TAGLINE = {
     'wcw': 'Как самая горячая компания мира за пару лет растеряла всё.',
     'heenan': 'Самый острый язык рестлинга — о AWA, WWF и Горилле Монсуне.',
     'lesnar': 'Ферма, WWE, NFL, UFC и болезнь, которая едва не закончила всё.',
-    'flair': 'Усыновление в Мемфисе, первые бои и взлёт «Парня из природы» — главы 1–6, перевод не закончен.',
+    'flair': 'Усыновление в Мемфисе, первые бои и взлёт «Парня из природы».',
+    'piper': 'Буян Родди: от трудного детства до звёздных лет — с предисловием Брета Харта.',
+    'holly': 'Алабама, годы в WWF, травмы и жизнь после ринга — без прикрас.',
+    'goldust': 'Сын «Американской мечты», болезнь и путь из тьмы к свету.',
+    'booker-royalty': 'От падения WCW до Зала славы WWE.',
     'booker': 'Улицы Хьюстона, тюрьма и первый шаг на ринг.',
 }
 
@@ -46,8 +52,9 @@ for slug in SLUGS:
         im.save(OUT / 'covers' / f'{slug}.jpg', quality=82, optimize=True, progressive=True)
     books.append({'slug': slug, 'key': cfg['storageKey'], 'title': cfg['title'], 'subtitle': cfg.get('subtitle', ''),
                   'author': cfg['author'], 'credit': cfg['credit'], 'accent': accent, 'words': words,
-                  'chapters': len(words), 'epub': f'../{slug}/{epub}', 'orig': cfg.get('original') or {}, 'era': ERAS.get(slug), 'tag': TAGLINE.get(slug, '')})
+                  'chapters': len(words), 'epub': f'../{slug}/{epub}', 'orig': cfg.get('original') or {}, 'inc': cfg.get('incomplete'), 'era': ERAS.get(slug), 'tag': TAGLINE.get(slug, '')})
 
+full = [b for b in books if not b['inc']]; partial = [b for b in books if b['inc']]
 total_words = sum(sum(b['words']) for b in books)
 hours = round(total_words / 180 / 60)
 shutil.copy(T / 'assets' / 'vsplanet-logo.png', OUT / 'vsplanet-logo.png')
@@ -65,6 +72,7 @@ def card(b):
  <div class="meta"><p class="author">{E(b['author'])}</p><h3><a href="../{b['slug']}/">{E(b['title'])}</a></h3>
  <p class="tag">{E(b['tag'])}</p>
  {f'<p class="orig"><i lang="en">{E(b["orig"]["title"])}</i> · {b["orig"]["year"]}</p>' if b['orig'] else ''}
+ {f'<p class="inc {b["inc"]["kind"]}"><i></i>{E(b["inc"]["label"])}</p>' if b['inc'] else ''}
  <p class="facts">{b['chapters']} {plural(b['chapters'], 'раздел', 'раздела', 'разделов')} · ≈{round(mins / 60)} ч чтения</p>
  <div class="progress" hidden><span><i></i></span><b></b></div>
  <div class="actions"><a class="btn" href="../{b['slug']}/">Читать</a><a class="ghost" href="{b['epub']}" download>EPUB</a></div></div>
@@ -74,7 +82,7 @@ y0, y1 = 1940, 2010
 def era_row(b):
     s, e = b['era']; left = (s - y0) / (y1 - y0) * 100; width = (e - s) / (y1 - y0) * 100
     return (f'<a class="era" href="../{b["slug"]}/" style="--a:{b["accent"]};--l:{left:.2f}%;--w:{width:.2f}%">'
-            f'<span class="era-name">{E("Смерть WCW" if b["slug"] == "wcw" else b["author"])}</span><span class="era-bar"><span>{s}–{e}</span></span></a>')
+            f'<span class="era-name">{E(ERA_LABEL.get(b["slug"]) or ("Смерть WCW" if b["slug"] == "wcw" else b["author"]))}</span><span class="era-bar"><span>{s}–{e}</span></span></a>')
 
 ld = {'@context': 'https://schema.org', '@type': 'CollectionPage', 'name': 'VSplanet Книги', 'url': BASE, 'inLanguage': 'ru',
       'description': 'Автобиографии звёзд рестлинга в переводах VSplanet.net: читать онлайн бесплатно или скачать EPUB.',
@@ -124,7 +132,11 @@ section{{padding:48px 0 0}}h2{{font-size:clamp(24px,3vw,32px);letter-spacing:-.0
 .book:hover .cover img{{transform:rotateY(-10deg) translateY(-6px);box-shadow:20px 34px 60px -20px #000,0 0 0 1px #ffffff18}}.book:hover .cover::after{{opacity:1}}
 .ring{{position:absolute;top:10px;right:10px;padding:4px 9px;border-radius:999px;font-size:12px;font-weight:700;background:#000b;backdrop-filter:blur(6px);color:#fff;border:1px solid color-mix(in srgb,var(--a) 60%,transparent)}}
 .meta{{display:flex;flex-direction:column;gap:6px;flex:1}}.author{{margin:0;color:var(--a);font-size:13px;font-weight:600;filter:brightness(1.25)}}
-h3{{margin:0;font-size:22px;line-height:1.1;letter-spacing:-.03em}}.tag{{margin:0;color:#c3cad5;font-size:14.5px;line-height:1.45}}.orig{{margin:0;color:#aab3c0;font-size:13px;line-height:1.4}}.orig i{{font-style:italic}}.facts{{margin:0;color:var(--mute);font-size:13px}}
+h3{{margin:0;font-size:22px;line-height:1.1;letter-spacing:-.03em}}.tag{{margin:0;color:#c3cad5;font-size:14.5px;line-height:1.45}}.nav{{display:flex;gap:8px}}
+.inc{{margin:0;display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.35;color:#d7c9a3}}.inc i{{flex:none;width:8px;height:8px;margin-top:5px;border-radius:50%;background:#e8b84a}}.inc.ongoing{{color:#a9d8b8}}.inc.ongoing i{{background:#4fcf86;box-shadow:0 0 0 3px #4fcf8633}}
+.help{{display:grid;grid-template-columns:1fr auto;gap:20px 32px;align-items:center;margin:0 0 36px;padding:24px;border-radius:22px;background:linear-gradient(115deg,#2f5b8f33,var(--s1) 70%);border:1px solid #7fa6d433}}.help h3{{font-size:24px;margin:0 0 8px}}.help p{{margin:0 0 12px;color:#c9d0db;max-width:62ch}}.help ol{{margin:0;padding-left:20px;color:#c9d0db;font-size:15px}}.help li+li{{margin-top:4px}}
+@media (max-width:640px){{.help{{grid-template-columns:1fr}}}}
+.orig{{margin:0;color:#aab3c0;font-size:13px;line-height:1.4}}.orig i{{font-style:italic}}.facts{{margin:0;color:var(--mute);font-size:13px}}
 .progress{{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mute)}}.progress span{{flex:1;height:4px;border-radius:9px;background:#ffffff14;overflow:hidden}}.progress i{{display:block;height:100%;background:var(--a);border-radius:inherit}}
 .actions{{display:flex;gap:8px;margin-top:auto;padding-top:8px}}
 .eras{{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:22px;background:var(--s1);border:1px solid var(--line)}}
@@ -139,17 +151,26 @@ footer{{margin:72px 0 0;padding:28px 0 40px;border-top:1px solid var(--line);col
 </style></head><body>
 <div class="glow"></div>
 <div class="wrap">
-<header class="top"><a class="brand" href="./"><img src="vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a><a class="chip" href="#eras">Эпохи</a></header>
+<header class="top"><a class="brand" href="./"><img src="vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a><span class="nav"><a class="chip" href="#unfinished">Неполные</a><a class="chip" href="#eras">Эпохи</a></span></header>
 <main>
 <div class="hero"><p class="eyebrow">Библиотека переводов VSplanet.net</p>
 <h1>Рестлинг, рассказанный изнутри</h1>
 <p class="lead">Автобиографии звёзд рестлинга, которые читатели VSplanet переводили для читателей VSplanet с 2011 года. Теперь — в удобной читалке, с закладками и офлайн-режимом, без регистрации.</p>
-<ul class="stats"><li><b>{len(books)}</b><span>{plural(len(books), 'книга', 'книги', 'книг')}</span></li><li><b>{sum(b['chapters'] for b in books)}</b><span>глав и разделов</span></li><li><b>≈{hours} ч</b><span>чтения</span></li><li><b>EPUB</b><span>для любой читалки</span></li></ul>
+<ul class="stats"><li><b>{len(full)}</b><span>{plural(len(full), 'книга', 'книги', 'книг')} целиком</span></li><li><b>{len(partial)}</b><span>{plural(len(partial), 'неполная', 'неполные', 'неполных')}</span></li><li><b>{sum(b['chapters'] for b in books)}</b><span>глав и разделов</span></li><li><b>≈{hours} ч</b><span>чтения</span></li><li><b>EPUB</b><span>для любой читалки</span></li></ul>
 <div id="resume"></div></div>
 <section id="shelf" aria-labelledby="shelf-h"><h2 id="shelf-h">Полка</h2><p class="sub">Прогресс сохраняется в вашем браузере и подтягивается сюда сам.</p>
 <div class="filters" id="filters" hidden><button aria-pressed="true" data-f="all">Все</button><button aria-pressed="false" data-f="reading">Читаю</button><button aria-pressed="false" data-f="new">Не начато</button><button aria-pressed="false" data-f="done">Прочитано</button></div>
 <div class="grid">
-{chr(10).join(card(b) for b in books)}
+{chr(10).join(card(b) for b in full)}
+</div></section>
+<section id="unfinished" aria-labelledby="unf-h"><h2 id="unf-h">Неполные переводы</h2>
+<p class="sub">Эти книги начали переводить, но не довели до конца, или переводят прямо сейчас. Читать можно уже то, что есть.</p>
+<div class="help"><div><h3>Помогите дописать</h3>
+<p>Знаете английский и любите рестлинг? Возьмите одну главу — и у книги появится продолжение. Идеальный литературный текст не нужен: вёрстку, проверку орфографии и EPUB берёт на себя сайт, готовая глава сразу попадает в читалку.</p>
+<ol><li>Выберите книгу ниже и посмотрите, чего не хватает.</li><li>Напишите в редакцию VSplanet.net, какую главу берёте.</li><li>Пришлите перевод — и ваше имя появится в выходных данных книги.</li></ol></div>
+<a class="btn" href="https://vsplanet.net/" rel="noopener">Предложить помощь</a></div>
+<div class="grid">
+{chr(10).join(card(b) for b in partial)}
 </div></section>
 <section id="eras" aria-labelledby="eras-h"><h2 id="eras-h">Эпохи</h2><p class="sub">О каких годах рассказывает каждая книга — читайте историю рестлинга по порядку.</p>
 <div class="eras">
@@ -191,8 +212,8 @@ if(Object.keys(st).length){{const f=document.getElementById('filters');f.hidden=
 from playwright.sync_api import sync_playwright
 uri = lambda p: 'data:image/jpeg;base64,' + base64.b64encode(p.read_bytes()).decode()
 font = lambda f: 'url(data:font/woff2;base64,' + base64.b64encode((OUT / f).read_bytes()).decode() + ')'
-n = len(books)
-covers = ''.join(f'<img src="{uri(OUT / "covers" / (b["slug"] + ".jpg"))}" style="left:{560 + i * 82}px;transform:rotate({(i - (n - 1) / 2) * 3.2:.1f}deg);z-index:{i}">' for i, b in enumerate(books))
+n = len(full)
+covers = ''.join(f'<img src="{uri(OUT / "covers" / (b["slug"] + ".jpg"))}" style="left:{560 + i * 82}px;transform:rotate({(i - (n - 1) / 2) * 3.2:.1f}deg);z-index:{i}">' for i, b in enumerate(full))
 OG = f'''<html><head><style>@font-face{{font-family:G;src:{font("geologica-cyr.woff2")};unicode-range:U+0400-045F}}@font-face{{font-family:G;src:{font("geologica-lat.woff2")};unicode-range:U+0000-00FF,U+2000-206F}}
 body{{margin:0;width:1200px;height:630px;background:radial-gradient(60% 80% at 75% 50%,#2f5b8f55,transparent),#03060c;color:#fff;font-family:G;position:relative;overflow:hidden}}
 img.c{{}}img{{position:absolute;top:150px;width:220px;border-radius:4px 8px 8px 4px;box-shadow:0 30px 60px -10px #000,0 0 0 1px #ffffff18;transform-origin:50% 120%}}

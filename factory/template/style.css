@@ -392,3 +392,6 @@ legend{font-size:14px;color:#d6d6da;margin-bottom:8px}
 .hero .orig span{margin-right:9px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-hi,#9c9ca3)}
 .hero .orig i{font-style:italic;color:#c9c9ce}.hero .orig b{margin-left:6px;white-space:nowrap;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}.hero .orig b::before{content:"· ";color:var(--mute,#8e8e95);font-weight:400}
 .hero .orig+.credit{margin-top:10px}
+.hero .unfinished{margin:12px 0 0;max-width:500px;font-size:14px;line-height:1.45;color:#c9c9ce;padding:10px 14px;border-radius:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 28%,transparent)}
+.hero .unfinished span{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-hi);margin-bottom:2px}
+.hero .unfinished a{color:var(--text);font-weight:600;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent) 60%,transparent);text-underline-offset:3px;white-space:nowrap}

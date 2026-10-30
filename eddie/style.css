@@ -382,3 +382,4 @@ legend{font-size:14px;color:#d6d6da;margin-bottom:8px}
 .static-toc span{grid-row:span 2;font-weight:600;color:var(--dim);font-variant-numeric:tabular-nums}
 .static-toc b{font-weight:600}
 .static-toc small{font-size:14px;color:var(--muted)}
+.topbar nav,.site-header nav,header.top nav{display:flex;gap:8px}

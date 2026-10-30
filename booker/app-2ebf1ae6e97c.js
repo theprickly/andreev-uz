@@ -18,7 +18,8 @@ function validateState(raw){
  const positions={};for(const [k,v] of Object.entries(raw.positions||{})){const p=positionOf(v);if(p&&String(p.chapter)===k)positions[k]=p;}
  const bookmarks=Array.isArray(raw.bookmarks)?raw.bookmarks.slice(0,500).map((b,i)=>{const p=positionOf(b);return p?{...p,id:String(b.id||i).slice(0,80),excerpt:String(b.excerpt||'Закладка').slice(0,220),created:String(b.created||'').slice(0,40)}:null}).filter(Boolean):[];
  const started=typeof raw.started==='string'&&!isNaN(Date.parse(raw.started))?raw.started:new Date().toISOString();
- return {version:1,book:BOOK,started,settings:settingsOf(raw.settings),current:positionOf(raw.current),positions,bookmarks};
+ const updated=typeof raw.updated==='string'&&!isNaN(Date.parse(raw.updated))?raw.updated:'';
+ return {version:1,book:BOOK,started,updated,settings:settingsOf(raw.settings),current:positionOf(raw.current),positions,bookmarks};
 }
 let state;
 try{const stored=localStorage.getItem(KEY);state=validateState(stored?JSON.parse(stored):{});}catch{state=validateState({});}
@@ -126,7 +127,7 @@ function restorePosition(p){
 }
 function savePosition(){
  if(active<0||restoring||$('#reader').hidden)return;
- const p=capturePosition();state.current=p;state.positions[String(active)]=p;persist();updateProgress(p);updateResume();
+ const p=capturePosition();state.current=p;state.updated=new Date().toISOString();state.positions[String(active)]=p;persist();updateProgress(p);updateResume();
  if(storageAvailable)$('#save-status').textContent='✓ Место чтения сохранено';
 }
 function updateProgress(p){

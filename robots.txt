@@ -14,3 +14,4 @@ Sitemap: https://andreev.uz/piper/sitemap.xml
 Sitemap: https://andreev.uz/holly/sitemap.xml
 Sitemap: https://andreev.uz/goldust/sitemap.xml
 Sitemap: https://andreev.uz/booker-royalty/sitemap.xml
+Sitemap: https://andreev.uz/copeland/sitemap.xml

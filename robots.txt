@@ -9,3 +9,4 @@ Sitemap: https://andreev.uz/lesnar/sitemap.xml
 Sitemap: https://andreev.uz/booker/sitemap.xml
 Sitemap: https://andreev.uz/heenan/sitemap.xml
 Sitemap: https://andreev.uz/books/sitemap.xml
+Sitemap: https://andreev.uz/flair/sitemap.xml

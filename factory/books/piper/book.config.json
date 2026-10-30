@@ -88,9 +88,10 @@
    "Риетхумнне"
   ]
  ],
- "theme": "vs",
+ "theme": "piper",
  "incomplete": {
   "kind": "stalled",
   "label": "Переведены предисловие и главы 1–14 · остановился в 2014 году"
- }
+ },
+ "cover_image": "books/piper/assets/cover-original.jpg"
 }

@@ -50,7 +50,7 @@ dialog{color:var(--text)}
 .credit b{font-weight:700;color:var(--text)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 22px;border-radius:999px;font-size:16px;font-weight:600;white-space:nowrap;transition:background .2s,transform .2s,border-color .2s}
 .btn svg{width:19px;height:19px;stroke-width:2.2}
-.btn-primary{color:var(--accent-ink);background:var(--red);box-shadow:0 10px 30px color-mix(in srgb,var(--accent) 25%,transparent)}
+.btn-primary{color:var(--accent-ink);background:var(--accent-fill,var(--red));box-shadow:0 10px 30px color-mix(in srgb,var(--accent) 25%,transparent)}
 .btn-primary:hover{background:var(--red-hi);transform:translateY(-1px)}
 .btn-ghost{color:var(--text);background:#ffffff10;border:1px solid var(--line)}
 .btn-ghost:hover{background:#ffffff1c;border-color:var(--line-2)}

@@ -202,4 +202,46 @@ for i, c in enumerate(ch):
 (dst / 'chapters' / 'index.html').write_text(spage(f'Оглавление — «{cfg["title"]}», {cfg["author"]}', cfg['description'], BASE + 'chapters/',
     f'<main class="page-main wrap"><header class="page-head"><p class="eyebrow">Оглавление</p><h1>{E(cfg["title"])}</h1><p class="page-lead">{credit_html}</p></header><ol class="static-toc">{"".join(items)}</ol></main>'))
 (dst / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + ''.join(f'<url><loc>{u}</loc></url>' for u in urls) + '</urlset>\n')
+
+# раздел «Правки»: что и где исправлено в тексте (changes.json пишет scripts/typo.py)
+_chg = src / 'changes.json'
+if _chg.exists():
+    CH = json.loads(_chg.read_text()); (dst / 'changes').mkdir()
+    def _ctx(a, tag):
+        return E(a).replace('⟦', f'<{tag}>').replace('⟧', f'</{tag}>')
+    RULES = {'nbsp': 'Неразрывные пробелы', 'латиница в кириллице': 'Латинские буквы внутри кириллических слов', 'кавычки': 'Кавычки приведены к «ёлочкам»',
+             'диапазон лет': 'Диапазоны лет — через короткое тире', 'пробел после запятой': 'Пропущенный пробел после запятой', 'пробел после точки': 'Пропущенный пробел после точки',
+             'тире': 'Дефис и среднее тире в роли тире → «—»', 'многоточие': 'Три точки → «…»', 'двойные пробелы': 'Двойные пробелы', 'пробел перед знаком': 'Пробел перед знаком препинания',
+             'пробелы у тире': 'Пробелы у тире'}
+    titles = CH['titles']
+    link = lambda c, p_: f'<a href="../#read/{c}/{p_}">{E(titles[c])} · абзац {p_ + 1}</a>'
+    commit = CH.get('commit')
+    commit_html = (f' Коммит с правками: <a href="https://github.com/theprickly/andreev-uz/commit/{commit}" rel="noopener">{commit[:7]}</a>.' if commit else '')
+    summ = ''.join(f'<tr><td>{E(RULES.get(r, r))}</td><td>{n:,}'.replace(',', ' ') + '</td></tr>' for r, n in sorted(CH['counts'].items(), key=lambda x: -x[1]))
+    by = {}
+    for it in CH['items']: by.setdefault(it['rule'], []).append(it)
+    secs = ''
+    for r, lst in sorted(by.items(), key=lambda x: -len(x[1])):
+        secs += f'<details class="chg" open><summary><b>{E(RULES.get(r, r))}</b> <span>{len(lst)}</span></summary><ol>' + ''.join(
+            f'<li>{link(it["c"], it["p"])}<p class="diff"><span class="was">{_ctx(it["a"], "del")}</span><span class="now">{_ctx(it["b"], "ins")}</span></p></li>' for it in lst) + '</ol></details>'
+    fl = {}
+    for f in CH['flags']: fl.setdefault(f['kind'], []).append(f)
+    FL = {'повтор слова': 'Повтор слова подряд (возможна опечатка — или так задумано)', 'точка вместо пробела в имени': 'Точка вместо пробела или дефиса в имени',
+          'смесь латиницы и кириллицы': 'Смесь латиницы и кириллицы (нужен взгляд человека)', 'несбалансированные кавычки': 'Несбалансированные кавычки', 'тире без пробелов': 'Тире без пробелов вокруг'}
+    fsec = ''.join(f'<details class="chg"><summary><b>{E(FL.get(k, k))}</b> <span>{len(v)}</span></summary><ol>' + ''.join(
+        f'<li>{link(f["c"], f["p"])}<p class="diff"><span class="was">{_ctx(f["t"], "mark")}</span></p></li>' for f in v) + '</ol></details>' for k, v in fl.items())
+    body = (f'<main class="page-main wrap"><header class="page-head"><p class="eyebrow">Правки текста · слой 1</p><h1>{E(cfg["title"])}</h1>'
+            f'<p class="page-lead">Механические исправления: типографика, пробелы, латиница вместо кириллицы. Смысл и порядок абзацев не менялись, закладки и прогресс читателей не пострадали. Дата: {E(CH["date"])}.{commit_html}</p></header>'
+            f'<table class="chg-sum"><tbody>{summ}</tbody></table>{secs}'
+            + (f'<h2 class="chg-h">На проверку: исправлено не было</h2><p class="page-lead">Здесь спорные места: правка могла бы испортить задуманное. Решают редакторы, словарь терминов и имён будет собран отдельно.</p>{fsec}' if fsec else '') + '</main>')
+    style = ('<style>.chg-sum{border-collapse:collapse;margin:0 0 28px;width:100%;max-width:560px}.chg-sum td{padding:8px 0;border-bottom:1px solid var(--line)}.chg-sum td+td{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}'
+             '.chg{margin:0 0 14px;border:1px solid var(--line);border-radius:14px;padding:0 16px;background:var(--surface)}.chg summary{cursor:pointer;padding:14px 0;list-style:none}.chg summary span{color:var(--muted);margin-left:8px}'
+             '.chg ol{margin:0;padding:0 0 12px;list-style:none;display:grid;gap:12px}.chg li a{font-size:13px;color:var(--muted)}.chg .diff{margin:4px 0 0;display:grid;gap:2px;font-size:15px;line-height:1.5;word-break:break-word}'
+             '.chg .was{color:#c9c9ce}.chg del{background:#ff5a5a30;color:inherit;text-decoration:none;padding:0 2px;border-radius:3px}.chg ins{background:#4ade8030;text-decoration:none;padding:0 2px;border-radius:3px}.chg mark{background:#facc1533;color:inherit;padding:0 2px;border-radius:3px}.chg-h{margin:40px 0 8px}</style>'
+             '<meta name="robots" content="noindex">')
+    page_ = spage(f'Правки текста — «{cfg["title"]}»', f'Что исправлено в тексте книги «{cfg["title"]}»', BASE + 'changes/', body, style)
+    (dst / 'changes' / 'index.html').write_text(page_.replace('<a class="chip" href="./">Все главы</a>', '<a class="chip" href="../chapters/">Все главы</a>'))
+    _idx = (dst / 'index.html').read_text()
+    _idx = _idx.replace('<a href="chapters/">Все главы текстом</a>', '<a href="chapters/">Все главы текстом</a><a href="changes/">Правки</a>')
+    (dst / 'index.html').write_text(_idx)
 print(f'built {cfg["slug"]}: {len(ch)} sections, {words} words, {photos} photos, EPUB {epub_mb} MB → {dst}')

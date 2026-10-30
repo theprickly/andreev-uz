@@ -26,7 +26,7 @@ try{const stored=localStorage.getItem(KEY);state=validateState(stored?JSON.parse
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch{storageAvailable=false;$('#save-status').textContent='Сохранение недоступно — экспортируйте прогресс';}}
 function notify(text){const t=$('#toast');t.textContent=text;t.classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('visible'),3500);}
 function escapeText(s){const n=document.createElement('span');n.textContent=s;return n.innerHTML;}
-function normalized(s){return s.toLocaleLowerCase('ru').replace(/ё/g,'е');}
+function normalized(s){return s.toLocaleLowerCase('ru').replace(/ё/g,'е').replace(/[\u00a0\u202f]/g,' ');}
 function mins(c){return Math.max(1,Math.ceil(c.words/200));}
 function parseChapter(c){const template=document.createElement('template');template.innerHTML=c.html;return template.content;}
 function applySettings(){

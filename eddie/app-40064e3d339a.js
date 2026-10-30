@@ -240,7 +240,7 @@ function bindTilt(){
 function firstLine(section){const p=section.paragraphs.find(x=>x.text.length>12&&!/^…?в память/i.test(x.text))||section.paragraphs[0];if(!p)return '';const m=p.text.match(/^.{12,}?[.!?…](?=\s|$)/);let t=(m?m[0]:p.text).trim();if(t.length>90)t=t.slice(0,88).replace(/\s+\S*$/,'')+'…';return t;}
 async function init(){
  try{
-  const response=await fetch('book-bfa811236f59.json');if(!response.ok)throw Error('book fetch');book=await response.json();chapters=book.chapters;if(chapters.length!==46)throw Error('chapter count');
+  const response=await fetch('book-28a385777d25.json');if(!response.ok)throw Error('book fetch');book=await response.json();chapters=book.chapters;if(chapters.length!==46)throw Error('chapter count');
   searchIndex=chapters.map(c=>{const f=parseChapter(c);let els=[...f.children].filter(n=>['P','H2','H3','BLOCKQUOTE','FIGURE'].includes(n.tagName));if(!els.length)els=[...f.children];return {paragraphs:els.map((n,i)=>({paragraph:i,text:n.textContent.trim(),normalized:normalized(n.textContent.trim())}))};});
   snippets=searchIndex.map(firstLine);buildExtras();
   applySettings();buildLanding();bindEvents();route();persist();

@@ -1,14 +1,14 @@
 {
  "id": "./",
- "name": "Быть мужчиной · VSplanet Книги",
- "short_name": "Рик Флэр",
- "description": "Автобиография Рика Флэра «Быть мужчиной» на русском: главы 1–6 в переводе Евгения Лайдера для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
+ "name": "От тюрьмы к успеху · VSplanet Книги",
+ "short_name": "Букер Т",
+ "description": "Первая автобиография Букера Т «От тюрьмы к успеху» на русском. Перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
  "lang": "ru",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
- "background_color": "#06040c",
- "theme_color": "#06040c",
+ "background_color": "#060503",
+ "theme_color": "#060503",
  "icons": [
   {
    "src": "assets/icons/cover-icon-192.png",

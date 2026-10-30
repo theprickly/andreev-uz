@@ -228,7 +228,7 @@ function bindEvents(){
 }
 function bindTilt(){
  const stage=$('.hero-book'),book=$('.book-tilt');if(!stage||!book||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- const set=(x,y)=>{book.style.setProperty('--ry',(x*16).toFixed(2)+'deg');book.style.setProperty('--rx',(-y*12).toFixed(2)+'deg');book.style.setProperty('--gx',(50+x*60)+'%');book.style.setProperty('--gy',(40+y*60)+'%');};
+ const set=(x,y)=>{book.style.setProperty('--ry',(x*10).toFixed(2)+'deg');book.style.setProperty('--rx',(-y*7).toFixed(2)+'deg');book.style.setProperty('--gx',(50+x*60)+'%');book.style.setProperty('--gy',(40+y*60)+'%');};
  stage.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const r=stage.getBoundingClientRect();book.classList.add('is-tilting');set((e.clientX-r.left)/r.width-.5,(e.clientY-r.top)/r.height-.5);});
  stage.addEventListener('pointerleave',()=>{book.classList.remove('is-tilting');set(0,0);});
  window.addEventListener('deviceorientation',e=>{if(e.gamma==null||$('#landing').hidden)return;book.classList.add('is-tilting');set(clamp(e.gamma/40,-.5,.5),clamp((e.beta-45)/50,-.5,.5));},{passive:true});

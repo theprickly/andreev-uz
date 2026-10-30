@@ -1,14 +1,14 @@
 {
  "id": "./",
- "name": "Хитман · VSplanet Книги",
- "short_name": "Брет Харт",
- "description": "Автобиография Брета Харта «Хитман» на русском. Перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
+ "name": "От тюрьмы к успеху · VSplanet Книги",
+ "short_name": "Букер Т",
+ "description": "Первая автобиография Букера Т «От тюрьмы к успеху» на русском. Перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
  "lang": "ru",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
- "background_color": "#050305",
- "theme_color": "#050305",
+ "background_color": "#060505",
+ "theme_color": "#060505",
  "icons": [
   {
    "src": "assets/icons/cover-icon-192.png",

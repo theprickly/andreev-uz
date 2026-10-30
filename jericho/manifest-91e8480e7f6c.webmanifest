@@ -1,14 +1,14 @@
 {
  "id": "./",
- "name": "Плохиш из мира рестлинга · VSplanet Книги",
- "short_name": "Бобби Хинан",
- "description": "Автобиография Бобби Хинана «Плохиш из мира рестлинга» на русском. Перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
+ "name": "Неоспоримый · VSplanet Книги",
+ "short_name": "Крис Джерико",
+ "description": "Автобиография Криса Джерико «Неоспоримый» на русском. Перевод Артёма Розанова для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
  "lang": "ru",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
- "background_color": "#03060c",
- "theme_color": "#03060c",
+ "background_color": "#0a0304",
+ "theme_color": "#0a0304",
  "icons": [
   {
    "src": "assets/icons/cover-icon-192.png",

@@ -1,14 +1,14 @@
 {
  "id": "./",
- "name": "Смерть WCW · VSplanet Книги",
- "short_name": "Смерть WCW",
- "description": "Книга о закате World Championship Wrestling «Смерть WCW» на русском. Перевод Александра Суменко для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
+ "name": "Хитман · VSplanet Книги",
+ "short_name": "Брет Харт",
+ "description": "Автобиография Брета Харта «Хитман» на русском. Перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
  "lang": "ru",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
- "background_color": "#03060c",
- "theme_color": "#03060c",
+ "background_color": "#0a0605",
+ "theme_color": "#0a0605",
  "icons": [
   {
    "src": "assets/icons/cover-icon-192.png",

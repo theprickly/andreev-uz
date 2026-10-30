@@ -1,7 +1,7 @@
 /* Versioned, atomic offline copy. Only same-origin book files are cached. */
 'use strict';
-const CACHE='book-jericho-24c52ab73e30';
-const ASSETS=["./", "index.html", "book.json", "book-9d340f769d34.json", "assets/book-ca1a7ebf38c3.epub", "style-22a24eeada28.css", "app-5961e069a494.js", "pwa-82be9cff5451.js", "manifest-91e8480e7f6c.webmanifest", "assets/fonts/geologica-cyr.woff2", "assets/fonts/geologica-lat.woff2", "assets/fonts/literata-cyrillic-italic.woff2", "assets/fonts/literata-cyrillic-normal.woff2", "assets/fonts/literata-latin-italic.woff2", "assets/fonts/literata-latin-normal.woff2", "assets/icons/cover-apple-touch.png", "assets/icons/cover-favicon-32.png", "assets/icons/cover-icon-192.png", "assets/icons/cover-icon-512.png", "assets/icons/cover-icon-maskable-512.png", "assets/cover.jpg", "assets/book-render.webp", "assets/vsplanet-logo.png"];
+const CACHE='book-jericho-54306a7d673e';
+const ASSETS=["./", "index.html", "book.json", "book-bd79ebcdea19.json", "assets/book-ef8e97556be3.epub", "style-22a24eeada28.css", "app-5961e069a494.js", "pwa-82be9cff5451.js", "manifest-91e8480e7f6c.webmanifest", "assets/fonts/geologica-cyr.woff2", "assets/fonts/geologica-lat.woff2", "assets/fonts/literata-cyrillic-italic.woff2", "assets/fonts/literata-cyrillic-normal.woff2", "assets/fonts/literata-latin-italic.woff2", "assets/fonts/literata-latin-normal.woff2", "assets/icons/cover-apple-touch.png", "assets/icons/cover-favicon-32.png", "assets/icons/cover-icon-192.png", "assets/icons/cover-icon-512.png", "assets/icons/cover-icon-maskable-512.png", "assets/cover.jpg", "assets/book-render.webp", "assets/vsplanet-logo.png"];
 self.addEventListener('install',event=>{event.waitUntil((async()=>{
  const cache=await caches.open(CACHE);
  try{

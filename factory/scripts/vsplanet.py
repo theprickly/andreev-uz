@@ -129,6 +129,27 @@ def fetch(req, out):
                                    '\n'.join(f'- {x["date"][:10]} · {x["title"]} · {x["chars"]} зн.' for x in index) + '\n')
 
 
+def authors(req, out):
+    """Авторы публикаций (обычно переводчики) для уже скачанных книг."""
+    res = {}
+    for name in req['books']:
+        idx = json.loads((OUT / name / 'index.json').read_text())
+        ids = [x['id'] for x in idx]; book = {}
+        for k in range(0, len(ids), 50):
+            data, _ = get('/wp-json/wp/v2/posts', include=','.join(map(str, ids[k:k + 50])), per_page=50, _embed='author', _fields='id,author,_links,_embedded')
+            for p in data:
+                emb = (p.get('_embedded') or {}).get('author') or [{}]
+                book[p['id']] = {'author_id': p.get('author'), 'name': emb[0].get('name'), 'slug': emb[0].get('slug')}
+        res[name] = book
+    (out / 'authors.json').write_text(json.dumps(res, ensure_ascii=False, indent=1))
+    from collections import Counter
+    lines = ['# Авторы публикаций', '']
+    for name, book in res.items():
+        c = Counter(v['name'] for v in book.values())
+        lines.append(f'- **{name}**: ' + ', '.join(f'{n} ×{k}' for n, k in c.most_common()))
+    (out / 'README.md').write_text('\n'.join(lines) + '\n')
+
+
 def main():
     done = 0
     for f in sorted(REQ.glob('*.json')):
@@ -138,7 +159,7 @@ def main():
         out.mkdir(parents=True, exist_ok=True)
         req = json.loads(f.read_text())
         try:
-            {'discover': discover, 'fetch': fetch}[req['type']](req, out)
+            {'discover': discover, 'fetch': fetch, 'authors': authors}[req['type']](req, out)
         except Exception as e:
             (out / 'README.md').write_text(f'# Ошибка\n{type(e).__name__}: {e}\n')
         done += 1

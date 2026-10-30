@@ -326,17 +326,17 @@ async function makeQuoteCard(text,title){
  const W=1080,H=1920,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
  try{await Promise.all([document.fonts.load('56px Literata'),document.fonts.load('700 32px Geologica'),document.fonts.load('32px Geologica'),document.fonts.load('44px "GTA Russian"')]);}catch{}
  x.fillStyle='#000';x.fillRect(0,0,W,H);
- const g=x.createRadialGradient(W/2,H-520,40,W/2,H-520,760);g.addColorStop(0,'rgba(238,42,36,.42)');g.addColorStop(1,'rgba(238,42,36,0)');x.fillStyle=g;x.fillRect(0,0,W,H);
+ const AC=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#7fa6d4',DF=getComputedStyle(document.documentElement).getPropertyValue('--display').trim()||'Geologica';const g=x.createRadialGradient(W/2,H-520,40,W/2,H-520,760);g.addColorStop(0,AC+'6b');g.addColorStop(1,AC+'00');x.fillStyle=g;x.fillRect(0,0,W,H);
  try{const img=await loadImg(CFG.render);x.drawImage(img,W/2-360,H-1010,720,720);}catch{}
  let q='«'+(text.length>420?text.slice(0,text.lastIndexOf(' ',410))+'…':text.replace(/\.$/,''))+'»',size=64,lines,lh;
  const maxH=H-1010-260;
  do{x.font=size+'px Literata';lines=wrapLines(x,q,W-170);lh=size*1.36;size-=2;}while(lines.length*lh>maxH&&size>30);
  x.fillStyle='#f5f5f7';x.textBaseline='top';let y=200;
- x.font='700 30px Geologica';x.fillStyle='#ee2a24';x.fillText(title.toUpperCase(),85,y-70);
+ x.font='700 30px Geologica';x.fillStyle=AC;x.fillText(title.toUpperCase(),85,y-70);
  x.font=(size+2)+'px Literata';x.fillStyle='#f5f5f7';lines.forEach((l,k)=>x.fillText(l,85,y+k*lh));
- x.textAlign='center';x.font='44px "GTA Russian"';x.fillStyle='#ee2a24';x.fillText(TITLE,W/2,H-232);
+ x.textAlign='center';x.font='800 44px '+DF;x.fillStyle=AC;x.fillText(TITLE,W/2,H-232);
  x.font='30px Geologica';x.fillStyle='#b9b9bf';x.fillText(CREDIT,W/2,H-168);
- x.fillStyle='#ee2a24';x.fillText(location.host+location.pathname.replace(/\/$/,''),W/2,H-112);
+ x.fillStyle=AC;x.fillText(location.host+location.pathname.replace(/\/$/,''),W/2,H-112);
  return await new Promise(r=>c.toBlob(r,'image/png'));
 }
 async function shareQuote(){

@@ -28,6 +28,11 @@ for old, new in cfg.get('replacements', []):
         if n: c['html'] = ''.join(parts); fix_log.append(f'{c["title"]}: {old} → {new} ×{n}')
 (src / 'adaptation.log').write_text('\n'.join(fix_log) + '\n')
 BASE = cfg.get('base_url', f'https://andreev.uz/{cfg["slug"]}/')
+import themes
+TH = themes.resolve(cfg)
+cfg['accent'] = TH['accent']; cfg.setdefault('cover_bg', TH['bg'])
+theme_css = (f'<style id="theme">:root{{--accent:{TH["accent"]};--accent-hi:{TH["accent_hi"]};--accent-deep:{TH["accent_deep"]};--accent-ink:{TH["accent_ink"]};'
+             f'--bg:{TH["bg"]};--surface:{TH["surface"]};--surface-2:{TH["surface_2"]};--reader-bg-night:{TH["reader_bg"]}}}</style>')
 E = lambda s: html.escape(str(s), quote=True)
 
 shutil.rmtree(dst, ignore_errors=True)
@@ -90,7 +95,7 @@ ld = {'@context': 'https://schema.org', '@type': 'Book', 'name': cfg['title'], '
       'image': BASE + 'assets/og.jpg', 'url': BASE}
 if cfg.get('translator'): ld['translator'] = {'@type': 'Person', 'name': cfg['translator']}
 if cfg.get('original'): ld['isBasedOn'] = {'@type': 'Book', 'name': cfg['original']['title'], 'datePublished': str(cfg['original']['year'])}
-style_vars = f'<style>:root{{--archive-label:"Из архива VSplanet{(" · " + str(cfg["archive_year"])) if cfg.get("archive_year") else ""}"}}</style>'
+style_vars = theme_css + f'<style>:root{{--archive-label:"Из архива VSplanet{(" · " + str(cfg["archive_year"])) if cfg.get("archive_year") else ""}"}}</style>'
 R = {'JSONLD': '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + '</script>',
      'CONFIG': '<script>window.BOOK_CONFIG=' + json.dumps(reader_cfg, ensure_ascii=False) + '</script>' + style_vars,
      'OGMETA': og, 'PAGE_TITLE': E(cfg['page_title']), 'DESCRIPTION': E(cfg['description']), 'SHORT_NAME': E(cfg['short_name']),
@@ -104,7 +109,7 @@ assert '{{' not in page, re.findall(r'\{\{\w+\}\}', page)
 if not photos: page = page.replace('<a href="#album">Альбом</a>', '')
 (dst / 'index.html').write_text(page)
 (dst / 'manifest.webmanifest').write_text(json.dumps({'id': './', 'name': f'{cfg["title"]} · VSplanet Книги', 'short_name': cfg['short_name'], 'description': cfg['description'],
-    'lang': 'ru', 'start_url': './', 'scope': './', 'display': 'standalone', 'background_color': '#000000', 'theme_color': '#000000',
+    'lang': 'ru', 'start_url': './', 'scope': './', 'display': 'standalone', 'background_color': TH['bg'], 'theme_color': TH['bg'],
     'icons': [{'src': 'assets/icons/cover-icon-192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'},
               {'src': 'assets/icons/cover-icon-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
               {'src': 'assets/icons/cover-icon-maskable-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'}]}, ensure_ascii=False, indent=1))
@@ -115,8 +120,8 @@ try:
     from playwright.sync_api import sync_playwright
     b64 = lambda p: base64.b64encode(p.read_bytes()).decode()
     ogh = f'''<html><style>@font-face{{font-family:G;src:url(data:font/woff2;base64,{b64(T / "assets/fonts/geologica-cyr.woff2")});unicode-range:U+0400-045F}}@font-face{{font-family:G;src:url(data:font/woff2;base64,{b64(T / "assets/fonts/geologica-lat.woff2")})}}
-body{{margin:0;width:1200px;height:630px;background:#000;color:#fff;font-family:G;position:relative;overflow:hidden}}.g{{position:absolute;right:-120px;top:-120px;width:900px;height:900px;background:radial-gradient(closest-side,#ee2a2455,transparent)}}
-img.r{{position:absolute;right:20px;top:-5px;width:640px}}.t{{position:absolute;left:72px;top:140px;width:560px}}.k{{font-size:24px;font-weight:600;color:#ee2a24}}h1{{margin:16px 0 0;font-size:60px;line-height:1.02;letter-spacing:-2px;font-weight:800}}
+body{{margin:0;width:1200px;height:630px;background:{TH["bg"]};color:#fff;font-family:G;position:relative;overflow:hidden}}.g{{position:absolute;right:-120px;top:-120px;width:900px;height:900px;background:radial-gradient(closest-side,{TH["accent"]}55,transparent)}}
+img.r{{position:absolute;right:20px;top:-5px;width:640px}}.t{{position:absolute;left:72px;top:140px;width:560px}}.k{{font-size:24px;font-weight:600;color:{TH["accent"]}}}h1{{margin:16px 0 0;font-size:60px;line-height:1.02;letter-spacing:-2px;font-weight:800}}
 p{{margin:22px 0 0;font-size:26px;color:#c9c9ce;line-height:1.35}}b{{color:#fff}}.br{{position:absolute;left:72px;bottom:56px;display:flex;align-items:center;gap:12px;font-size:24px;font-weight:700}}.br img{{width:54px}}.br small{{display:block;font-size:14px;color:#fff;letter-spacing:.08em;text-transform:uppercase}}</style>
 <body><div class=g></div><img class=r src="data:image/png;base64,{b64(src / "assets/book-render.png")}"><div class=t><div class=k>{E(cfg["author"])}</div><h1>{E(cfg["title"])}</h1><p>{credit_html}</p></div>
 <div class=br><img src="data:image/png;base64,{b64(T / "assets/vsplanet-logo.png")}"><span>VSplanet<small>Книги</small></span></div></body></html>'''

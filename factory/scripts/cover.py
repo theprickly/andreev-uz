@@ -14,16 +14,17 @@ cfg = json.loads(pathlib.Path(sys.argv[1]).read_text())
 out = pathlib.Path(sys.argv[2]); out.mkdir(parents=True, exist_ok=True)
 font = lambda f: f'url(data:font/woff2;base64,{base64.b64encode((T / "fonts" / f).read_bytes()).decode()})'
 logo = 'data:image/png;base64,' + base64.b64encode((T / 'vsplanet-logo.png').read_bytes()).decode()
-accent = cfg.get('accent', '#ee2a24')
+sys.path.insert(0, str(pathlib.Path(__file__).parent)); import themes
+TH = themes.resolve(cfg); accent = TH['accent']; cbg = TH['bg']
 
 COVER = f'''<html><head><style>
 @font-face{{font-family:G;src:{font("geologica-cyr.woff2")};font-weight:100 900;unicode-range:U+0400-045F}}
 @font-face{{font-family:G;src:{font("geologica-lat.woff2")};font-weight:100 900;unicode-range:U+0000-00FF,U+2000-206F}}
-html,body{{margin:0}}body{{width:1024px;height:1536px;background:#0a0a0a;color:#fff;font-family:G;position:relative;overflow:hidden}}
+html,body{{margin:0}}body{{width:1024px;height:1536px;background:{cbg};color:#fff;font-family:G;position:relative;overflow:hidden}}
 .glow{{position:absolute;left:-30%;top:38%;width:160%;height:80%;background:radial-gradient(closest-side,{accent}55,{accent}10 60%,transparent)}}
 .grain{{position:absolute;inset:0;opacity:.06;background:repeating-linear-gradient(0deg,#fff 0 1px,transparent 1px 3px)}}
 .top{{position:absolute;left:84px;top:84px;display:flex;align-items:center;gap:18px}}
-.top img{{width:84px}}.top b{{display:block;font-size:36px;font-weight:700;letter-spacing:-.02em;line-height:1}}.top small{{display:block;font-size:22px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-top:4px}}
+.top img{{width:84px}}.top b{{display:block;font-size:36px;font-weight:700;letter-spacing:-.02em;line-height:1}}.top small{{display:block;font-size:22px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin-top:4px;color:#fff}}
 .author{{position:absolute;left:84px;right:84px;top:420px;font-size:52px;font-weight:500;letter-spacing:-.02em;color:#d8d8dc}}
 .title{{position:absolute;left:80px;right:70px;top:500px;font-size:{cfg.get("cover_title_size", 150)}px;font-weight:800;line-height:.92;letter-spacing:-.05em;color:#fff;text-wrap:balance}}
 .bar{{position:absolute;left:84px;width:120px;height:10px;background:{accent};top:390px}}

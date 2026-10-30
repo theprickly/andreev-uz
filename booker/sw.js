@@ -1,7 +1,7 @@
 /* Versioned, atomic offline copy. Only same-origin book files are cached. */
 'use strict';
-const CACHE='book-booker-5ae47f5a26f2';
-const ASSETS=["./", "index.html", "book.json", "book-7a899b13c13b.json", "assets/book-29fa3858ba7f.epub", "style-61dda27478a8.css", "app-5c460eaded3a.js", "pwa-f8f568b00d19.js", "manifest-7501fcc95233.webmanifest", "assets/fonts/geologica-cyr.woff2", "assets/fonts/geologica-lat.woff2", "assets/fonts/literata-cyrillic-italic.woff2", "assets/fonts/literata-cyrillic-normal.woff2", "assets/fonts/literata-latin-italic.woff2", "assets/fonts/literata-latin-normal.woff2", "assets/icons/cover-apple-touch.png", "assets/icons/cover-favicon-32.png", "assets/icons/cover-icon-192.png", "assets/icons/cover-icon-512.png", "assets/icons/cover-icon-maskable-512.png", "assets/images/108706552c439358728.jpg", "assets/images/11-gtasa11.jpg", "assets/images/11.jpg", "assets/cover.jpg", "assets/book-render.png", "assets/vsplanet-logo.png"];
+const CACHE='book-booker-560742e93cd5';
+const ASSETS=["./", "index.html", "book.json", "book-7a899b13c13b.json", "assets/book-614ab329a32d.epub", "style-9c41c8d2cfc5.css", "app-1e38c5eb53c3.js", "pwa-82be9cff5451.js", "manifest-7501fcc95233.webmanifest", "assets/fonts/geologica-cyr.woff2", "assets/fonts/geologica-lat.woff2", "assets/fonts/literata-cyrillic-italic.woff2", "assets/fonts/literata-cyrillic-normal.woff2", "assets/fonts/literata-latin-italic.woff2", "assets/fonts/literata-latin-normal.woff2", "assets/icons/cover-apple-touch.png", "assets/icons/cover-favicon-32.png", "assets/icons/cover-icon-192.png", "assets/icons/cover-icon-512.png", "assets/icons/cover-icon-maskable-512.png", "assets/images/108706552c439358728.jpg", "assets/images/11-gtasa11.jpg", "assets/images/11.jpg", "assets/cover.jpg", "assets/book-render.webp", "assets/vsplanet-logo.png"];
 self.addEventListener('install',event=>{event.waitUntil((async()=>{
  const cache=await caches.open(CACHE);
  try{

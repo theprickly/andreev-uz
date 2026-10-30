@@ -15,7 +15,8 @@ function validateState(raw){
  if(!raw||typeof raw!=='object'||(raw.book&&raw.book!==BOOK))throw Error('Этот файл относится к другой книге.');
  const positions={};for(const [k,v] of Object.entries(raw.positions||{})){const p=positionOf(v);if(p&&String(p.chapter)===k)positions[k]=p;}
  const bookmarks=Array.isArray(raw.bookmarks)?raw.bookmarks.slice(0,500).map((b,i)=>{const p=positionOf(b);return p?{...p,id:String(b.id||i).slice(0,80),excerpt:String(b.excerpt||'Закладка').slice(0,220),created:String(b.created||'').slice(0,40)}:null}).filter(Boolean):[];
- return {version:1,book:BOOK,settings:settingsOf(raw.settings),current:positionOf(raw.current),positions,bookmarks};
+ const started=typeof raw.started==='string'&&!isNaN(Date.parse(raw.started))?raw.started:new Date().toISOString();
+ return {version:1,book:BOOK,started,settings:settingsOf(raw.settings),current:positionOf(raw.current),positions,bookmarks};
 }
 let state;
 try{const stored=localStorage.getItem(KEY);state=validateState(stored?JSON.parse(stored):{});}catch{state=validateState({});}
@@ -86,7 +87,7 @@ function goChapter(i,paragraph=null){
 let pendingPosition=null;
 function showChapter(i){
  active=i;restoring=true;
- $('#landing').hidden=true;$('#reader').hidden=false;
+ $('#landing').hidden=true;$('#page').hidden=true;$('#reader').hidden=false;
  const c=chapters[i];document.title=c.title+' — Обмани смерть. Укради жизнь · VSplanet';
  $('#chapter-title').textContent=c.title;$('#header-chapter').textContent=c.title;
  $('#chapter-category').textContent=i===0?'До первого гонга':i<=43?String(i).padStart(2,'0')+' / 43 · Эдди Герреро':'После финального гонга';
@@ -98,7 +99,7 @@ function showChapter(i){
  if(!blocks.length)blocks=$$('#article > *');
  blocks.forEach((n,j)=>n.id='paragraph-'+j);
  $('#previous-chapter').disabled=i===0;$('#previous-label').textContent=i?chapters[i-1].title:'';
- $('#next-chapter').hidden=i===chapters.length-1;$('#next-label').textContent=i<chapters.length-1?chapters[i+1].title:'';$('#end-note').hidden=i!==chapters.length-1;
+ $('#next-chapter').hidden=i===chapters.length-1;$('#next-label').textContent=i<chapters.length-1?chapters[i+1].title:'';$('#end-note').hidden=i!==chapters.length-1;if(i===chapters.length-1)fillFinale();
  buildSidebar();
  const position=pendingPosition||state.positions[String(i)]||{chapter:i,paragraph:0,offset:-1,fraction:0};pendingPosition=null;
  requestAnimationFrame(()=>requestAnimationFrame(()=>{restorePosition(position);restoring=false;savePosition();}));
@@ -135,7 +136,10 @@ function updateProgress(p){
 }
 function route(){
  const match=location.hash.match(/^#read\/(\d+)$/);
- if(match&&validChapter(Number(match[1]))){showChapter(Number(match[1]));return;}
+ if(match&&validChapter(Number(match[1]))){$('#page').hidden=true;showChapter(Number(match[1]));return;}
+ const pg=location.hash.match(/^#(letter|album|about)$/);
+ if(pg){if(active>=0)savePosition();active=-1;showPage(pg[1]);return;}
+ $('#page').hidden=true;
  if(active>=0)savePosition();active=-1;
  $('#reader').hidden=true;$('#landing').hidden=false;document.body.classList.remove('focus-mode');focused=false;$('#exit-focus').hidden=true;
  document.title='Обмани смерть. Укради жизнь — VSplanet';updateResume();
@@ -236,10 +240,123 @@ function bindTilt(){
 function firstLine(section){const p=section.paragraphs.find(x=>x.text.length>12&&!/^…?в память/i.test(x.text))||section.paragraphs[0];if(!p)return '';const m=p.text.match(/^.{12,}?[.!?…](?=\s|$)/);let t=(m?m[0]:p.text).trim();if(t.length>90)t=t.slice(0,88).replace(/\s+\S*$/,'')+'…';return t;}
 async function init(){
  try{
-  const response=await fetch('book-illustrated-a477de166ee3.json');if(!response.ok)throw Error('book fetch');book=await response.json();chapters=book.chapters;if(chapters.length!==46)throw Error('chapter count');
+  const response=await fetch('book-bfa811236f59.json');if(!response.ok)throw Error('book fetch');book=await response.json();chapters=book.chapters;if(chapters.length!==46)throw Error('chapter count');
   searchIndex=chapters.map(c=>{const f=parseChapter(c);let els=[...f.children].filter(n=>['P','H2','H3','BLOCKQUOTE','FIGURE'].includes(n.tagName));if(!els.length)els=[...f.children];return {paragraphs:els.map((n,i)=>({paragraph:i,text:n.textContent.trim(),normalized:normalized(n.textContent.trim())}))};});
-  snippets=searchIndex.map(firstLine);
+  snippets=searchIndex.map(firstLine);buildExtras();
   applySettings();buildLanding();bindEvents();route();persist();
  }catch(e){console.error(e);$('#load-error').hidden=false;$('#load-error').textContent='Не удалось загрузить книгу. Проверьте подключение и обновите страницу.';}
 }
 init();
+
+/* ===== Extras: letter, album, about, footnotes, quote cards, typos, memorial, finale ===== */
+let letterStart=-1,album=[],selTimer;
+const BLOCK_TAGS=['P','H2','H3','BLOCKQUOTE','FIGURE'];
+function blocksOf(c){const f=parseChapter(c);let bl=[...f.children].filter(n=>BLOCK_TAGS.includes(n.tagName));if(!bl.length)bl=[...f.children];return bl;}
+function buildExtras(){
+ const last=blocksOf(chapters[45]);letterStart=last.findIndex(n=>/^От переводчика/.test(n.textContent.trim()));
+ album=[];chapters.forEach((c,i)=>blocksOf(c).forEach((n,j)=>{const img=n.querySelector('img');if(img)album.push({chapter:i,paragraph:j,src:img.getAttribute('src'),alt:img.getAttribute('alt')||'',w:+img.getAttribute('width')||3,h:+img.getAttribute('height')||4});}));
+ const teaser=$('#letter-teaser');
+ if(teaser&&letterStart>=0){const t=(last.slice(letterStart+1).find(n=>/переводя книгу/i.test(n.textContent))||last[letterStart+1]).textContent.trim();const first=(t.match(/^.+?[.!?](?=\s|$)/)||[t])[0];teaser.textContent=first;}
+ if(isMemorial()){document.body.classList.add('memorial');$$('.memorial-line').forEach(n=>n.hidden=false);}
+ const photos=$('#stat-photos');if(photos)photos.textContent=album.length;
+}
+function isMemorial(){const d=new Date();return (d.getMonth()===10&&d.getDate()===13)||/[?&]memorial\b/.test(location.search);}
+function showPage(name){
+ $('#landing').hidden=true;$('#reader').hidden=true;const page=$('#page');page.hidden=false;document.body.classList.remove('focus-mode','bars-hidden');focused=false;
+ const main=$('#page-main');main.replaceChildren();main.className='page-main wrap page-'+name;
+ if(name==='letter'){
+  document.title='Письмо переводчика — Обмани смерть. Укради жизнь · VSplanet';
+  const head=document.createElement('header');head.className='page-head';head.innerHTML='<p class="eyebrow-red">От переводчика · 2013</p><h1>Письмо читателям VSplanet</h1>';main.append(head);
+  const art=document.createElement('article');art.className='letter book-prose';
+  blocksOf(chapters[45]).slice(letterStart+1).forEach(n=>{if(n.textContent.trim())art.append(n);});
+  const sign=document.createElement('p');sign.className='letter-sign';sign.innerHTML='Александр Суменко<span>переводчик, 2013</span>';art.append(sign);main.append(art);
+  const act=document.createElement('div');act.className='page-actions';act.innerHTML='<button class="btn-primary" data-continue>Читать книгу</button><button class="btn-ghost" id="letter-in-book">Открыть в книге</button>';main.append(act);
+  act.querySelector('[data-continue]').addEventListener('click',()=>{if(state.current)pendingPosition=state.current;goChapter(state.current?.chapter||0);});
+  $('#letter-in-book').addEventListener('click',()=>jumpTo({chapter:45,paragraph:letterStart,offset:0,fraction:0}));
+ }else if(name==='album'){
+  document.title='Альбом — Обмани смерть. Укради жизнь · VSplanet';
+  const head=document.createElement('header');head.className='page-head';head.innerHTML='<p class="eyebrow-red">Альбом · '+album.length+' фотографий</p><h1>Фотографии из книги</h1><p class="page-lead">Нажмите на снимок, чтобы открыть его в тексте.</p>';main.append(head);
+  const grid=document.createElement('div');grid.className='album-grid';
+  album.forEach(a=>{const b=document.createElement('button');b.className='album-item';b.style.setProperty('--ar',(a.w/a.h).toFixed(3));b.innerHTML='<img loading="lazy" decoding="async" alt="" src="'+a.src+'"><span><b>'+escapeText(chapters[a.chapter].title)+'</b>'+escapeText(a.alt)+'</span>';b.addEventListener('click',()=>jumpTo({chapter:a.chapter,paragraph:a.paragraph,offset:0,fraction:0}));grid.append(b);});
+  main.append(grid);
+ }else{
+  document.title='О сайте — Обмани смерть. Укради жизнь · VSplanet';
+  main.innerHTML=$('#about-template').innerHTML;
+ }
+ window.scrollTo({top:0,behavior:'instant'});$('#page').focus?.({preventScroll:true});
+}
+function fillFinale(){
+ const days=Math.max(1,Math.ceil((Date.now()-Date.parse(state.started))/864e5));
+ const n=state.bookmarks.length,plural=(k,a,b,c)=>k%10===1&&k%100!==11?a:k%10>=2&&k%10<=4&&(k%100<10||k%100>=20)?b:c;
+ $('#end-stats').innerHTML='<div><b>'+days+'</b><span>'+plural(days,'день','дня','дней')+' с книгой</span></div><div><b>'+n+'</b><span>'+plural(n,'закладка','закладки','закладок')+'</span></div><div><b>46</b><span>разделов</span></div>';
+}
+async function shareBook(){
+ const url=location.origin+location.pathname,data={title:'Обмани смерть. Укради жизнь',text:'История Эдди Герреро. Перевод Александра Суменко для VSplanet.net',url};
+ try{if(navigator.share){await navigator.share(data);return;}await navigator.clipboard.writeText(url);notify('Ссылка на книгу скопирована');}catch(e){if(e?.name!=='AbortError')notify('Не удалось поделиться. Скопируйте адрес страницы.');}
+}
+/* footnotes */
+function showFootnote(btn){
+ const bub=$('#fn-bubble');bub.innerHTML='<b>Примечание переводчика</b>'+escapeText(btn.dataset.note);bub.hidden=false;
+ const r=btn.getBoundingClientRect(),w=Math.min(320,window.innerWidth-24);bub.style.width=w+'px';
+ const left=clamp(r.left+r.width/2-w/2,12,window.innerWidth-w-12);bub.style.left=left+'px';
+ const top=r.bottom+10+bub.offsetHeight>window.innerHeight?r.top-10-bub.offsetHeight:r.bottom+10;bub.style.top=top+'px';
+ btn.setAttribute('aria-expanded','true');
+}
+function hideFootnote(){const b=$('#fn-bubble');if(!b.hidden){b.hidden=true;$$('.fn[aria-expanded]').forEach(x=>x.removeAttribute('aria-expanded'));}}
+/* selection: quote card + typo */
+function currentSelection(){
+ const sel=window.getSelection();if(!sel||sel.isCollapsed||!sel.rangeCount)return null;
+ const range=sel.getRangeAt(0),art=$('#article');if(!art||!art.contains(range.commonAncestorContainer))return null;
+ const text=sel.toString().replace(/\s+/g,' ').trim();if(text.length<3)return null;
+ let node=range.startContainer.nodeType===1?range.startContainer:range.startContainer.parentElement;const block=node.closest('#article > *');
+ return {text,range,paragraph:Math.max(0,blocks.indexOf(block))};
+}
+function placeSelBar(){
+ const s=currentSelection(),bar=$('#sel-bar');if(!s){bar.hidden=true;return;}
+ const r=s.range.getBoundingClientRect();bar.hidden=false;
+ const touch=matchMedia('(pointer: coarse)').matches,w=bar.offsetWidth,h=bar.offsetHeight;
+ bar.style.left=clamp(r.left+r.width/2-w/2,10,window.innerWidth-w-10)+'px';
+ let top=touch?r.bottom+14:r.top-h-10;if(top<64)top=r.bottom+14;if(top+h>window.innerHeight-10)top=Math.max(64,r.top-h-10);bar.style.top=top+'px';
+}
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src;});}
+function wrapLines(ctx,text,max){const words=text.split(' '),lines=[];let line='';for(const w of words){const t=line?line+' '+w:w;if(ctx.measureText(t).width>max&&line){lines.push(line);line=w;}else line=t;}if(line)lines.push(line);return lines;}
+async function makeQuoteCard(text,title){
+ const W=1080,H=1920,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+ try{await Promise.all([document.fonts.load('56px Literata'),document.fonts.load('700 32px "Golos Text"'),document.fonts.load('32px "Golos Text"')]);}catch{}
+ x.fillStyle='#000';x.fillRect(0,0,W,H);
+ const g=x.createRadialGradient(W/2,H-520,40,W/2,H-520,760);g.addColorStop(0,'rgba(238,42,36,.42)');g.addColorStop(1,'rgba(238,42,36,0)');x.fillStyle=g;x.fillRect(0,0,W,H);
+ try{const img=await loadImg('assets/book-render-v4.png');x.drawImage(img,W/2-360,H-1010,720,720);}catch{}
+ let q='«'+(text.length>420?text.slice(0,text.lastIndexOf(' ',410))+'…':text)+'»',size=64,lines,lh;
+ const maxH=H-1010-260;
+ do{x.font=size+'px Literata';lines=wrapLines(x,q,W-170);lh=size*1.36;size-=2;}while(lines.length*lh>maxH&&size>30);
+ x.fillStyle='#f5f5f7';x.textBaseline='top';let y=200;
+ x.font='700 30px "Golos Text"';x.fillStyle='#ee2a24';x.fillText(title.toUpperCase(),85,y-70);
+ x.font=(size+2)+'px Literata';x.fillStyle='#f5f5f7';lines.forEach((l,k)=>x.fillText(l,85,y+k*lh));
+ x.textAlign='center';x.font='700 32px "Golos Text"';x.fillStyle='#fff';x.fillText('Обмани смерть. Укради жизнь',W/2,H-220);
+ x.font='30px "Golos Text"';x.fillStyle='#b9b9bf';x.fillText('Перевод Александра Суменко для VSplanet.net',W/2,H-168);
+ x.fillStyle='#ee2a24';x.fillText(location.host+location.pathname.replace(/\/$/,''),W/2,H-112);
+ return await new Promise(r=>c.toBlob(r,'image/png'));
+}
+async function shareQuote(){
+ const s=currentSelection();if(!s)return;const title=chapters[active].title;$('#sel-bar').hidden=true;
+ notify('Готовим карточку…');
+ const blob=await makeQuoteCard(s.text,title);if(!blob){notify('Не удалось создать карточку');return;}
+ const file=new File([blob],'eddie-quote.png',{type:'image/png'});
+ try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Обмани смерть. Укради жизнь'});return;}}catch(e){if(e?.name==='AbortError')return;}
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='eddie-quote.png';a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);notify('Карточка сохранена');
+}
+async function reportTypo(){
+ const s=currentSelection();if(!s)return;$('#sel-bar').hidden=true;
+ const msg='Опечатка в книге «Обмани смерть. Укради жизнь»\n'+chapters[active].title+', абзац '+(s.paragraph+1)+':\n«'+s.text+'»\nКак правильно: ';
+ try{await navigator.clipboard.writeText(msg);notify('Скопировано с номером главы и абзаца. Отправьте редакции VSplanet');}catch{notify(chapters[active].title+', абзац '+(s.paragraph+1));}
+}
+document.addEventListener('click',e=>{
+ const fn=e.target.closest('.fn');if(fn){e.preventDefault();if(fn.getAttribute('aria-expanded'))hideFootnote();else{hideFootnote();showFootnote(fn);}return;}
+ if(!e.target.closest('#fn-bubble'))hideFootnote();
+ if(e.target.closest('#share-book'))shareBook();
+});
+document.addEventListener('selectionchange',()=>{clearTimeout(selTimer);selTimer=setTimeout(placeSelBar,active>=0?180:0);});
+window.addEventListener('scroll',()=>{hideFootnote();if(!$('#sel-bar').hidden)placeSelBar();},{passive:true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')hideFootnote();});
+$('#sel-quote')?.addEventListener('click',shareQuote);$('#sel-typo')?.addEventListener('click',reportTypo);
+$('#sel-bar')?.addEventListener('mousedown',e=>e.preventDefault());

@@ -1,0 +1,3 @@
+GTA Russian Regular
+Cyrillic: Peter Shadow (2012), based on Pricedown by Ray Larabie (latin).
+License: freeware (as stated in the font file, fonts.by). Embedding: installable (fsType 0).

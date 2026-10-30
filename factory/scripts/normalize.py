@@ -30,20 +30,25 @@ def roman(s):
         v = ROMAN[ch]; t += -v if i + 1 < len(s) and ROMAN[s[i + 1]] > v else v
     return t
 
-def chapter_no(title):
-    m = re.search(r'(?i)глава\s+(\d+|[IVXLC]+)\b', title)
-    if not m: return None
-    return int(m[1]) if m[1].isdigit() else roman(m[1].upper())
+NUM = re.compile(r'(?i)(?:глава\s*#?\s*|^#\s*)(\d+|[IVXLC]+)(?:\.(\d+))?(?=$|[\s.:—–-])')
+PART = re.compile(r'(?i)\(\s*ч\.?\s*(\d+)\s*\)')
 
-SPECIAL = [(r'(?i)вступлени|предислови|введени|пролог', 'Вступление'), (r'(?i)эпилог', 'Эпилог'),
-           (r'(?i)благодарност', 'Благодарности'), (r'(?i)послеслови', 'Послесловие')]
-
-def section_title(t):
-    n = chapter_no(t)
-    if n is not None: return f'Глава {n}', n
-    for rx, name in SPECIAL:
-        if re.search(rx, t): return name, None
-    return re.sub(r'^.*?[.:—–-]\s*', '', t).strip() or t, None
+def parse_title(raw):
+    """→ (тип, номер, часть, название). Тип: 'ch' — глава, 'extra' — прочий раздел."""
+    t = re.sub(r'^\s*\[[^\]]*\]\s*[:.]?\s*', '', raw).strip()
+    part = None
+    if (pm := PART.search(t)): part = int(pm[1]); t = PART.sub('', t).strip()
+    m = NUM.search(t)
+    if m:
+        n = int(m[1]) if m[1].isdigit() else roman(m[1].upper())
+        if m[2]: part = int(m[2])
+        name = re.sub(r'^[\s.:—–-]+', '', t[m.end():]).strip()
+        return 'ch', n, part, name
+    name = t.strip(' .:—–-')
+    if ':' in name and re.match(r'(?i)\s*(от (?:автора|переводчика)|предислов|вступлен|введени|пролог|эпилог|благодарн|послеслов)', name.split(':', 1)[1]):
+        name = name.split(':', 1)[1].strip()
+    name = re.sub(r'^(Эпилог)[,.:]\s*', r'\1: ', name)
+    return 'extra', None, part, name[:1].upper() + name[1:]
 
 ARCHIVE_HINT = re.compile(r'(?i)(продолжаем (?:публик|перевод)|публикуем (?:перевод|продолжение)|предыдущ\w+ глав|следующ\w+ глав|читайте (?:в|на)|все главы|начало (?:перевода|книги)|перевод книги|продолжение следует|альтернативная ссылка)')
 VIDEO = re.compile(r'(?i)youtu|vimeo|rutube|video|видео')
@@ -65,7 +70,9 @@ def clean(el, notes):
         elif t == 'br': inner = '<br>'
         elif t == 'img':
             u = c.get('src', ''); name = images.get(u)
-            if name and not name.startswith('ERROR'):
+            if not valid_image(name):
+                LOST.append(u); inner = '\x00LOST\x00'
+            elif name and not name.startswith('ERROR'):
                 shutil.copy(src / 'images' / name, dst / 'assets' / 'images' / name)
                 alt = escape(c.get('alt', ''), {'"': '&quot;'})
                 inner = f'<img src="assets/images/{name}" alt="{alt}" loading="lazy" decoding="async">'
@@ -82,6 +89,14 @@ def clean_img(c):
     wrap = html5lib.parseFragment('<span></span>', namespaceHTMLElements=False)[0]; wrap.append(c)
     return clean(wrap, [])
 
+CREDITS, LOST = [], []
+from PIL import Image as _PIL
+def valid_image(name):
+    if not name or name.startswith('ERROR'): return False
+    try:
+        with _PIL.open(src / 'images' / name) as im: im.verify()
+        return True
+    except Exception: return False
 NAV = re.compile(r'(?i)продолжение следует|предыдущ\w+ глав|следующ\w+ глав|читайте (?:в|на)|все главы|по ссылк')
 
 def chapter_html(raw):
@@ -94,7 +109,7 @@ def chapter_html(raw):
             t = c.tag.lower()
             cls = c.get('class') or ''
             if t == 'img' or 'wp-caption' in cls or t == 'figure':
-                img = re.search(r'<img[^>]+>', clean(c, []) if t != 'img' else clean_img(c))
+                img = re.search(r'<img[^>]+>', clean(c, []) if t != 'img' else clean_img(c))  # утраченные дают None
                 cap = next((x for x in c.iter() if isinstance(x.tag, str) and (x.tag == 'figcaption' or 'wp-caption-text' in (x.get('class') or ''))), None)
                 if img: blocks.append(('p', img.group(0) + (f'<br>\n<i>{escape(plain(clean(cap, [])))}</i>' if cap is not None else '')))
                 continue
@@ -102,6 +117,10 @@ def chapter_html(raw):
                 walk(c); continue
             notes = []
             body = clean(c, notes).strip()
+            if '\x00LOST\x00' in body:
+                rest = plain(body.replace('\x00LOST\x00', ''))
+                if len(rest) < 250: continue          # утраченное фото с подписью
+                body = body.replace('\x00LOST\x00', '')
             body = re.sub(r'^(?:<br>\s*)+|(?:\s*<br>)+$', '', body)
             txt = plain(body)
             if t in ('h1', 'h2', 'h3', 'h4'):
@@ -133,25 +152,59 @@ def chapter_html(raw):
         elif kind == 'blockquote': out.append(f'<blockquote>{b}</blockquote>')
         else: out.append(f'<p>{b}</p>')
     h = '\n'.join(out)
+    # абзацы-примечания редакции целиком курсивом: «<i>… — прим.ред.</i>»
+    h = re.sub(r'<p>\s*<i>\s*(.+?)\s*[—–-]?\s*прим\.\s*ред(?:\.|акции)?\s*</i>\s*</p>', lambda m: f'<p class="ed-note">{m[1].strip(" .—–-")}.</p>' if not m[1].strip().endswith(('.', '!', '?', '…')) else f'<p class="ed-note">{m[1].strip(" —–-")}</p>', h)
+    h = re.sub(r'<p>\s*<i>\s*((?:Заранее )?[Пп]редупреждение от редакции[^<]*)</i>\s*</p>', r'<p class="ed-note">\1</p>', h)
+    h = re.sub(r'<p>\s*<i>\s*([^<]*(?:YouTube|Youtube|youtube|ролик|видео)[^<]*)</i>\s*</p>', r'<p class="archive-note">\1</p>', h)
+    # подписи переводчиков/помощников → в метаданные книги, из текста убираем
+    def take_credit(m):
+        CREDITS.append(plain(m[1])); return ''
+    h = re.sub(r'<p>((?:<[^>]+>)*\s*(?:Перевод(?:ы)?\s*[:—–-]\s*[А-ЯЁ][а-яё]+\s+[А-ЯЁ][а-яё]+(?:,\s*[А-ЯЁ][а-яё]+\s+[А-ЯЁ][а-яё]+)*|(?:Отдельное спасибо|За помощь (?:с|в|при) перевод\w*|Спасибо за помощь (?:с|в|при) перевод\w*)[^<]{0,120})(?:<[^>]+>)*\s*)</p>\n?', take_credit, h)
     # примечания переводчика → сноски
+    h = re.sub(r'\s?\(\s*(?:<i>)?\s*([^()<]*?)\s*[,–—-]?\s*прим\.\s*ред(?:\.|акции)?\s*(?:</i>)?\s*\)',
+               lambda m: f'<button class="fn" type="button" data-kind="ed" data-note="{escape(m[1].strip()[:1].upper() + m[1].strip()[1:], {chr(34): "&quot;"})}" aria-label="Примечание редакции">*</button>', h)
     h = re.sub(r'\s?\(\s*(?:<i>)?\s*([^()<]*?)\s*[,–—-]?\s*прим\.\s*пер\.\s*(?:</i>)?\s*\)',
                lambda m: f'<button class="fn" type="button" data-note="{escape(m[1].strip()[:1].upper() + m[1].strip()[1:], {chr(34): "&quot;"})}" aria-label="Примечание переводчика">*</button>', h)
     return h
 
 sections = []
 for p in posts:
-    title, n = section_title(plain(p['title']['rendered']))
-    sections.append({'post': p['id'], 'date': p['date'], 'link': p['link'], 'title': title, 'n': n, 'html': chapter_html(p['content']['rendered'])})
+    raw_title = plain(p['title']['rendered'])
+    if '[' in raw_title and not raw_title.lstrip().startswith('['):
+        print('  пропуск (не часть книги):', raw_title); continue
+    kind, n, part, name = parse_title(raw_title)
+    if kind == 'extra' and a.title and name.lower().replace('ё', 'е') == a.title.lower().replace('ё', 'е'): name = 'Вступление'
+    h = chapter_html(p['content']['rendered'])
+    if kind == 'extra' and len(plain(h)) < 600 and '<img' not in h:
+        print('  пропуск (анонс/пусто):', raw_title); continue
+    sections.append({'post': p['id'], 'date': p['date'], 'link': p['link'], 'kind': kind, 'n': n, 'part': part or 1, 'name': name, 'html': h})
+
 from collections import Counter
-rep_notes = Counter(n for s in sections for n in set(re.findall(r'<p class="archive-note">(.*?)</p>', s['html'])))
-for s in sections:
-    s['html'] = re.sub(r'<p class="archive-note">(.*?)</p>\n?', lambda m: '' if rep_notes[m[1]] >= 2 and 'видео' not in m[1] else m[0], s['html'])
-order = {'Вступление': -1, 'Эпилог': 10**6, 'Послесловие': 10**6 + 1, 'Благодарности': 10**6 + 2}
-sections.sort(key=lambda s: (s['n'] if s['n'] is not None else order.get(s['title'], 10**5), s['date']))
-book = {'title': a.title, 'language': 'ru', 'chapters': []}
-for i, s in enumerate(sections):
-    words = len(re.findall(r'\w+', plain(s['html'])))
-    book['chapters'].append({'id': f'c{i}', 'title': s['title'], 'html': s['html'], 'words': words, 'source': {'post': s['post'], 'date': s['date'], 'link': s['link']}})
+rep_notes = Counter(nt for x in sections for nt in set(re.findall(r'<p class="archive-note">(.*?)</p>', x['html'])))
+for x in sections:
+    x['html'] = re.sub(r'<p class="archive-note">(.*?)</p>\n?', lambda m: '' if rep_notes[m[1]] >= 2 and 'видео' not in m[1] else m[0], x['html'])
+
+chapters = {}
+for x in sorted((x for x in sections if x['kind'] == 'ch'), key=lambda x: (x['n'], x['part'], x['date'])):
+    if x['n'] in chapters:
+        c = chapters[x['n']]; c['html'] += '\n' + x['html']; c['posts'].append(x['post']); c['name'] = c['name'] or x['name']
+    else:
+        chapters[x['n']] = {**x, 'posts': [x['post']]}
+first_date = min((c['date'] for c in chapters.values()), default='9999')
+extras = sorted((x for x in sections if x['kind'] == 'extra'), key=lambda x: x['date'])
+ordered = [{**x, 'title': x['name'], 'posts': [x['post']]} for x in extras if x['date'] < first_date]
+ordered += [{**c, 'title': f'Глава {c["n"]}' + (f'. {c["name"]}' if c['name'] else '')} for _, c in sorted(chapters.items())]
+ordered += [{**x, 'title': x['name'], 'posts': [x['post']]} for x in extras if x['date'] >= first_date]
+nums = sorted(chapters)
+missing = sorted(set(range(1, nums[-1] + 1)) - set(nums)) if nums else []
+
+book = {'title': a.title, 'language': 'ru', 'credits': sorted(set(CREDITS)), 'chapters': []}
+for i, x in enumerate(ordered):
+    words = len(re.findall(r'\w+', plain(x['html'])))
+    book['chapters'].append({'id': f'c{i}', 'title': x['title'], 'html': x['html'], 'words': words, 'source': {'posts': x['posts'], 'date': x['date'], 'link': x['link']}})
 (dst / 'book.json').write_text(json.dumps(book, ensure_ascii=False, separators=(',', ':')))
-print(f'{len(sections)} sections → {dst / "book.json"}')
-for s in sections: print(f'  {s["date"][:10]}  {s["title"]:<16} {len(plain(s["html"])):>7} зн.  post {s["post"]}')
+print(f'{len(ordered)} разделов → {dst / "book.json"}' + (f'  ⚠ нет глав: {missing}' if missing else ''))
+if LOST: print(f'  ⚠ утрачено фото (битые ссылки): {len(set(LOST))}')
+book['lost_images'] = len(set(LOST))
+if CREDITS: print('  подписи переводчиков (убраны из текста):', sorted(set(CREDITS)))
+for x in ordered: print(f'  {x["date"][:10]}  {x["title"][:62]:<62} {len(plain(x["html"])):>7} зн.  посты {x["posts"]}')

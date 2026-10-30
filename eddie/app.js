@@ -256,8 +256,6 @@ function blocksOf(c){const f=parseChapter(c);let bl=[...f.children].filter(n=>BL
 function buildExtras(){
  const last=blocksOf(chapters[45]);letterStart=last.findIndex(n=>/^От переводчика/.test(n.textContent.trim()));
  album=[];chapters.forEach((c,i)=>blocksOf(c).forEach((n,j)=>{const img=n.querySelector('img');if(img)album.push({chapter:i,paragraph:j,src:img.getAttribute('src'),alt:img.getAttribute('alt')||'',w:+img.getAttribute('width')||3,h:+img.getAttribute('height')||4});}));
- const teaser=$('#letter-teaser');
- if(teaser&&letterStart>=0){const t=(last.slice(letterStart+1).find(n=>/переводя книгу/i.test(n.textContent))||last[letterStart+1]).textContent.trim();const first=(t.match(/^.+?[.!?](?=\s|$)/)||[t])[0];teaser.textContent=first.replace(/[.]$/,'');}
  if(isMemorial()){document.body.classList.add('memorial');$$('.memorial-line').forEach(n=>n.hidden=false);}
  const photos=$('#stat-photos');if(photos)photos.textContent=album.length;
 }
@@ -361,38 +359,3 @@ window.addEventListener('scroll',()=>{hideFootnote();if(!$('#sel-bar').hidden)pl
 document.addEventListener('keydown',e=>{if(e.key==='Escape')hideFootnote();});
 $('#sel-quote')?.addEventListener('click',shareQuote);$('#sel-typo')?.addEventListener('click',reportTypo);
 $('#sel-bar')?.addEventListener('mousedown',e=>e.preventDefault());
-/* ===== Book opening transition ===== */
-let opening=false;
-function continueReading(){if(state.current)pendingPosition=state.current;goChapter(state.current?.chapter||0);}
-async function openBookAnimated(){
- if(opening)return;
- const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,src=$('.book-tilt img'),book=$('#ob-book'),veil=$('#book-open');
- if(reduce||!book||!src||!book.animate){continueReading();return;}
- opening=true;
- const r=src.getBoundingClientRect();
- // front face of the render (measured on the 1024×1024 image)
- const f={x:r.left+r.width*.200,y:r.top+r.height*.075,w:r.width*.478,h:r.height*.86};
- const th=Math.min(innerHeight*.74,innerWidth*.9*1.5/2),tw=th/1.5,tx=(innerWidth-tw)/2,ty=(innerHeight-th)/2;
- Object.assign(book.style,{left:tx+'px',top:ty+'px',width:tw+'px',height:th+'px'});book.hidden=false;
- const cover=book.querySelector('.ob-cover');cover.style.transform='rotateY(0deg)';
- $('.book-tilt').style.visibility='hidden';
- const from=`translate(${f.x-tx}px,${f.y-ty}px) scale(${f.w/tw},${f.h/th}) perspective(1400px) rotateY(-16deg)`;
- const ease='cubic-bezier(.2,.75,.2,1)';
- try{
-  veil.animate([{opacity:0},{opacity:1}],{duration:520,easing:ease,fill:'forwards'});
-  await book.animate([{transform:from},{transform:'translate(0,0) scale(1) perspective(1400px) rotateY(0deg)'}],{duration:620,easing:ease,fill:'forwards'}).finished;
-  const shift=book.animate([{transform:'translate(0,0) scale(1) perspective(1400px)'},{transform:`translate(${tw/2}px,0) scale(1) perspective(1400px)`}],{duration:900,easing:ease,fill:'forwards'});
-  await cover.animate([{transform:'perspective(2200px) rotateY(0deg)'},{transform:'perspective(2200px) rotateY(-168deg)'}],{duration:900,easing:'cubic-bezier(.45,.05,.2,1)',fill:'forwards'}).finished;
-  await shift.finished;
-  continueReading();
-  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
-  const out={duration:520,easing:'ease-in',fill:'forwards'};
-  book.animate([{opacity:1,transform:`translate(${tw/2}px,0) scale(1) perspective(1400px)`},{opacity:0,transform:`translate(${tw/2}px,0) scale(1.35) perspective(1400px)`}],out);
-  await veil.animate([{opacity:1},{opacity:0}],out).finished;
- }catch(e){console.error(e);continueReading();}
- finally{
-  book.hidden=true;book.getAnimations().forEach(a=>a.cancel());cover.getAnimations().forEach(a=>a.cancel());veil.getAnimations().forEach(a=>a.cancel());
-  $('.book-tilt').style.visibility='';opening=false;
- }
-}
-$$('[data-open-book]').forEach(b=>b.addEventListener('click',openBookAnimated));

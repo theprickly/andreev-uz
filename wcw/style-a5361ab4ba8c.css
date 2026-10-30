@@ -388,3 +388,7 @@ legend{font-size:14px;color:#d6d6da;margin-bottom:8px}
 .static-toc b{font-weight:600}
 .static-toc small{font-size:14px;color:var(--muted)}
 .topbar nav,.site-header nav,header.top nav{display:flex;gap:8px}
+.hero .orig{display:block;margin:18px 0 0;max-width:500px;font-size:14px;line-height:1.4;color:var(--mute,#8e8e95)}
+.hero .orig span{margin-right:9px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-hi,#9c9ca3)}
+.hero .orig i{font-style:italic;color:#c9c9ce}.hero .orig b{margin-left:6px;white-space:nowrap;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}.hero .orig b::before{content:"· ";color:var(--mute,#8e8e95);font-weight:400}
+.hero .orig+.credit{margin-top:10px}

@@ -138,8 +138,8 @@ function updateProgress(p){
  $('#add-bookmark').setAttribute('aria-pressed',String(exists));
 }
 function route(){
- const match=location.hash.match(/^#read\/(\d+)$/);
- if(match&&validChapter(Number(match[1]))){$('#page').hidden=true;showChapter(Number(match[1]));return;}
+ const match=location.hash.match(/^#read\/(\d+)(?:\/(\d+))?$/);
+ if(match&&validChapter(Number(match[1]))){$('#page').hidden=true;const jp=match[2]!==undefined?Number(match[2]):null;if(jp!==null)pendingPosition={chapter:Number(match[1]),paragraph:jp,offset:0,fraction:0};showChapter(Number(match[1]));if(jp!==null)setTimeout(()=>highlightBlock(jp),350);return;}
  const pg=location.hash.match(/^#(letter|album|about)$/);
  if(pg){if(active>=0)savePosition();active=-1;showPage(pg[1]);return;}
  $('#page').hidden=true;

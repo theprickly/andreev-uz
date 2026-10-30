@@ -10,3 +10,7 @@ Sitemap: https://andreev.uz/booker/sitemap.xml
 Sitemap: https://andreev.uz/heenan/sitemap.xml
 Sitemap: https://andreev.uz/books/sitemap.xml
 Sitemap: https://andreev.uz/flair/sitemap.xml
+Sitemap: https://andreev.uz/piper/sitemap.xml
+Sitemap: https://andreev.uz/holly/sitemap.xml
+Sitemap: https://andreev.uz/goldust/sitemap.xml
+Sitemap: https://andreev.uz/booker-royalty/sitemap.xml

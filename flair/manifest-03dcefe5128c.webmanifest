@@ -1,0 +1,32 @@
+{
+ "id": "./",
+ "name": "Быть мужчиной · VSplanet Книги",
+ "short_name": "Рик Флэр",
+ "description": "Автобиография Рика Флэра «Быть мужчиной» на русском: главы 1–6 в переводе Евгения Лайдера для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
+ "lang": "ru",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#06040c",
+ "theme_color": "#06040c",
+ "icons": [
+  {
+   "src": "assets/icons/cover-icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "assets/icons/cover-icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "assets/icons/cover-icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}

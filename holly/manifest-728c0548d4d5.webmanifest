@@ -1,0 +1,32 @@
+{
+ "id": "./",
+ "name": "Хардкорная правда · VSplanet Книги",
+ "short_name": "Боб Холли",
+ "description": "Автобиография Боба Холли «Хардкорная правда» на русском — неполный перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
+ "lang": "ru",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#03060c",
+ "theme_color": "#03060c",
+ "icons": [
+  {
+   "src": "assets/icons/cover-icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "assets/icons/cover-icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "assets/icons/cover-icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}

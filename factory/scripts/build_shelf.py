@@ -10,7 +10,7 @@ import base64, html, json, pathlib, re, shutil, sys
 from PIL import Image
 
 ROOT = pathlib.Path(sys.argv[1]).resolve()
-SLUGS = sys.argv[2:] or ['eddie', 'hart', 'jericho', 'wcw', 'heenan', 'lesnar', 'booker', 'flair', 'piper', 'holly', 'goldust', 'booker-royalty']
+SLUGS = sys.argv[2:] or ['eddie', 'hart', 'jericho', 'wcw', 'heenan', 'lesnar', 'booker', 'flair', 'piper', 'holly', 'goldust', 'booker-royalty', 'copeland']
 T = pathlib.Path(__file__).resolve().parents[1] / 'template'
 OUT = ROOT / 'books'; (OUT / 'covers').mkdir(parents=True, exist_ok=True)
 BASE = 'https://andreev.uz/books/'
@@ -19,8 +19,8 @@ E = lambda s: html.escape(str(s), quote=True)
 # О каких годах рассказывает книга — для ленты эпох (приблизительно, по содержанию)
 ERAS = {'heenan': (1944, 2002), 'hart': (1957, 2007), 'booker': (1965, 1993), 'eddie': (1967, 2005),
         'lesnar': (1977, 2010), 'wcw': (1988, 2001), 'jericho': (1999, 2008), 'flair': (1949, 1985),
-        'piper': (1954, 2002), 'holly': (1970, 2012), 'goldust': (1969, 2010), 'booker-royalty': (2001, 2006)}
-ERA_LABEL = {'booker': 'Букер Т (1-я книга)', 'booker-royalty': 'Букер Т (2-я книга)', 'goldust': 'Голдаст'}
+        'piper': (1954, 2002), 'holly': (1970, 2012), 'goldust': (1969, 2010), 'booker-royalty': (2001, 2006), 'copeland': (1973, 1999)}
+ERA_LABEL = {'booker': 'Букер Т (1-я книга)', 'booker-royalty': 'Букер Т (2-я книга)', 'goldust': 'Голдаст', 'copeland': 'Эдж (Коупленд)'}
 TAGLINE = {
     'eddie': 'О семье Герреро, зависимости и пути к титулу чемпиона WWE.',
     'hart': 'Подземелье Стю, Монреальская подстава и жизнь, которую не придумать сценаристам.',
@@ -32,6 +32,7 @@ TAGLINE = {
     'piper': 'Буян Родди: от трудного детства до звёздных лет — с предисловием Брета Харта.',
     'holly': 'Алабама, годы в WWF, травмы и жизнь после ринга — без прикрас.',
     'goldust': 'Сын «Американской мечты», болезнь и путь из тьмы к свету.',
+    'copeland': 'Детство в Канаде, путь в рестлинг и первые годы Эджа в WWF.',
     'booker-royalty': 'От падения WCW до Зала славы WWE.',
     'booker': 'Улицы Хьюстона, тюрьма и первый шаг на ринг.',
 }

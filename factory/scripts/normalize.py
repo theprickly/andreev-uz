@@ -13,7 +13,7 @@ import html5lib
 from xml.sax.saxutils import escape
 
 ap = argparse.ArgumentParser(); ap.add_argument('src'); ap.add_argument('dst'); ap.add_argument('--title', default='')
-ap.add_argument('--skip-ids', default=''); ap.add_argument('--year', default='')
+ap.add_argument('--skip-ids', default=''); ap.add_argument('--split-h1', action='store_true'); ap.add_argument('--prefix', default=''); ap.add_argument('--year', default='')
 a = ap.parse_args()
 src, dst = pathlib.Path(a.src), pathlib.Path(a.dst)
 (dst / 'assets' / 'images').mkdir(parents=True, exist_ok=True)
@@ -75,7 +75,9 @@ def clean(el, notes):
             if not valid_image(name):
                 LOST.append(u); inner = '\x00LOST\x00'
             elif name and not name.startswith('ERROR'):
-                shutil.copy(src / 'images' / name, dst / 'assets' / 'images' / name)
+                if not re.search(r'(?i)\.(jpe?g|png|gif|webp)$', name):       # без расширения EPUB не знает тип файла
+                    with _PIL.open(src / 'images' / name) as im: name += {'JPEG': '.jpg', 'PNG': '.png', 'GIF': '.gif', 'WEBP': '.webp'}.get(im.format, '.jpg')
+                shutil.copy(src / 'images' / (name.rsplit('.', 1)[0] if name not in images.values() else name), dst / 'assets' / 'images' / name)
                 alt = escape(c.get('alt', ''), {'"': '&quot;'})
                 inner = f'<img src="assets/images/{name}" alt="{alt}" loading="lazy" decoding="async">'
             else: inner = ''
@@ -175,6 +177,23 @@ for p in posts:
     raw_title = plain(p['title']['rendered'])
     if '[' in raw_title and not raw_title.lstrip().startswith('['):
         print('  пропуск (не часть книги):', raw_title); continue
+    if a.prefix and not raw_title.lstrip().startswith(a.prefix):
+        print('  пропуск (не из серии):', raw_title[:50]); continue
+    if a.split_h1 and len(re.findall(r'<h1', p['content']['rendered'])) >= 2:
+        # в одной публикации несколько глав/разделов, каждый под своим <h1>: «ГЛАВА 7», «ПРОЛОГ»…
+        pieces = re.split(r'(?=<h1[^>]*>)', p['content']['rendered'])
+        for piece in pieces:
+            hm = re.match(r'<h1[^>]*>(.*?)</h1>', piece, re.S)
+            if not hm: continue
+            head = plain(hm[1]); body = chapter_html(piece[hm.end():])
+            nm = re.fullmatch(r'(?i)глава\s+(\d+)', head)
+            if nm: kind, n, name = 'ch', int(nm[1]), ''
+            else:
+                kind, n = 'extra', None
+                name = re.sub(r'\s*\(от ([^)]*)\)', lambda m: ' ' + m[1].replace('Мика Фоли', 'Мика Фоли'), head.lower()).strip().capitalize()
+                name = re.sub(r'(?<=\s)(мика|фоли)', lambda m: m[1].capitalize(), name)
+            sections.append({'post': p['id'], 'date': p['date'], 'link': p['link'], 'kind': kind, 'n': n, 'part': 1, 'name': name, 'html': body})
+        continue
     kind, n, part, name = parse_title(raw_title)
     if kind == 'extra' and a.title and name.lower().replace('ё', 'е') == a.title.lower().replace('ё', 'е'): name = 'Вступление'
     h = chapter_html(p['content']['rendered'])

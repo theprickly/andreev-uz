@@ -4,6 +4,8 @@ THEMES = {
     'hart': {'accent': '#ff3d9a', 'accent_hi': '#ff6fb5', 'accent_deep': '#b0105e', 'accent_ink': '#ffffff', 'bg': '#050305', 'surface': '#120a10', 'surface_2': '#1c1019', 'reader_bg': '#0b070a'},
     'booker': {'accent': '#f2b632', 'accent_hi': '#ffd36b', 'accent_deep': '#a8740a', 'accent_ink': '#140c00', 'bg': '#060503', 'surface': '#13100a', 'surface_2': '#1d1810', 'reader_bg': '#0b0906'},
     'jericho': {'accent': '#ffe11a', 'accent_hi': '#fff06b', 'accent_deep': '#b89a00', 'accent_ink': '#1a1500', 'bg': '#060503', 'surface': '#13110a', 'surface_2': '#1d1a10', 'reader_bg': '#0b0a06'},
+    'lesnar': {'accent': '#e5212b', 'accent_hi': '#ff5961', 'accent_deep': '#a3121a', 'accent_ink': '#ffffff', 'bg': '#050505', 'surface': '#111111', 'surface_2': '#1a1a1a', 'reader_bg': '#0a0a0a'},
+    'flair': {'accent': '#a98bff', 'accent_hi': '#c6b2ff', 'accent_deep': '#5b3bb8', 'accent_ink': '#0d0620', 'bg': '#06040c', 'surface': '#100c1b', 'surface_2': '#191328', 'reader_bg': '#0a0711'},
 }
 
 

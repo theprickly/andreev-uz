@@ -3,3 +3,8 @@ Allow: /
 
 Sitemap: https://andreev.uz/eddie/sitemap.xml
 Sitemap: https://andreev.uz/jericho/sitemap.xml
+Sitemap: https://andreev.uz/hart/sitemap.xml
+Sitemap: https://andreev.uz/wcw/sitemap.xml
+Sitemap: https://andreev.uz/lesnar/sitemap.xml
+Sitemap: https://andreev.uz/booker/sitemap.xml
+Sitemap: https://andreev.uz/heenan/sitemap.xml

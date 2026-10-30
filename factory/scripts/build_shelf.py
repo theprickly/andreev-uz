@@ -8,6 +8,7 @@
 """
 import base64, html, json, pathlib, re, shutil, sys
 from PIL import Image
+sys.path.insert(0, str(pathlib.Path(__file__).parent)); import quotes as _q
 
 ROOT = pathlib.Path(sys.argv[1]).resolve()
 SLUGS = sys.argv[2:] or ['eddie', 'hart', 'jericho', 'wcw', 'heenan', 'lesnar', 'booker', 'flair', 'piper', 'holly', 'goldust', 'booker-royalty', 'copeland']
@@ -44,6 +45,7 @@ for slug in SLUGS:
     cfg = json.loads(re.search(r'window\.BOOK_CONFIG=(\{.*?\});?</script>', page, re.S)[1])
     data = json.loads((d / cfg.get('bookFile', 'book.json').split('?')[0]).read_text()) if (d / cfg.get('bookFile', '')).is_file() else \
         json.loads(sorted(d.glob('book-*.json'))[0].read_text())
+    qs = _q.extract(slug, data)
     words = [c.get('words') or len(re.sub(r'<[^>]+>', ' ', c['html']).split()) for c in data['chapters']]
     m = re.search(r'<style id="theme">[^<]*--accent:(#[0-9a-fA-F]{6})', page)
     accent = m[1] if m else '#ee2a24'                       # у Эдди своя красная тема
@@ -51,7 +53,7 @@ for slug in SLUGS:
     with Image.open(d / 'assets' / 'cover.jpg') as im:
         im = im.convert('RGB'); im.thumbnail((480, 720), Image.LANCZOS)
         im.save(OUT / 'covers' / f'{slug}.jpg', quality=82, optimize=True, progressive=True)
-    books.append({'slug': slug, 'key': cfg['storageKey'], 'title': cfg['title'], 'subtitle': cfg.get('subtitle', ''),
+    books.append({'q': qs, 'slug': slug, 'key': cfg['storageKey'], 'title': cfg['title'], 'subtitle': cfg.get('subtitle', ''),
                   'author': cfg['author'], 'credit': cfg['credit'], 'accent': accent, 'words': words,
                   'chapters': len(words), 'epub': f'../{slug}/{epub}' if epub else None, 'orig': cfg.get('original') or {}, 'inc': cfg.get('incomplete'), 'era': ERAS.get(slug), 'tag': TAGLINE.get(slug, '')})
 
@@ -92,6 +94,7 @@ ld = {'@context': 'https://schema.org', '@type': 'CollectionPage', 'name': 'VSpl
            'item': {'@type': 'Book', 'name': b['title'], 'author': {'@type': 'Person', 'name': b['author']}, 'inLanguage': 'ru',
                     'url': f'https://andreev.uz/{b["slug"]}/', 'image': f'{BASE}covers/{b["slug"]}.jpg'}}
           for i, b in enumerate(books)]}}
+QUOTES = [dict(s=b['slug'], **x) for b in books for x in b['q']]
 js_books = [{k: b[k] for k in ('slug', 'key', 'title', 'author', 'accent', 'words')} for b in books]
 
 PAGE = f'''<!doctype html>
@@ -111,7 +114,7 @@ PAGE = f'''<!doctype html>
 body{{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.5 G,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}}
 a{{color:inherit;text-decoration:none}}img{{display:block;max-width:100%}}
 .wrap{{width:min(1180px,100% - 32px);margin:0 auto}}
-.glow{{position:absolute;inset:-20% -10% auto;height:720px;background:radial-gradient(60% 60% at 70% 30%,#2f5b8f40,transparent 70%);pointer-events:none;z-index:-1}}
+.glow{{position:absolute;inset:-20% 0 auto;height:720px;background:radial-gradient(60% 60% at 70% 30%,#2f5b8f40,transparent 70%);pointer-events:none;z-index:-1}}
 header.top{{display:flex;align-items:center;justify-content:space-between;padding:22px 0}}
 .brand{{display:flex;align-items:center;gap:12px}}.brand img{{width:46px;height:auto}}.brand b{{display:block;font-size:19px;font-weight:700;letter-spacing:-.02em;line-height:1}}.brand small{{display:block;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-top:3px}}
 .chip{{display:inline-flex;align-items:center;height:36px;padding:0 15px;border-radius:999px;font-size:14px;font-weight:500;background:#ffffff0f;border:1px solid var(--line)}}
@@ -148,17 +151,31 @@ h3{{margin:0;font-size:22px;line-height:1.1;letter-spacing:-.03em}}.tag{{margin:
 .axis{{display:grid;grid-template-columns:150px 1fr;gap:14px;color:var(--mute);font-size:12px}}.axis div{{display:flex;justify-content:space-between}}
 footer{{margin:72px 0 0;padding:28px 0 40px;border-top:1px solid var(--line);color:var(--mute);font-size:14px;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}}
 @media (max-width:640px){{.hero{{padding-top:28px}}.resume{{grid-template-columns:auto 1fr}}.resume .btn{{grid-column:1/-1}}.grid{{grid-template-columns:repeat(2,1fr);gap:32px 16px}}h3{{font-size:18px}}.tag{{display:none}}.actions .ghost{{display:none}}.era,.axis{{grid-template-columns:96px 1fr;gap:10px}}.era-bar span{{font-size:0;padding:0}}.axis div span:nth-child(even){{visibility:hidden}}}}
+.qwrap{{position:relative}}.qtrack{{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 18px;scrollbar-width:none;outline:none}}.qtrack::-webkit-scrollbar{{display:none}}
+.qcard{{flex:0 0 min(420px,86%);scroll-snap-align:start;display:flex;flex-direction:column;justify-content:space-between;gap:22px;min-height:250px;padding:26px 24px 22px;border-radius:22px;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 22%,#0a0e16),#0a0e16 70%);border:1px solid color-mix(in srgb,var(--a) 35%,transparent);position:relative;overflow:hidden}}
+.qcard::before{{content:"«";position:absolute;right:14px;bottom:-34px;font-size:140px;font-weight:800;line-height:1;color:color-mix(in srgb,var(--a) 16%,transparent);pointer-events:none;z-index:0}}
+.qcard blockquote{{margin:0;position:relative;font-size:clamp(18px,2.1vw,21px);line-height:1.42;letter-spacing:-.01em;font-weight:500;text-wrap:pretty}}
+.qcard footer{{position:relative;z-index:1;display:flex;align-items:center;gap:12px}}.qcard img{{width:42px;height:63px;object-fit:cover;border-radius:3px 6px 6px 3px;box-shadow:0 8px 18px -6px #000,0 0 0 1px #fff1}}
+.qcard cite{{display:block;font-style:normal;font-size:13.5px;line-height:1.35;color:#c3cad5;flex:1}}.qcard cite b{{display:block;color:#fff;font-weight:600}}
+.qcard .go{{flex:none;display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;background:var(--a);color:var(--ink,#fff);font-size:13.5px;font-weight:600}}
+.qctl{{display:flex;gap:8px;align-items:center}}.qctl button{{font:inherit;font-size:16px;height:38px;min-width:38px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text,#fff);cursor:pointer}}.qctl button:hover{{border-color:#fff6}}.qctl .qshuf{{font-size:14px;color:var(--mute);margin-left:auto}}
+@media (max-width:640px){{.qcard{{min-height:280px;padding:22px 18px 18px}}.qcard footer{{flex-wrap:wrap}}.qcard cite{{flex-basis:calc(100% - 56px)}}.qcard .go{{width:100%;justify-content:center}}}}
+html,body{{overflow-x:clip}}@media (max-width:480px){{.nav{{gap:6px}}.nav .chip{{padding:0 11px;font-size:13px}}.brand small{{display:none}}}}
+@media (prefers-reduced-motion:no-preference){{.qtrack{{scroll-behavior:smooth}}}}
 @media (prefers-reduced-motion:reduce){{*{{transition:none!important}}}}
 </style></head><body>
 <div class="glow"></div>
 <div class="wrap">
-<header class="top"><a class="brand" href="./"><img src="vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a><span class="nav"><a class="chip" href="#unfinished">Неполные</a><a class="chip" href="#eras">Эпохи</a></span></header>
+<header class="top"><a class="brand" href="./"><img src="vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a><span class="nav"><a class="chip" href="#quotes">Цитаты</a><a class="chip" href="#unfinished">Неполные</a><a class="chip" href="#eras">Эпохи</a></span></header>
 <main>
 <div class="hero"><p class="eyebrow">Библиотека переводов VSplanet.net</p>
 <h1>Рестлинг, рассказанный изнутри</h1>
 <p class="lead">Автобиографии звёзд рестлинга, которые читатели VSplanet переводили для читателей VSplanet с 2011 года. Теперь — в удобной читалке, с закладками и офлайн-режимом, без регистрации.</p>
 <ul class="stats"><li><b>{len(full)}</b><span>{plural(len(full), 'книга', 'книги', 'книг')} целиком</span></li><li><b>{len(partial)}</b><span>{plural(len(partial), 'неполная', 'неполные', 'неполных')}</span></li><li><b>{sum(b['chapters'] for b in books)}</b><span>глав и разделов</span></li><li><b>≈{hours} ч</b><span>чтения</span></li><li><b>EPUB</b><span>для любой читалки</span></li></ul>
 <div id="resume"></div></div>
+<section id="quotes" aria-labelledby="q-h"><h2 id="q-h">Цитаты</h2><p class="sub">Случайные строки из книг. Листайте — или проваливайтесь в книгу, прямо к нужному абзацу.</p>
+<div class="qwrap"><div class="qtrack" id="qtrack" tabindex="0" aria-label="Цитаты из книг"></div>
+<div class="qctl"><button id="qprev" aria-label="Назад">←</button><button id="qnext" aria-label="Дальше">→</button><button id="qshuf" class="qshuf">Перемешать</button></div></div></section>
 <section id="shelf" aria-labelledby="shelf-h"><h2 id="shelf-h">Полка</h2><p class="sub">Прогресс сохраняется в вашем браузере и подтягивается сюда сам.</p>
 <div class="filters" id="filters" hidden><button aria-pressed="true" data-f="all">Все</button><button aria-pressed="false" data-f="reading">Читаю</button><button aria-pressed="false" data-f="new">Не начато</button><button aria-pressed="false" data-f="done">Прочитано</button></div>
 <div class="grid">
@@ -192,6 +209,15 @@ for(const b of BOOKS){{
   st[b.slug]={{pct,chapter:p.chapter,t:Date.parse(s.updated||s.started||0)||0}};
 }}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}})[c]);
+const QUOTES={json.dumps(QUOTES, ensure_ascii=False)};
+(()=>{{const by=Object.fromEntries(BOOKS.map(b=>[b.slug,b])),tr=document.getElementById('qtrack');
+const lum=h=>{{const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))/255}};const shuf=a=>{{a=a.slice();for(let i=a.length-1;i>0;i--){{const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}}return a}};
+function pick(){{const g={{}};shuf(QUOTES).forEach(q=>(g[q.s]=g[q.s]||[]).push(q));const keys=shuf(Object.keys(g)),out=[];
+ for(let r=0;out.length<12&&r<3;r++)for(const k of keys){{if(g[k][r]&&out.length<12)out.push(g[k][r]);}}return shuf(out)}}
+function render(){{tr.innerHTML=pick().map(q=>{{const b=by[q.s];return `<article class="qcard" style="--a:${{b.accent}};--ink:${{lum(b.accent)>.55?'#111':'#fff'}}"><blockquote>${{esc(q.t)}}</blockquote><footer><img src="covers/${{q.s}}.jpg" alt="" loading="lazy"><cite><b>${{esc(b.author)}}</b>«${{esc(b.title)}}»</cite><a class="go" href="../${{q.s}}/#read/${{q.c}}/${{q.p}}">Открыть в книге →</a></footer></article>`}}).join('');tr.scrollTo({{left:0,behavior:'instant'}})}}
+const step=()=>tr.firstElementChild?tr.firstElementChild.getBoundingClientRect().width+16:300;
+document.getElementById('qnext').onclick=()=>tr.scrollBy({{left:step()}});document.getElementById('qprev').onclick=()=>tr.scrollBy({{left:-step()}});
+document.getElementById('qshuf').onclick=render;tr.addEventListener('keydown',e=>{{if(e.key==='ArrowRight')tr.scrollBy({{left:step()}});if(e.key==='ArrowLeft')tr.scrollBy({{left:-step()}})}});render()}})();
 document.querySelectorAll('.book').forEach(el=>{{
   const x=st[el.dataset.slug];el.dataset.state=!x?'new':x.pct>=98?'done':'reading';if(!x)return;
   const pr=el.querySelector('.progress');pr.hidden=false;pr.querySelector('i').style.width=x.pct+'%';pr.querySelector('b').textContent=x.pct>=98?'Прочитано':x.pct+'%';

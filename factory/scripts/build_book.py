@@ -48,14 +48,6 @@ for f in ('app.js', 'pwa.js', 'sw.js', 'style.css'): shutil.copy(T / f, dst / f)
 shutil.copytree(T / 'assets' / 'fonts', dst / 'assets' / 'fonts')
 shutil.copy(T / 'assets' / 'vsplanet-logo.png', dst / 'assets')
 for f in ('cover.jpg', 'book-render.png'): shutil.copy(src / 'assets' / f, dst / 'assets' / f)
-# приглушённый размытый фон героя — кадр с обложки, затемнённый под тему
-from PIL import ImageFilter as _IF
-_cv = Image.open(src / 'assets' / 'cover.jpg').convert('RGB')
-_w, _h = _cv.size; _c = _cv.crop((0, int(_h * .08), _w, int(_h * .08) + int(_w * .62)))
-_c = _c.resize((1400, int(1400 * _c.height / _c.width)), Image.LANCZOS).filter(_IF.GaussianBlur(26))
-_bgc = tuple(int(TH['bg'].lstrip('#')[i:i+2], 16) for i in (0, 2, 4))
-_c = Image.blend(_c, Image.new('RGB', _c.size, _bgc), .72)
-_c.save(dst / 'assets' / 'hero-bg.jpg', quality=70, optimize=True)
 if (src / 'assets' / 'images').exists(): shutil.copytree(src / 'assets' / 'images', dst / 'assets' / 'images')
 else: (dst / 'assets' / 'images').mkdir()
 
@@ -172,7 +164,7 @@ for name in ('style.css', 'app.js') if INC else ('style.css', 'app.js', 'pwa.js'
 assets = ['./', 'index.html', 'book.json', book_file] + ([] if INC else [epub_file]) + rel
 for d in ('assets/fonts', 'assets/icons', 'assets/images'):
     assets += sorted(f'{d}/{f}' for f in os.listdir(dst / d) if not f.endswith('.txt'))
-assets += ['assets/cover.jpg', 'assets/book-render.png', 'assets/vsplanet-logo.png', 'assets/hero-bg.jpg']
+assets += ['assets/cover.jpg', 'assets/book-render.png', 'assets/vsplanet-logo.png']
 sw = (dst / 'sw.js').read_text()
 sw = re.sub(r'const ASSETS=\[.*?\];', 'const ASSETS=' + json.dumps(assets, ensure_ascii=False) + ';', sw)
 sw = re.sub(r"const CACHE='[^']+';", f"const CACHE='book-{cfg['slug']}-{h12(page.encode() + bj)}';", sw)

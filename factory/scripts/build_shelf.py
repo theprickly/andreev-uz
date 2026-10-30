@@ -53,10 +53,13 @@ for slug in SLUGS:
     with Image.open(d / 'assets' / 'cover.jpg') as im:
         im = im.convert('RGB'); im.thumbnail((480, 720), Image.LANCZOS)
         im.save(OUT / 'covers' / f'{slug}.jpg', quality=82, optimize=True, progressive=True)
+        im.save(OUT / 'covers' / f'{slug}.webp', quality=78, method=6)
     books.append({'q': qs, 'slug': slug, 'key': cfg['storageKey'], 'title': cfg['title'], 'subtitle': cfg.get('subtitle', ''),
                   'author': cfg['author'], 'credit': cfg['credit'], 'accent': accent, 'words': words,
                   'chapters': len(words), 'epub': f'../{slug}/{epub}' if epub else None, 'orig': cfg.get('original') or {}, 'inc': cfg.get('incomplete'), 'era': ERAS.get(slug), 'tag': TAGLINE.get(slug, '')})
 
+books.sort(key=lambda b: ((b['orig'] or {}).get('year', 9999), b['slug']))
+EAGER = {b['slug'] for b in books if not b['inc']}.intersection({b['slug'] for b in books[:4]})
 full = [b for b in books if not b['inc']]; partial = [b for b in books if b['inc']]
 total_words = sum(sum(b['words']) for b in books)
 hours = round(total_words / 180 / 60)
@@ -68,10 +71,15 @@ def plural(n, a, b, c):
     n = abs(n) % 100; n1 = n % 10
     return c if 10 < n < 20 else a if n1 == 1 else b if 2 <= n1 <= 4 else c
 
+def RIB(b):
+    if not b['inc']: return ''
+    return '<span class="rib" aria-hidden="true"><b>' + ('Идёт перевод' if b['inc'].get('kind') == 'ongoing' else 'Остановлен') + '</b></span>'
+
+
 def card(b):
     mins = round(sum(b['words']) / 180)
     return f'''<article class="book" data-slug="{b['slug']}" style="--a:{b['accent']}">
- <a class="cover" href="../{b['slug']}/" aria-label="{E(b['author'])} — {E(b['title'])}"><img src="covers/{b['slug']}.jpg" alt="" width="480" height="720" loading="lazy"><span class="ring" hidden></span></a>
+ <a class="cover" href="../{b['slug']}/" aria-label="{E(b['author'])} — {E(b['title'])}"><img src="covers/{b['slug']}.webp" alt="" width="480" height="720" decoding="async" loading="{'eager' if b['slug'] in EAGER else 'lazy'}">{RIB(b)}<span class="ring" hidden></span></a>
  <div class="meta"><p class="author">{E(b['author'])}</p><h3><a href="../{b['slug']}/">{E(b['title'])}</a></h3>
  <p class="tag">{E(b['tag'])}</p>
  {f'<p class="orig"><i lang="en">{E(b["orig"]["title"])}</i> · {b["orig"]["year"]}</p>' if b['orig'] else ''}
@@ -162,6 +170,8 @@ footer{{margin:72px 0 0;padding:28px 0 40px;border-top:1px solid var(--line);col
 @media (max-width:640px){{.qcard{{min-height:280px;padding:22px 18px 18px}}.qcard footer{{flex-wrap:wrap}}.qcard cite{{flex-basis:calc(100% - 56px)}}.qcard .go{{width:100%;justify-content:center}}}}
 html,body{{overflow-x:clip}}@media (max-width:480px){{.nav{{gap:6px}}.nav .chip{{padding:0 11px;font-size:13px}}.brand small{{display:none}}}}
 @media (prefers-reduced-motion:no-preference){{.qtrack{{scroll-behavior:smooth}}}}
+.rib{{position:absolute;inset:0;overflow:hidden;border-radius:4px 10px 10px 4px;pointer-events:none}}.rib b{{position:absolute;left:-46px;top:22px;width:160px;padding:5px 0;text-align:center;transform:rotate(-45deg);background:var(--a);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;box-shadow:0 4px 12px #0007;text-shadow:0 1px 1px #0004}}
+@media (max-width:640px){{.rib b{{left:-42px;top:15px;width:130px;font-size:9px;padding:4px 0;letter-spacing:.03em}}}}
 @media (prefers-reduced-motion:reduce){{*{{transition:none!important}}}}
 </style></head><body>
 <div class="glow"></div>
@@ -214,7 +224,7 @@ const QUOTES={json.dumps(QUOTES, ensure_ascii=False)};
 const lum=h=>{{const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))/255}};const shuf=a=>{{a=a.slice();for(let i=a.length-1;i>0;i--){{const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}}return a}};
 function pick(){{const g={{}};shuf(QUOTES).forEach(q=>(g[q.s]=g[q.s]||[]).push(q));const keys=shuf(Object.keys(g)),out=[];
  for(let r=0;out.length<12&&r<3;r++)for(const k of keys){{if(g[k][r]&&out.length<12)out.push(g[k][r]);}}return shuf(out)}}
-function render(){{tr.innerHTML=pick().map(q=>{{const b=by[q.s];return `<article class="qcard" style="--a:${{b.accent}};--ink:${{lum(b.accent)>.55?'#111':'#fff'}}"><blockquote>${{esc(q.t)}}</blockquote><footer><img src="covers/${{q.s}}.jpg" alt="" loading="lazy"><cite><b>${{esc(b.author)}}</b>«${{esc(b.title)}}»</cite><a class="go" href="../${{q.s}}/#read/${{q.c}}/${{q.p}}">Открыть в книге →</a></footer></article>`}}).join('');tr.scrollTo({{left:0,behavior:'instant'}})}}
+function render(){{tr.innerHTML=pick().map(q=>{{const b=by[q.s];return `<article class="qcard" style="--a:${{b.accent}};--ink:${{lum(b.accent)>.55?'#111':'#fff'}}"><blockquote>${{esc(q.t)}}</blockquote><footer><img src="covers/${{q.s}}.webp" alt="" loading="lazy"><cite><b>${{esc(b.author)}}</b>«${{esc(b.title)}}»</cite><a class="go" href="../${{q.s}}/#read/${{q.c}}/${{q.p}}">Открыть в книге →</a></footer></article>`}}).join('');tr.scrollTo({{left:0,behavior:'instant'}})}}
 const step=()=>tr.firstElementChild?tr.firstElementChild.getBoundingClientRect().width+16:300;
 document.getElementById('qnext').onclick=()=>tr.scrollBy({{left:step()}});document.getElementById('qprev').onclick=()=>tr.scrollBy({{left:-step()}});
 document.getElementById('qshuf').onclick=render;tr.addEventListener('keydown',e=>{{if(e.key==='ArrowRight')tr.scrollBy({{left:step()}});if(e.key==='ArrowLeft')tr.scrollBy({{left:-step()}})}});render()}})();
@@ -226,7 +236,7 @@ document.querySelectorAll('.book').forEach(el=>{{
 }});
 const reading=BOOKS.filter(b=>st[b.slug]&&st[b.slug].pct<98).sort((a,b)=>st[b.slug].t-st[a.slug].t||st[b.slug].pct-st[a.slug].pct);
 if(reading.length){{const b=reading[0],x=st[b.slug];
-  document.getElementById('resume').innerHTML=`<a class="resume" style="--a:${{b.accent}}" href="../${{b.slug}}/#read/${{x.chapter}}"><img src="covers/${{b.slug}}.jpg" alt=""><div><small>Продолжить чтение</small><strong>${{esc(b.title)}}</strong><p>${{esc(b.author)}} · прочитано ${{x.pct}}%</p></div><span class="btn">Продолжить</span></a>`;}}
+  document.getElementById('resume').innerHTML=`<a class="resume" style="--a:${{b.accent}}" href="../${{b.slug}}/#read/${{x.chapter}}"><img src="covers/${{b.slug}}.webp" alt=""><div><small>Продолжить чтение</small><strong>${{esc(b.title)}}</strong><p>${{esc(b.author)}} · прочитано ${{x.pct}}%</p></div><span class="btn">Продолжить</span></a>`;}}
 if(Object.keys(st).length){{const f=document.getElementById('filters');f.hidden=false;
   f.addEventListener('click',e=>{{const k=e.target.dataset.f;if(!k)return;f.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===e.target)));
     document.querySelectorAll('.book').forEach(el=>el.hidden=k!=='all'&&el.dataset.state!==k);}});}}

@@ -2,7 +2,7 @@
  "slug": "goldust",
  "id": "goldust-vsplanet-ru",
  "title": "Кросс-Роудс",
- "subtitle": "Голдаст — из тьмы во свет",
+ "subtitle": "Голдаст. Из тьмы к свету",
  "author": "Дастин Роудс (Голдаст)",
  "coauthors": [
   "Марк Вансил"
@@ -71,9 +71,10 @@
   ]
  ],
  "replacements": [],
- "theme": "vs",
+ "theme": "goldust",
  "incomplete": {
   "kind": "ongoing",
   "label": "Переведены главы 1–3 · перевод продолжается"
- }
+ },
+ "cover_image": "books/goldust/assets/cover-original.jpg"
 }

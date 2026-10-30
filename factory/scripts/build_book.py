@@ -45,9 +45,16 @@ E = lambda s: html.escape(str(s), quote=True)
 shutil.rmtree(dst, ignore_errors=True)
 (dst / 'assets' / 'icons').mkdir(parents=True)
 for f in ('app.js', 'pwa.js', 'sw.js', 'style.css'): shutil.copy(T / f, dst / f)
+import subprocess
+_ESB = pathlib.Path('/home/claude/tools/node_modules/.bin/esbuild')
+if _ESB.exists():     # минификация (без неё сайт работает так же, только тяжелее)
+    for f in ('app.js', 'pwa.js', 'style.css'):
+        subprocess.run([str(_ESB), str(dst / f), '--minify', '--allow-overwrite', f'--outfile={dst / f}', '--log-level=error'], check=True)
 shutil.copytree(T / 'assets' / 'fonts', dst / 'assets' / 'fonts')
 shutil.copy(T / 'assets' / 'vsplanet-logo.png', dst / 'assets')
-for f in ('cover.jpg', 'book-render.png'): shutil.copy(src / 'assets' / f, dst / 'assets' / f)
+_cv0 = Image.open(src / 'assets' / 'cover.jpg').convert('RGB'); _cv0.thumbnail((800, 1200), Image.LANCZOS)
+_cv0.save(dst / 'assets' / 'cover.jpg', quality=80, optimize=True, progressive=True)
+Image.open(src / 'assets' / 'book-render.png').save(dst / 'assets' / 'book-render.webp', quality=88, method=6)
 if (src / 'assets' / 'images').exists(): shutil.copytree(src / 'assets' / 'images', dst / 'assets' / 'images')
 else: (dst / 'assets' / 'images').mkdir()
 
@@ -82,7 +89,7 @@ plural = lambda k, a, b, c: a if k % 10 == 1 and k % 100 != 11 else b if 2 <= k 
 # конфиг для читалки
 reader_cfg = {'id': cfg['id'], 'slug': cfg['slug'], 'storageKey': cfg['slug'] + '-reading-room-v1', 'title': cfg['title'], 'subtitle': cfg.get('subtitle', ''),
               'author': cfg['author'], 'translator': cfg.get('translator', ''), 'credit': cfg['credit'], 'pageTitle': cfg['page_title'],
-              'bookFile': book_file, 'render': 'assets/book-render.png', 'letter': cfg.get('letter'), 'memorial': cfg.get('memorial'), 'original': cfg.get('original'), 'incomplete': cfg.get('incomplete')}
+              'bookFile': book_file, 'render': 'assets/book-render.webp', 'letter': cfg.get('letter'), 'memorial': cfg.get('memorial'), 'original': cfg.get('original'), 'incomplete': cfg.get('incomplete')}
 orig = cfg.get('original') or {}
 original_html = (f'<p class="orig"><span>Оригинал</span><i lang="en">{E(orig["title"])}</i><b>{E(orig["year"])}</b></p>' if orig else '')
 inc = cfg.get('incomplete')
@@ -164,7 +171,7 @@ for name in ('style.css', 'app.js') if INC else ('style.css', 'app.js', 'pwa.js'
 assets = ['./', 'index.html', 'book.json', book_file] + ([] if INC else [epub_file]) + rel
 for d in ('assets/fonts', 'assets/icons', 'assets/images'):
     assets += sorted(f'{d}/{f}' for f in os.listdir(dst / d) if not f.endswith('.txt'))
-assets += ['assets/cover.jpg', 'assets/book-render.png', 'assets/vsplanet-logo.png']
+assets += ['assets/cover.jpg', 'assets/book-render.webp', 'assets/vsplanet-logo.png']
 sw = (dst / 'sw.js').read_text()
 sw = re.sub(r'const ASSETS=\[.*?\];', 'const ASSETS=' + json.dumps(assets, ensure_ascii=False) + ';', sw)
 sw = re.sub(r"const CACHE='[^']+';", f"const CACHE='book-{cfg['slug']}-{h12(page.encode() + bj)}';", sw)

@@ -12,7 +12,7 @@ const validChapter=n=>Number.isInteger(n)&&n>=0&&n<46;
 function settingsOf(s={}){return {font:['serif','sans','mono'].includes(s.font)?s.font:DEFAULT.font,size:cleanNumber(s.size,16,30,DEFAULT.size),line:cleanNumber(s.line,1.5,2.2,DEFAULT.line),width:[560,680,820].includes(Number(s.width))?Number(s.width):680,theme:['night','graphite','warm'].includes(s.theme)?s.theme:'night'};}
 function positionOf(p){if(!p||!validChapter(p.chapter))return null;return {chapter:p.chapter,paragraph:Math.floor(cleanNumber(p.paragraph,0,10000,0)),offset:cleanNumber(p.offset,-2,1,0),fraction:cleanNumber(p.fraction,0,1,0)};}
 function validateState(raw){
- if(!raw||typeof raw!=='object'||(raw.book&&raw.book!==BOOK))throw Error('Этот файл относится к другой книге.');
+ if(!raw||typeof raw!=='object'||(raw.book&&raw.book!==BOOK))throw Error('Этот файл относится к другой книге');
  const positions={};for(const [k,v] of Object.entries(raw.positions||{})){const p=positionOf(v);if(p&&String(p.chapter)===k)positions[k]=p;}
  const bookmarks=Array.isArray(raw.bookmarks)?raw.bookmarks.slice(0,500).map((b,i)=>{const p=positionOf(b);return p?{...p,id:String(b.id||i).slice(0,80),excerpt:String(b.excerpt||'Закладка').slice(0,220),created:String(b.created||'').slice(0,40)}:null}).filter(Boolean):[];
  const started=typeof raw.started==='string'&&!isNaN(Date.parse(raw.started))?raw.started:new Date().toISOString();
@@ -28,7 +28,7 @@ function mins(c){return Math.max(1,Math.ceil(c.words/200));}
 function parseChapter(c){const template=document.createElement('template');template.innerHTML=c.html;return template.content;}
 function applySettings(){
  const s=state.settings,r=document.documentElement;
- r.style.setProperty('--font',{serif:"Literata,Georgia,serif",sans:"-apple-system,BlinkMacSystemFont,'Golos Text',system-ui,sans-serif",mono:"Menlo,Consolas,monospace"}[s.font]);
+ r.style.setProperty('--font',{serif:"Literata,Georgia,serif",sans:"Geologica,-apple-system,BlinkMacSystemFont,system-ui,sans-serif",mono:"Menlo,Consolas,monospace"}[s.font]);
  r.style.setProperty('--size',s.size+'px');r.style.setProperty('--leading',s.line);r.style.setProperty('--measure',s.width+'px');
  document.body.classList.remove('theme-night','theme-graphite','theme-warm');document.body.classList.add('theme-'+s.theme);
  $('#font-setting').value=s.font;$('#size-setting').value=s.size;$('#line-setting').value=s.line;$('#width-setting').value=s.width;
@@ -36,17 +36,17 @@ function applySettings(){
  $$('[data-theme]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.theme===s.theme)));
 }
 function applyAndKeepPosition(){const p=active>=0?capturePosition():null;applySettings();persist();if(p)requestAnimationFrame(()=>restorePosition(p));}
-function chapterMark(i){return i===0?'—':i>43?'✦':String(i).padStart(2,'0');}
+function chapterMark(i){return i===0?'В':i===44?'Э':i===45?'П':String(i).padStart(2,'0');}
 function tocHTML(c,i){return '<span>'+chapterMark(i)+'</span><b>'+escapeText(c.title)+'</b><small>'+escapeText(snippets[i]||'')+'</small>';}
 function buildLanding(){
  const words=chapters.reduce((s,c)=>s+c.words,0),hours=$('#stat-hours'),photos=$('#stat-photos');
- if(hours)hours.textContent='≈'+Math.round(words/200/60);
+ if(hours)hours.textContent='≈\u202f'+Math.round(words/200/60);
  if(photos)photos.textContent=chapters.reduce((s,c)=>s+(c.html.match(/<img/g)||[]).length,0);
  const card=$('#match-card');if(!card)return updateResume();
  card.replaceChildren();
  chapters.forEach((c,i)=>{
   const b=document.createElement('button');b.className='match'+(i===0||i>43?' special':'');b.dataset.chapter=i;b.setAttribute('role','listitem');
-  b.innerHTML='<small>'+(i===0?'Вступ.':i===44?'Эпилог':i===45?'Финал':'Глава')+'</small><b>'+(i===0?'00':i===44?'EP':i===45?'✦':String(i).padStart(2,'0'))+'</b>';
+  b.innerHTML='<b>'+chapterMark(i)+'</b>';
   b.setAttribute('aria-label',c.title+'. '+(snippets[i]||''));
   const show=()=>{const t=$('#match-ticker');if(t)t.innerHTML='<b>'+escapeText(c.title)+'</b> — '+escapeText(snippets[i]||'');};
   b.addEventListener('mouseenter',show);b.addEventListener('focus',show);
@@ -90,10 +90,10 @@ function showChapter(i){
  $('#landing').hidden=true;$('#page').hidden=true;$('#reader').hidden=false;
  const c=chapters[i];document.title=c.title+' — Обмани смерть. Укради жизнь · VSplanet';
  $('#chapter-title').textContent=c.title;$('#header-chapter').textContent=c.title;
- $('#chapter-category').textContent=i===0?'До первого гонга':i<=43?String(i).padStart(2,'0')+' / 43 · Эдди Герреро':'После финального гонга';
+ $('#chapter-category').textContent=i===0?'Перед первой главой':i<=43?i+' из 43':'После последней главы';
  $('#chapter-number').textContent=i===0?'00':i<=43?String(i).padStart(2,'0'):i===44?'EP':'✦';
  $('#reader').classList.toggle('is-extra',i===0||i>43);document.body.classList.remove('bars-hidden');window.__quietBars=Date.now()+900;
- $('#reading-time').textContent='≈ '+mins(c)+' мин чтения';
+ $('#reading-time').textContent='≈\u202f'+mins(c)+' мин чтения';
  $('#article').replaceChildren(parseChapter(c));
  blocks=$$('#article > p, #article > h2, #article > h3, #article > blockquote, #article > figure');
  if(!blocks.length)blocks=$$('#article > *');
@@ -142,7 +142,7 @@ function route(){
  $('#page').hidden=true;
  if(active>=0)savePosition();active=-1;
  $('#reader').hidden=true;$('#landing').hidden=false;document.body.classList.remove('focus-mode');focused=false;$('#exit-focus').hidden=true;
- document.title='Обмани смерть. Укради жизнь — VSplanet';updateResume();
+ document.title='Обмани смерть. Укради жизнь — Эдди Герреро, читать онлайн на русском · VSplanet Книги';updateResume();
  if(location.hash==='#chapters')openLibrary('contents');
  if(location.hash==='#formats')requestAnimationFrame(()=>$('#formats').scrollIntoView({behavior:'smooth'}));else window.scrollTo({top:0,behavior:'instant'});
 }
@@ -196,17 +196,17 @@ function bookmark(){
  const excerpt=(blocks[p.paragraph]?.textContent||chapters[active].title).trim().slice(0,160);
  state.bookmarks.push({...p,id:Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7),excerpt:excerpt+'…',created:new Date().toISOString()});persist();updateProgress(p);notify('Закладка сохранена · '+chapters[active].title);
 }
-function toggleFocus(value=!focused){const p=capturePosition();focused=value;document.body.classList.toggle('focus-mode',focused);$('#exit-focus').hidden=!focused;$('#focus-toggle').setAttribute('aria-pressed',String(focused));requestAnimationFrame(()=>restorePosition(p));if(focused)notify('Только вы и книга. Esc — выйти из фокуса.');}
+function toggleFocus(value=!focused){const p=capturePosition();focused=value;document.body.classList.toggle('focus-mode',focused);$('#exit-focus').hidden=!focused;$('#focus-toggle').setAttribute('aria-pressed',String(focused));requestAnimationFrame(()=>restorePosition(p));if(focused)notify('Режим фокуса · Esc — выйти');}
 function exportProgress(){savePosition();const blob=new Blob([JSON.stringify({...state,exportedAt:new Date().toISOString()},null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='eddie-reading-progress.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);notify('Прогресс и закладки сохранены в файл');}
 async function importProgress(file){
  if(!file)return;try{
-  if(file.size>2*1024*1024)throw Error('Файл слишком большой. Выберите файл экспорта прогресса.');
-  const raw=JSON.parse(await file.text());if(raw.book!==BOOK||raw.version!==1)throw Error('Нужен файл прогресса этой книги.');
+  if(file.size>2*1024*1024)throw Error('Файл слишком большой — выберите файл экспорта прогресса');
+  const raw=JSON.parse(await file.text());if(raw.book!==BOOK||raw.version!==1)throw Error('Нужен файл прогресса этой книги');
   const incoming=validateState(raw);state=incoming;persist();applySettings();updateResume();
   if($('#settings-dialog').open)$('#settings-dialog').close();
   if(state.current){const p=state.current;if(active===p.chapter){restorePosition(p);savePosition();}else{pendingPosition=p;location.hash='#read/'+p.chapter;}}
   notify('Прогресс, настройки и закладки восстановлены');
- }catch(e){notify(e instanceof SyntaxError?'Не удалось прочитать JSON. Выберите файл экспорта.':e.message);}finally{$('#import-file').value='';}
+ }catch(e){notify(e instanceof SyntaxError?'Не удалось прочитать JSON — выберите файл экспорта':e.message);}finally{$('#import-file').value='';}
 }
 function bindEvents(){
  $$('[data-continue]').forEach(b=>b.addEventListener('click',()=>{if(state.current)pendingPosition=state.current;goChapter(state.current?.chapter||0);}));
@@ -250,13 +250,14 @@ init();
 
 /* ===== Extras: letter, album, about, footnotes, quote cards, typos, memorial, finale ===== */
 let letterStart=-1,album=[],selTimer;
+const plural=(k,a,b,c)=>k%10===1&&k%100!==11?a:k%10>=2&&k%10<=4&&(k%100<10||k%100>=20)?b:c;
 const BLOCK_TAGS=['P','H2','H3','BLOCKQUOTE','FIGURE'];
 function blocksOf(c){const f=parseChapter(c);let bl=[...f.children].filter(n=>BLOCK_TAGS.includes(n.tagName));if(!bl.length)bl=[...f.children];return bl;}
 function buildExtras(){
  const last=blocksOf(chapters[45]);letterStart=last.findIndex(n=>/^От переводчика/.test(n.textContent.trim()));
  album=[];chapters.forEach((c,i)=>blocksOf(c).forEach((n,j)=>{const img=n.querySelector('img');if(img)album.push({chapter:i,paragraph:j,src:img.getAttribute('src'),alt:img.getAttribute('alt')||'',w:+img.getAttribute('width')||3,h:+img.getAttribute('height')||4});}));
  const teaser=$('#letter-teaser');
- if(teaser&&letterStart>=0){const t=(last.slice(letterStart+1).find(n=>/переводя книгу/i.test(n.textContent))||last[letterStart+1]).textContent.trim();const first=(t.match(/^.+?[.!?](?=\s|$)/)||[t])[0];teaser.textContent=first;}
+ if(teaser&&letterStart>=0){const t=(last.slice(letterStart+1).find(n=>/переводя книгу/i.test(n.textContent))||last[letterStart+1]).textContent.trim();const first=(t.match(/^.+?[.!?](?=\s|$)/)||[t])[0];teaser.textContent=first.replace(/[.]$/,'');}
  if(isMemorial()){document.body.classList.add('memorial');$$('.memorial-line').forEach(n=>n.hidden=false);}
  const photos=$('#stat-photos');if(photos)photos.textContent=album.length;
 }
@@ -266,16 +267,16 @@ function showPage(name){
  const main=$('#page-main');main.replaceChildren();main.className='page-main wrap page-'+name;
  if(name==='letter'){
   document.title='Письмо переводчика — Обмани смерть. Укради жизнь · VSplanet';
-  const head=document.createElement('header');head.className='page-head';head.innerHTML='<p class="eyebrow-red">От переводчика · 2013</p><h1>Письмо читателям VSplanet</h1>';main.append(head);
+  const head=document.createElement('header');head.className='page-head';head.innerHTML='<p class="eyebrow">От переводчика · 2013</p><h1>Письмо читателям VSplanet</h1>';main.append(head);
   const art=document.createElement('article');art.className='letter book-prose';
   blocksOf(chapters[45]).slice(letterStart+1).forEach(n=>{if(n.textContent.trim())art.append(n);});
   const sign=document.createElement('p');sign.className='letter-sign';sign.innerHTML='Александр Суменко<span>переводчик, 2013</span>';art.append(sign);main.append(art);
-  const act=document.createElement('div');act.className='page-actions';act.innerHTML='<button class="btn-primary" data-continue>Читать книгу</button><button class="btn-ghost" id="letter-in-book">Открыть в книге</button>';main.append(act);
+  const act=document.createElement('div');act.className='page-actions';act.innerHTML='<button class="btn btn-primary" data-continue>Читать книгу</button><button class="btn btn-ghost" id="letter-in-book">Открыть в книге</button>';main.append(act);
   act.querySelector('[data-continue]').addEventListener('click',()=>{if(state.current)pendingPosition=state.current;goChapter(state.current?.chapter||0);});
   $('#letter-in-book').addEventListener('click',()=>jumpTo({chapter:45,paragraph:letterStart,offset:0,fraction:0}));
  }else if(name==='album'){
   document.title='Альбом — Обмани смерть. Укради жизнь · VSplanet';
-  const head=document.createElement('header');head.className='page-head';head.innerHTML='<p class="eyebrow-red">Альбом · '+album.length+' фотографий</p><h1>Фотографии из книги</h1><p class="page-lead">Нажмите на снимок, чтобы открыть его в тексте.</p>';main.append(head);
+  const head=document.createElement('header');head.className='page-head';head.innerHTML='<p class="eyebrow">Альбом · '+album.length+' '+plural(album.length,'фотография','фотографии','фотографий')+'</p><h1>Фотографии из книги</h1><p class="page-lead">Нажмите на снимок, чтобы открыть его в тексте</p>';main.append(head);
   const grid=document.createElement('div');grid.className='album-grid';
   album.forEach(a=>{const b=document.createElement('button');b.className='album-item';b.style.setProperty('--ar',(a.w/a.h).toFixed(3));b.innerHTML='<img loading="lazy" decoding="async" alt="" src="'+a.src+'"><span><b>'+escapeText(chapters[a.chapter].title)+'</b>'+escapeText(a.alt)+'</span>';b.addEventListener('click',()=>jumpTo({chapter:a.chapter,paragraph:a.paragraph,offset:0,fraction:0}));grid.append(b);});
   main.append(grid);
@@ -287,12 +288,12 @@ function showPage(name){
 }
 function fillFinale(){
  const days=Math.max(1,Math.ceil((Date.now()-Date.parse(state.started))/864e5));
- const n=state.bookmarks.length,plural=(k,a,b,c)=>k%10===1&&k%100!==11?a:k%10>=2&&k%10<=4&&(k%100<10||k%100>=20)?b:c;
- $('#end-stats').innerHTML='<div><b>'+days+'</b><span>'+plural(days,'день','дня','дней')+' с книгой</span></div><div><b>'+n+'</b><span>'+plural(n,'закладка','закладки','закладок')+'</span></div><div><b>46</b><span>разделов</span></div>';
+ const n=state.bookmarks.length;
+ $('#end-stats').innerHTML='<div><b>'+days+'</b><span>'+plural(days,'день','дня','дней')+' с книгой</span></div><div><b>'+n+'</b><span>'+plural(n,'закладка','закладки','закладок')+'</span></div><div><b>'+($('#book-percent').textContent||'100%')+'</b><span>книги прочитано</span></div>';
 }
 async function shareBook(){
  const url=location.origin+location.pathname,data={title:'Обмани смерть. Укради жизнь',text:'История Эдди Герреро. Перевод Александра Суменко для VSplanet.net',url};
- try{if(navigator.share){await navigator.share(data);return;}await navigator.clipboard.writeText(url);notify('Ссылка на книгу скопирована');}catch(e){if(e?.name!=='AbortError')notify('Не удалось поделиться. Скопируйте адрес страницы.');}
+ try{if(navigator.share){await navigator.share(data);return;}await navigator.clipboard.writeText(url);notify('Ссылка на книгу скопирована');}catch(e){if(e?.name!=='AbortError')notify('Не удалось поделиться — скопируйте адрес страницы');}
 }
 /* footnotes */
 function showFootnote(btn){
@@ -322,18 +323,18 @@ function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onloa
 function wrapLines(ctx,text,max){const words=text.split(' '),lines=[];let line='';for(const w of words){const t=line?line+' '+w:w;if(ctx.measureText(t).width>max&&line){lines.push(line);line=w;}else line=t;}if(line)lines.push(line);return lines;}
 async function makeQuoteCard(text,title){
  const W=1080,H=1920,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
- try{await Promise.all([document.fonts.load('56px Literata'),document.fonts.load('700 32px "Golos Text"'),document.fonts.load('32px "Golos Text"')]);}catch{}
+ try{await Promise.all([document.fonts.load('56px Literata'),document.fonts.load('700 32px Geologica'),document.fonts.load('32px Geologica'),document.fonts.load('44px "GTA Russian"')]);}catch{}
  x.fillStyle='#000';x.fillRect(0,0,W,H);
  const g=x.createRadialGradient(W/2,H-520,40,W/2,H-520,760);g.addColorStop(0,'rgba(238,42,36,.42)');g.addColorStop(1,'rgba(238,42,36,0)');x.fillStyle=g;x.fillRect(0,0,W,H);
- try{const img=await loadImg('assets/book-render-v4.png');x.drawImage(img,W/2-360,H-1010,720,720);}catch{}
- let q='«'+(text.length>420?text.slice(0,text.lastIndexOf(' ',410))+'…':text)+'»',size=64,lines,lh;
+ try{const img=await loadImg('assets/book-render-v5.png');x.drawImage(img,W/2-360,H-1010,720,720);}catch{}
+ let q='«'+(text.length>420?text.slice(0,text.lastIndexOf(' ',410))+'…':text.replace(/\.$/,''))+'»',size=64,lines,lh;
  const maxH=H-1010-260;
  do{x.font=size+'px Literata';lines=wrapLines(x,q,W-170);lh=size*1.36;size-=2;}while(lines.length*lh>maxH&&size>30);
  x.fillStyle='#f5f5f7';x.textBaseline='top';let y=200;
- x.font='700 30px "Golos Text"';x.fillStyle='#ee2a24';x.fillText(title.toUpperCase(),85,y-70);
+ x.font='700 30px Geologica';x.fillStyle='#ee2a24';x.fillText(title.toUpperCase(),85,y-70);
  x.font=(size+2)+'px Literata';x.fillStyle='#f5f5f7';lines.forEach((l,k)=>x.fillText(l,85,y+k*lh));
- x.textAlign='center';x.font='700 32px "Golos Text"';x.fillStyle='#fff';x.fillText('Обмани смерть. Укради жизнь',W/2,H-220);
- x.font='30px "Golos Text"';x.fillStyle='#b9b9bf';x.fillText('Перевод Александра Суменко для VSplanet.net',W/2,H-168);
+ x.textAlign='center';x.font='44px "GTA Russian"';x.fillStyle='#ee2a24';x.fillText('Обмани смерть. Укради жизнь',W/2,H-232);
+ x.font='30px Geologica';x.fillStyle='#b9b9bf';x.fillText('Перевод Александра Суменко для VSplanet.net',W/2,H-168);
  x.fillStyle='#ee2a24';x.fillText(location.host+location.pathname.replace(/\/$/,''),W/2,H-112);
  return await new Promise(r=>c.toBlob(r,'image/png'));
 }
@@ -348,7 +349,7 @@ async function shareQuote(){
 async function reportTypo(){
  const s=currentSelection();if(!s)return;$('#sel-bar').hidden=true;
  const msg='Опечатка в книге «Обмани смерть. Укради жизнь»\n'+chapters[active].title+', абзац '+(s.paragraph+1)+':\n«'+s.text+'»\nКак правильно: ';
- try{await navigator.clipboard.writeText(msg);notify('Скопировано с номером главы и абзаца. Отправьте редакции VSplanet');}catch{notify(chapters[active].title+', абзац '+(s.paragraph+1));}
+ try{await navigator.clipboard.writeText(msg);notify('Скопировано с номером главы и абзаца — отправьте редакции VSplanet');}catch{notify(chapters[active].title+', абзац '+(s.paragraph+1));}
 }
 document.addEventListener('click',e=>{
  const fn=e.target.closest('.fn');if(fn){e.preventDefault();if(fn.getAttribute('aria-expanded'))hideFootnote();else{hideFootnote();showFootnote(fn);}return;}
@@ -360,3 +361,38 @@ window.addEventListener('scroll',()=>{hideFootnote();if(!$('#sel-bar').hidden)pl
 document.addEventListener('keydown',e=>{if(e.key==='Escape')hideFootnote();});
 $('#sel-quote')?.addEventListener('click',shareQuote);$('#sel-typo')?.addEventListener('click',reportTypo);
 $('#sel-bar')?.addEventListener('mousedown',e=>e.preventDefault());
+/* ===== Book opening transition ===== */
+let opening=false;
+function continueReading(){if(state.current)pendingPosition=state.current;goChapter(state.current?.chapter||0);}
+async function openBookAnimated(){
+ if(opening)return;
+ const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,src=$('.book-tilt img'),book=$('#ob-book'),veil=$('#book-open');
+ if(reduce||!book||!src||!book.animate){continueReading();return;}
+ opening=true;
+ const r=src.getBoundingClientRect();
+ // front face of the render (measured on the 1024×1024 image)
+ const f={x:r.left+r.width*.200,y:r.top+r.height*.075,w:r.width*.478,h:r.height*.86};
+ const th=Math.min(innerHeight*.74,innerWidth*.9*1.5/2),tw=th/1.5,tx=(innerWidth-tw)/2,ty=(innerHeight-th)/2;
+ Object.assign(book.style,{left:tx+'px',top:ty+'px',width:tw+'px',height:th+'px'});book.hidden=false;
+ const cover=book.querySelector('.ob-cover');cover.style.transform='rotateY(0deg)';
+ $('.book-tilt').style.visibility='hidden';
+ const from=`translate(${f.x-tx}px,${f.y-ty}px) scale(${f.w/tw},${f.h/th}) perspective(1400px) rotateY(-16deg)`;
+ const ease='cubic-bezier(.2,.75,.2,1)';
+ try{
+  veil.animate([{opacity:0},{opacity:1}],{duration:520,easing:ease,fill:'forwards'});
+  await book.animate([{transform:from},{transform:'translate(0,0) scale(1) perspective(1400px) rotateY(0deg)'}],{duration:620,easing:ease,fill:'forwards'}).finished;
+  const shift=book.animate([{transform:'translate(0,0) scale(1) perspective(1400px)'},{transform:`translate(${tw/2}px,0) scale(1) perspective(1400px)`}],{duration:900,easing:ease,fill:'forwards'});
+  await cover.animate([{transform:'perspective(2200px) rotateY(0deg)'},{transform:'perspective(2200px) rotateY(-168deg)'}],{duration:900,easing:'cubic-bezier(.45,.05,.2,1)',fill:'forwards'}).finished;
+  await shift.finished;
+  continueReading();
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  const out={duration:520,easing:'ease-in',fill:'forwards'};
+  book.animate([{opacity:1,transform:`translate(${tw/2}px,0) scale(1) perspective(1400px)`},{opacity:0,transform:`translate(${tw/2}px,0) scale(1.35) perspective(1400px)`}],out);
+  await veil.animate([{opacity:1},{opacity:0}],out).finished;
+ }catch(e){console.error(e);continueReading();}
+ finally{
+  book.hidden=true;book.getAnimations().forEach(a=>a.cancel());cover.getAnimations().forEach(a=>a.cancel());veil.getAnimations().forEach(a=>a.cancel());
+  $('.book-tilt').style.visibility='';opening=false;
+ }
+}
+$$('[data-open-book]').forEach(b=>b.addEventListener('click',openBookAnimated));

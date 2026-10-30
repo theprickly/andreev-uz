@@ -39,7 +39,7 @@ import themes
 TH = themes.resolve(cfg)
 cfg['accent'] = TH['accent']; cfg.setdefault('cover_bg', TH['bg'])
 theme_css = (f'<style id="theme">html:root{{--accent:{TH["accent"]};--accent-hi:{TH["accent_hi"]};--accent-deep:{TH["accent_deep"]};--accent-ink:{TH["accent_ink"]};'
-             f'--bg:{TH["bg"]};--surface:{TH["surface"]};--surface-2:{TH["surface_2"]};--reader-bg-night:{TH["reader_bg"]}' + f';--accent-fill:{TH.get("accent_fill", "var(--accent)")}' + '}</style>')
+             f'--bg:{TH["bg"]};--surface:{TH["surface"]};--surface-2:{TH["surface_2"]};--reader-bg-night:{TH["reader_bg"]}' + f';--accent-fill:{TH.get("accent_fill", "var(--accent)")}' + '}' + TH.get('extra_css', '') + '</style>')
 E = lambda s: html.escape(str(s), quote=True)
 
 shutil.rmtree(dst, ignore_errors=True)
@@ -52,6 +52,7 @@ if _ESB.exists():     # минификация (без неё сайт рабо�
         subprocess.run([str(_ESB), str(dst / f), '--minify', '--allow-overwrite', f'--outfile={dst / f}', '--log-level=error'], check=True)
 shutil.copytree(T / 'assets' / 'fonts', dst / 'assets' / 'fonts')
 shutil.copy(T / 'assets' / 'vsplanet-logo.png', dst / 'assets')
+for _f in TH.get('fonts', []): shutil.copy(T / 'extra' / _f, dst / 'assets' / 'fonts' / _f)
 _cv0 = Image.open(src / 'assets' / 'cover.jpg').convert('RGB'); _cv0.thumbnail((800, 1200), Image.LANCZOS)
 _cv0.save(dst / 'assets' / 'cover.jpg', quality=80, optimize=True, progressive=True)
 Image.open(src / 'assets' / 'book-render.png').save(dst / 'assets' / 'book-render.webp', quality=88, method=6)
@@ -107,7 +108,7 @@ letter_section = (f'<section class="section letter-teaser" aria-labelledby="lett
                   f'<blockquote class="pull-quote" id="letter-teaser">{E(L["quote"])}</blockquote><p class="sign">{E(cfg["translator"])}<span>переводчик</span></p>'
                   f'<a class="btn btn-ghost" href="#letter">Читать письмо целиком</a></section>') if L and L.get('quote') else ''
 m = cfg.get('memorial')
-memorial = f'<p class="memorial-line" hidden>{E(m["text"])}</p>' if m else ''
+memorial = f'<p class="memorial-line" hidden>{re.sub(r"[*][*](.+?)[*][*]", lambda x: "<b>" + x[1] + "</b>", E(m["text"]))}</p>' if m else ''
 imprint = ''.join(f'<li><span>{E(y)}</span>{E(t)}</li>' for y, t in cfg['imprint'])
 about = '<header class="page-head"><p class="eyebrow">О сайте</p><h1>Как сделана эта книга</h1></header><div class="about">' + ''.join(
     f'<section><h2>{E(h)}</h2><p>{t}</p></section>' for h, t in cfg['about']) + '</div>'
@@ -134,7 +135,7 @@ if INC:
     page = re.sub(r'<section id="formats".*?</section>\s*', '', page, flags=re.S)
     page = re.sub(r'<div class="app-settings">.*?</p></div>', '', page, flags=re.S)
     page = re.sub(r'<dialog id="install-dialog".*?</dialog>\s*', '', page, flags=re.S)
-    for w in ('epub', 'manifest', 'pwa.js', 'install-dialog'):
+    for w in (r'\.epub', 'rel="manifest"', 'pwa.js', 'install-dialog'):
         for m in re.finditer(w, page, re.I): print('REMNANT', w, page[max(0,m.start()-80):m.end()+60].replace('\n',' '))
 if not photos: page = page.replace('<a href="#album">Альбом</a>', '')
 (dst / 'index.html').write_text(page)

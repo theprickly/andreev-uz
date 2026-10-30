@@ -11,6 +11,8 @@ THEMES = {
     'lesnar': {'accent': '#e5212b', 'accent_hi': '#ff5961', 'accent_deep': '#a3121a', 'accent_ink': '#ffffff', 'bg': '#050505', 'surface': '#111111', 'surface_2': '#1a1a1a', 'reader_bg': '#0a0a0a'},
     'copeland': {'accent': '#f6e7a6', 'accent_hi': '#fff3c4', 'accent_deep': '#b8142a', 'accent_ink': '#1a0507', 'bg': '#090304', 'surface': '#160a0c', 'surface_2': '#210f12', 'reader_bg': '#0e0506'},
     'goldust': {'accent': '#d9ac3c', 'accent_hi': '#f3d27a', 'accent_deep': '#7a5a14', 'accent_ink': '#150f00', 'bg': '#070502', 'surface': '#13100a', 'surface_2': '#1e1910', 'reader_bg': '#0b0905'},
+    'eddie': {'accent': '#ee2a24', 'accent_hi': '#ff4a43', 'accent_deep': '#b01914', 'accent_ink': '#ffffff', 'bg': '#000000', 'surface': '#0f0f10', 'surface_2': '#18181a', 'reader_bg': '#0b0b0c',
+              'extra_css': "@font-face{font-family:'GTA Russian';src:url('assets/fonts/gta-russian.woff2') format('woff2');font-weight:400;font-display:swap}html:root{--display:'GTA Russian',var(--ui);--display-weight:400;--display-tracking:.005em;--display-leading:.95}", 'fonts': ['gta-russian.woff2', 'GTA-Russian-LICENSE.txt']},
     'flair': {'accent': '#ffcf1f', 'accent_hi': '#ffe36b', 'accent_deep': '#1d4fb8', 'accent_ink': '#161000', 'bg': '#04070f', 'surface': '#0b1222', 'surface_2': '#121b31', 'reader_bg': '#070b16'},
     'piper': {'accent': '#ffc61a', 'accent_hi': '#ffdf6b', 'accent_deep': '#c8101a', 'accent_ink': '#1a1000', 'bg': '#0b0405', 'surface': '#190809', 'surface_2': '#250d0f', 'reader_bg': '#0f0607'},
 }

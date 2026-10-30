@@ -206,7 +206,7 @@ for i, c in enumerate(ch):
 # раздел «Правки»: что и где исправлено в тексте (changes.json пишет scripts/typo.py)
 _chg = src / 'changes.json'
 if _chg.exists():
-    CH = json.loads(_chg.read_text()); (dst / 'changes').mkdir()
+    CH = json.loads(_chg.read_text())
     def _ctx(a, tag):
         return E(a).replace('⟦', f'<{tag}>').replace('⟧', f'</{tag}>')
     RULES = {'nbsp': 'Неразрывные пробелы', 'латиница в кириллице': 'Латинские буквы внутри кириллических слов', 'кавычки': 'Кавычки приведены к «ёлочкам»',
@@ -244,8 +244,6 @@ if _chg.exists():
              '.chg .was{color:#c9c9ce}.chg del{background:#ff5a5a30;color:inherit;text-decoration:none;padding:0 2px;border-radius:3px}.chg ins{background:#4ade8030;text-decoration:none;padding:0 2px;border-radius:3px}.chg mark{background:#facc1533;color:inherit;padding:0 2px;border-radius:3px}.chg-h{margin:36px 0 6px}.chg-meta{margin:0 0 14px;color:var(--muted);font-size:14px}</style>'
              '<meta name="robots" content="noindex">')
     page_ = spage(f'Правки текста — «{cfg["title"]}»', f'Что исправлено в тексте книги «{cfg["title"]}»', BASE + 'changes/', body, style)
-    (dst / 'changes' / 'index.html').write_text(page_.replace('<a class="chip" href="./">Все главы</a>', '<a class="chip" href="../chapters/">Все главы</a>'))
-    _idx = (dst / 'index.html').read_text()
-    _idx = _idx.replace('<a href="chapters/">Все главы текстом</a>', '<a href="chapters/">Все главы текстом</a><a href="changes/">Правки</a>')
-    (dst / 'index.html').write_text(_idx)
+    # страница правок НЕ публикуется: остаётся внутренним отчётом в factory (books/<slug>/changes.html)
+    (src / 'changes.html').write_text(page_.replace('<a class="chip" href="./">Все главы</a>', ''))
 print(f'built {cfg["slug"]}: {len(ch)} sections, {words} words, {photos} photos, EPUB {epub_mb} MB → {dst}')

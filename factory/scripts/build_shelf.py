@@ -72,7 +72,7 @@ y0, y1 = 1940, 2010
 def era_row(b):
     s, e = b['era']; left = (s - y0) / (y1 - y0) * 100; width = (e - s) / (y1 - y0) * 100
     return (f'<a class="era" href="../{b["slug"]}/" style="--a:{b["accent"]};--l:{left:.2f}%;--w:{width:.2f}%">'
-            f'<span class="era-name">{E("Гибель WCW" if b["slug"] == "wcw" else b["author"])}</span><span class="era-bar"><span>{s}–{e}</span></span></a>')
+            f'<span class="era-name">{E("Смерть WCW" if b["slug"] == "wcw" else b["author"])}</span><span class="era-bar"><span>{s}–{e}</span></span></a>')
 
 ld = {'@context': 'https://schema.org', '@type': 'CollectionPage', 'name': 'VSplanet Книги', 'url': BASE, 'inLanguage': 'ru',
       'description': 'Автобиографии звёзд рестлинга в переводах VSplanet.net: читать онлайн бесплатно или скачать EPUB.',

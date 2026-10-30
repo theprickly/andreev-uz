@@ -1,7 +1,7 @@
 {
  "slug": "wcw",
  "id": "wcw-vsplanet-ru",
- "title": "Гибель WCW",
+ "title": "Смерть WCW",
  "subtitle": "",
  "author": "Р. Д. Рейнольдс и Брайан Альварес",
  "coauthors": [],
@@ -11,10 +11,10 @@
  "archive_year": "2011",
  "eyebrow": "Р. Д. Рейнольдс и Брайан Альварес",
  "lead": "Как самая горячая компания в истории рестлинга за несколько лет растеряла всё: хроника ошибок, интриг и решений, которые убили WCW.",
- "short_name": "Гибель WCW",
- "page_title": "Гибель WCW — Р. Д. Рейнольдс и Брайан Альварес, читать онлайн на русском · VSplanet Книги",
- "og_title": "Гибель WCW — книга о закате World Championship Wrestling",
- "description": "Книга о закате World Championship Wrestling «Гибель WCW» на русском. Перевод Александра Суменко для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
+ "short_name": "Смерть WCW",
+ "page_title": "Смерть WCW — Р. Д. Рейнольдс и Брайан Альварес, читать онлайн на русском · VSplanet Книги",
+ "og_title": "Смерть WCW — книга о закате World Championship Wrestling",
+ "description": "Книга о закате World Championship Wrestling «Смерть WCW» на русском. Перевод Александра Суменко для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
  "original": {
   "title": "The Death of WCW",
   "year": 2004
@@ -54,7 +54,7 @@
   ],
   [
    "Обложка",
-   "Обложка серии «VSplanet Книги» — не оригинальная обложка издания."
+   "Русская обложка издания."
   ],
   [
    "Шрифты",
@@ -99,5 +99,6 @@
    "Халкамании"
   ]
  ],
- "theme": "vs"
+ "theme": "vs",
+ "cover_image": "books/wcw/assets/cover-original.jpg"
 }

@@ -26,6 +26,10 @@ for old, new in cfg.get('replacements', []):
         for k, part in enumerate(parts):
             if not part.startswith('<'): parts[k], m = rx.subn(new, part); n += m
         if n: c['html'] = ''.join(parts); fix_log.append(f'{c["title"]}: {old} → {new} ×{n}')
+for old, new in cfg.get('html_patches', []):            # точечные правки разметки редактором
+    hits = [c for c in book['chapters'] if old in c['html']]
+    assert len(hits) == 1, f'html_patch не найден однозначно: {old[:60]}'
+    hits[0]['html'] = hits[0]['html'].replace(old, new, 1); fix_log.append(f'{hits[0]["title"]}: правка разметки')
 (src / 'adaptation.log').write_text('\n'.join(fix_log) + '\n')
 BASE = cfg.get('base_url', f'https://andreev.uz/{cfg["slug"]}/')
 import themes

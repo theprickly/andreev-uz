@@ -89,9 +89,10 @@
    "МакМэн"
   ]
  ],
- "theme": "vs",
+ "theme": "holly",
  "incomplete": {
   "kind": "ongoing",
   "label": "Переведены главы 1–36 · перевод продолжается"
- }
+ },
+ "cover_image": "books/holly/assets/cover-original.jpg"
 }

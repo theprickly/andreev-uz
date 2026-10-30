@@ -1,7 +1,7 @@
 {
  "slug": "booker-royalty",
  "id": "booker-royalty-vsplanet-ru",
- "title": "My Rise to Wrestling Royalty",
+ "title": "Моё восхождение к вершинам рестлинга",
  "subtitle": "",
  "author": "Букер Т",
  "coauthors": [
@@ -13,14 +13,14 @@
  "eyebrow": "Букер Т · при участии Эндрю Уильяма Райта",
  "lead": "Вторая автобиография Букера Т: от падения WCW до Зала славы WWE. Переведены главы 1–21 и последняя, 26-я; главы 22–25 пропущены.",
  "short_name": "Букер Т",
- "page_title": "My Rise to Wrestling Royalty — Букер Т, читать онлайн на русском · VSplanet Книги",
- "og_title": "My Rise to Wrestling Royalty — вторая автобиография Букера Т (перевод не закончен)",
- "description": "Вторая автобиография Букера Т «My Rise to Wrestling Royalty» на русском — неполный перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
+ "page_title": "Моё восхождение к вершинам рестлинга — Букер Т, читать онлайн на русском · VSplanet Книги",
+ "og_title": "Моё восхождение к вершинам рестлинга — вторая автобиография Букера Т (перевод не закончен)",
+ "description": "Вторая автобиография Букера Т «Моё восхождение к вершинам рестлинга» на русском — неполный перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
  "original": {
   "title": "Booker T: My Rise to Wrestling Royalty",
   "year": 2015
  },
- "source": "Booker T. Huffman, Andrew William Wright. Booker T: My Rise to Wrestling Royalty. Medallion Press, 2015.",
+ "source": "Booker T. Huffman, Andrew William Wright. Booker T: Моё восхождение к вершинам рестлинга. Medallion Press, 2015.",
  "imprint": [
   [
    "2015",
@@ -96,9 +96,10 @@
    "Орндорфф"
   ]
  ],
- "theme": "booker",
+ "theme": "royalty",
  "incomplete": {
   "kind": "stalled",
   "label": "Нет глав 22–25 · остановился в 2017 году"
- }
+ },
+ "cover_image": "books/booker-royalty/assets/cover-original.jpg"
 }

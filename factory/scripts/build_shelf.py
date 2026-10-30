@@ -20,7 +20,7 @@ E = lambda s: html.escape(str(s), quote=True)
 ERAS = {'heenan': (1944, 2002), 'hart': (1957, 2007), 'booker': (1965, 1993), 'eddie': (1967, 2005),
         'lesnar': (1977, 2010), 'wcw': (1988, 2001), 'jericho': (1999, 2008)}
 TAGLINE = {
-    'eddie': 'Латино Хит о семье Герреро, зависимости и пути к титулу чемпиона WWE.',
+    'eddie': 'О семье Герреро, зависимости и пути к титулу чемпиона WWE.',
     'hart': 'Подземелье Стю, Монреальская подстава и жизнь, которую не придумать сценаристам.',
     'jericho': 'Чемпион мира, рок-звезда и уход из рестлинга — Джерико в лучшей форме.',
     'wcw': 'Как самая горячая компания мира за пару лет растеряла всё.',
@@ -45,7 +45,7 @@ for slug in SLUGS:
         im.save(OUT / 'covers' / f'{slug}.jpg', quality=82, optimize=True, progressive=True)
     books.append({'slug': slug, 'key': cfg['storageKey'], 'title': cfg['title'], 'subtitle': cfg.get('subtitle', ''),
                   'author': cfg['author'], 'credit': cfg['credit'], 'accent': accent, 'words': words,
-                  'chapters': len(words), 'epub': f'../{slug}/{epub}', 'era': ERAS.get(slug), 'tag': TAGLINE.get(slug, '')})
+                  'chapters': len(words), 'epub': f'../{slug}/{epub}', 'orig': cfg.get('original') or {}, 'era': ERAS.get(slug), 'tag': TAGLINE.get(slug, '')})
 
 total_words = sum(sum(b['words']) for b in books)
 hours = round(total_words / 180 / 60)
@@ -63,6 +63,7 @@ def card(b):
  <a class="cover" href="../{b['slug']}/" aria-label="{E(b['author'])} — {E(b['title'])}"><img src="covers/{b['slug']}.jpg" alt="" width="480" height="720" loading="lazy"><span class="ring" hidden></span></a>
  <div class="meta"><p class="author">{E(b['author'])}</p><h3><a href="../{b['slug']}/">{E(b['title'])}</a></h3>
  <p class="tag">{E(b['tag'])}</p>
+ {f'<p class="orig"><i lang="en">{E(b["orig"]["title"])}</i> · {b["orig"]["year"]}</p>' if b['orig'] else ''}
  <p class="facts">{b['chapters']} {plural(b['chapters'], 'раздел', 'раздела', 'разделов')} · ≈{round(mins / 60)} ч чтения</p>
  <div class="progress" hidden><span><i></i></span><b></b></div>
  <div class="actions"><a class="btn" href="../{b['slug']}/">Читать</a><a class="ghost" href="{b['epub']}" download>EPUB</a></div></div>
@@ -122,7 +123,7 @@ section{{padding:48px 0 0}}h2{{font-size:clamp(24px,3vw,32px);letter-spacing:-.0
 .book:hover .cover img{{transform:rotateY(-10deg) translateY(-6px);box-shadow:20px 34px 60px -20px #000,0 0 0 1px #ffffff18}}.book:hover .cover::after{{opacity:1}}
 .ring{{position:absolute;top:10px;right:10px;padding:4px 9px;border-radius:999px;font-size:12px;font-weight:700;background:#000b;backdrop-filter:blur(6px);color:#fff;border:1px solid color-mix(in srgb,var(--a) 60%,transparent)}}
 .meta{{display:flex;flex-direction:column;gap:6px;flex:1}}.author{{margin:0;color:var(--a);font-size:13px;font-weight:600;filter:brightness(1.25)}}
-h3{{margin:0;font-size:22px;line-height:1.1;letter-spacing:-.03em}}.tag{{margin:0;color:#c3cad5;font-size:14.5px;line-height:1.45}}.facts{{margin:0;color:var(--mute);font-size:13px}}
+h3{{margin:0;font-size:22px;line-height:1.1;letter-spacing:-.03em}}.tag{{margin:0;color:#c3cad5;font-size:14.5px;line-height:1.45}}.orig{{margin:0;color:#aab3c0;font-size:13px;line-height:1.4}}.orig i{{font-style:italic}}.facts{{margin:0;color:var(--mute);font-size:13px}}
 .progress{{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mute)}}.progress span{{flex:1;height:4px;border-radius:9px;background:#ffffff14;overflow:hidden}}.progress i{{display:block;height:100%;background:var(--a);border-radius:inherit}}
 .actions{{display:flex;gap:8px;margin-top:auto;padding-top:8px}}
 .eras{{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:22px;background:var(--s1);border:1px solid var(--line)}}

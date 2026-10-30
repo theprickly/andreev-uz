@@ -75,7 +75,9 @@ plural = lambda k, a, b, c: a if k % 10 == 1 and k % 100 != 11 else b if 2 <= k 
 # конфиг для читалки
 reader_cfg = {'id': cfg['id'], 'slug': cfg['slug'], 'storageKey': cfg['slug'] + '-reading-room-v1', 'title': cfg['title'], 'subtitle': cfg.get('subtitle', ''),
               'author': cfg['author'], 'translator': cfg.get('translator', ''), 'credit': cfg['credit'], 'pageTitle': cfg['page_title'],
-              'bookFile': book_file, 'render': 'assets/book-render.png', 'letter': cfg.get('letter'), 'memorial': cfg.get('memorial')}
+              'bookFile': book_file, 'render': 'assets/book-render.png', 'letter': cfg.get('letter'), 'memorial': cfg.get('memorial'), 'original': cfg.get('original')}
+orig = cfg.get('original') or {}
+original_html = (f'<p class="orig"><span>Оригинал</span><i lang="en">{E(orig["title"])}</i><b>{E(orig["year"])}</b></p>' if orig else '')
 credit_html = E(cfg['credit']).replace('VSplanet.net', '<b>VSplanet.net</b>')
 stats = [(numbered or len(book['chapters']), plural(numbered or len(book['chapters']), 'глава', 'главы', 'глав')), (f'≈&#8239;{max(1, round(words / 200 / 60))}', 'часов чтения')]
 if photos: stats.append((photos, plural(photos, 'фотография', 'фотографии', 'фотографий')))
@@ -104,7 +106,7 @@ R = {'JSONLD': '<script type="application/ld+json">' + json.dumps(ld, ensure_asc
      'CONFIG': '<script>window.BOOK_CONFIG=' + json.dumps(reader_cfg, ensure_ascii=False) + '</script>' + style_vars,
      'OGMETA': og, 'PAGE_TITLE': E(cfg['page_title']), 'DESCRIPTION': E(cfg['description']), 'SHORT_NAME': E(cfg['short_name']),
      'MEMORIAL': memorial, 'H1': E(cfg['title'] + ' — ' + cfg.get('subtitle', cfg['author'])), 'EYEBROW': E(cfg['eyebrow']), 'LEAD': E(cfg['lead']),
-     'CREDIT_HTML': credit_html, 'RENDER_ALT': 'Книга «' + E(cfg['title']) + '»', 'TITLE': E(cfg['title']), 'QUOTE_SECTION': quote_section,
+     'CREDIT_HTML': credit_html, 'ORIGINAL_HTML': original_html, 'RENDER_ALT': 'Книга «' + E(cfg['title']) + '»', 'TITLE': E(cfg['title']), 'QUOTE_SECTION': quote_section,
      'LETTER_SECTION': letter_section, 'IMPRINT': imprint, 'EPUB': epub_file, 'EPUB_NAME': E(f'{cfg["author"]} — {cfg["title"]}.epub'),
      'EPUB_META': f'{epub_mb} МБ' + (' · с иллюстрациями' if photos else ''), 'ABOUT': about}
 page = (T / 'index.tpl.html').read_text()

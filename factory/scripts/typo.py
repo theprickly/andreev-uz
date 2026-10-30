@@ -13,6 +13,12 @@ BLOCKS = {'p', 'h2', 'h3', 'blockquote', 'figure'}
 VOID = {'br', 'img', 'hr', 'input', 'meta', 'link'}
 NBSP_RE = re.compile(r'(?<![\wА-Яа-яЁё])((?:[вксуоиа]|на|но|по|за|из|от|до|во|со|ко|об|не|ни)) (?=[\wА-Яа-яЁё«„"(])', re.I)
 
+GLOSS = []
+_gp = pathlib.Path(__file__).resolve().parents[1] / 'glossary.json'
+if _gp.exists():
+    for e in json.loads(_gp.read_text())['entries']:
+        for v in e['variants']: GLOSS.append((re.compile(r'(?<![А-Яа-яЁё])' + re.escape(v) + r'(?=[а-яё]{0,4}(?![А-Яа-яЁё]))'), v, e['canonical']))
+
 class Log:
     def __init__(self): self.items = []; self.flags = []; self.counts = {}
     def add(self, rule, ci, bi, before, after):
@@ -53,6 +59,7 @@ def fix_homoglyphs(text, ci, bi, log):
 def fix_text(text, ci, bi, log):
     t = text
     t = fix_homoglyphs(t, ci, bi, log)
+    for rx, v, c in GLOSS: t = sub_log(rx, c, t, 'словарь', ci, bi, log)
     t = sub_log(r'(?<=\S)  +(?=\S)', ' ', t, 'двойные пробелы', ci, bi, log)
     t = sub_log(r'(?<=[a-zа-яё]),(?=[А-Яа-яЁё])', ', ', t, 'пробел после запятой', ci, bi, log)
     t = sub_log(r'(?<=[а-яё]{3})\.(?=[А-ЯЁ][а-яё])(?<![А-ЯЁ][а-яё]{2}\.)', lambda m: '. ', t, 'пробел после точки', ci, bi, log) if False else t
@@ -146,21 +153,27 @@ def process_chapter(h, ci, log):
             if n != o: parts[i] = H.escape(n, quote=False).replace('&#x27;', "'")
     return ''.join(parts)
 
-def run(bookdir, apply=False):
+def load_changes(bookdir):
+    f = pathlib.Path(bookdir) / 'changes.json'
+    if not f.exists(): return {'runs': [], 'flags': [], 'titles': []}
+    c = json.loads(f.read_text())
+    if 'runs' not in c:      # старый формат (один слой)
+        c = {'runs': [{'name': 'Слой 1 · механические правки', 'date': c['date'], 'commit': c.get('commit'), 'counts': c['counts'], 'items': c['items']}], 'flags': c['flags'], 'titles': c['titles']}
+    return c
+
+def run(bookdir, apply=False, name='Слой 1 · механические правки'):
     bookdir = pathlib.Path(bookdir); data = json.loads((bookdir / 'book.json').read_text()); log = Log()
     for ci, ch in enumerate(data['chapters']):
         ch['html'] = process_chapter(ch['html'], ci, log)
-    changes = {'layer': 1, 'date': datetime.date.today().isoformat(), 'counts': log.counts, 'items': log.items, 'flags': log.flags,
-               'titles': [c['title'] for c in data['chapters']]}
+    ch_ = load_changes(bookdir); ch_['flags'] = log.flags; ch_['titles'] = [c['title'] for c in data['chapters']]
+    if log.counts:
+        ch_['runs'].append({'name': name, 'date': datetime.date.today().isoformat(), 'commit': None, 'counts': log.counts, 'items': log.items})
     if apply:
         (bookdir / 'book.json').write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')))
-        old = {}
-        if (bookdir / 'changes.json').exists():
-            old = json.loads((bookdir / 'changes.json').read_text())
-        if log.items or log.counts.get('nbsp') or not old:
-            changes['commit'] = old.get('commit'); (bookdir / 'changes.json').write_text(json.dumps(changes, ensure_ascii=False, indent=1))
-    return changes
+        (bookdir / 'changes.json').write_text(json.dumps(ch_, ensure_ascii=False, indent=1))
+    return ch_, log
 
 if __name__ == '__main__':
-    ch = run(sys.argv[1], '--apply' in sys.argv)
-    print(sys.argv[1], ch['counts'], 'flags:', len(ch['flags']))
+    nm = sys.argv[sys.argv.index('--name') + 1] if '--name' in sys.argv else 'Слой 1 · механические правки'
+    ch, lg = run(sys.argv[1], '--apply' in sys.argv, nm)
+    print(sys.argv[1], lg.counts, 'flags:', len(ch['flags']))

@@ -1,66 +1,71 @@
 {
- "layer": 1,
- "date": "2026-10-31",
- "counts": {
-  "nbsp": 12187,
-  "кавычки": 8
- },
- "items": [
+ "runs": [
   {
-   "rule": "кавычки",
-   "c": 5,
-   "p": 4,
-   "a": "there it is! Raise the roof!⟦”⟧ Реакция на наши появления, ",
-   "b": "there it is! Raise the roof!⟦»⟧ Реакция на наши появления, "
-  },
-  {
-   "rule": "кавычки",
-   "c": 5,
-   "p": 4,
-   "a": "е мы придумывали. Например, ⟦“⟧Whoop, there it is! Raise th",
-   "b": "е мы придумывали. Например, ⟦«⟧Whoop, there it is! Raise th"
-  },
-  {
-   "rule": "кавычки",
-   "c": 19,
-   "p": 54,
-   "a": "“Can you dig it?⟦”⟧\n",
-   "b": "“Can you dig it?⟦»⟧\n"
-  },
-  {
-   "rule": "кавычки",
-   "c": 19,
-   "p": 54,
-   "a": "⟦“⟧Can you dig it?”\n",
-   "b": "⟦«⟧Can you dig it?”\n"
-  },
-  {
-   "rule": "кавычки",
-   "c": 22,
-   "p": 104,
-   "a": "чало “Can you dig it, sucka?⟦”⟧, а затем заиграла моя музык",
-   "b": "чало “Can you dig it, sucka?⟦»⟧, а затем заиграла моя музык"
-  },
-  {
-   "rule": "кавычки",
-   "c": 22,
-   "p": 104,
-   "a": "ря. Когда в зале прозвучало ⟦“⟧Can you dig it, sucka?”, а з",
-   "b": "ря. Когда в зале прозвучало ⟦«⟧Can you dig it, sucka?”, а з"
-  },
-  {
-   "rule": "кавычки",
-   "c": 22,
-   "p": 118,
-   "a": "now can you dig that, sucka?⟦”⟧\n",
-   "b": "now can you dig that, sucka?⟦»⟧\n"
-  },
-  {
-   "rule": "кавычки",
-   "c": 22,
-   "p": 118,
-   "a": "⟦“⟧And, yes, I do take my place",
-   "b": "⟦«⟧And, yes, I do take my place"
+   "name": "Слой 1 · механические правки",
+   "date": "2026-10-31",
+   "commit": "012c09b69119989a144052fdf282aeac269512bb",
+   "counts": {
+    "nbsp": 12187,
+    "кавычки": 8
+   },
+   "items": [
+    {
+     "rule": "кавычки",
+     "c": 5,
+     "p": 4,
+     "a": "there it is! Raise the roof!⟦”⟧ Реакция на наши появления, ",
+     "b": "there it is! Raise the roof!⟦»⟧ Реакция на наши появления, "
+    },
+    {
+     "rule": "кавычки",
+     "c": 5,
+     "p": 4,
+     "a": "е мы придумывали. Например, ⟦“⟧Whoop, there it is! Raise th",
+     "b": "е мы придумывали. Например, ⟦«⟧Whoop, there it is! Raise th"
+    },
+    {
+     "rule": "кавычки",
+     "c": 19,
+     "p": 54,
+     "a": "“Can you dig it?⟦”⟧\n",
+     "b": "“Can you dig it?⟦»⟧\n"
+    },
+    {
+     "rule": "кавычки",
+     "c": 19,
+     "p": 54,
+     "a": "⟦“⟧Can you dig it?”\n",
+     "b": "⟦«⟧Can you dig it?”\n"
+    },
+    {
+     "rule": "кавычки",
+     "c": 22,
+     "p": 104,
+     "a": "чало “Can you dig it, sucka?⟦”⟧, а затем заиграла моя музык",
+     "b": "чало “Can you dig it, sucka?⟦»⟧, а затем заиграла моя музык"
+    },
+    {
+     "rule": "кавычки",
+     "c": 22,
+     "p": 104,
+     "a": "ря. Когда в зале прозвучало ⟦“⟧Can you dig it, sucka?”, а з",
+     "b": "ря. Когда в зале прозвучало ⟦«⟧Can you dig it, sucka?”, а з"
+    },
+    {
+     "rule": "кавычки",
+     "c": 22,
+     "p": 118,
+     "a": "now can you dig that, sucka?⟦”⟧\n",
+     "b": "now can you dig that, sucka?⟦»⟧\n"
+    },
+    {
+     "rule": "кавычки",
+     "c": 22,
+     "p": 118,
+     "a": "⟦“⟧And, yes, I do take my place",
+     "b": "⟦«⟧And, yes, I do take my place"
+    }
+   ]
   }
  ],
  "flags": [
@@ -137,6 +142,5 @@
   "Глава 20. Возвращение Брэндона",
   "Глава 21. Плохой парень",
   "Глава 26. Зал Славы"
- ],
- "commit": "012c09b69119989a144052fdf282aeac269512bb"
+ ]
 }

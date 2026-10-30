@@ -1,0 +1,1198 @@
+[
+ {
+  "norm": "джим",
+  "total": 530,
+  "forms": [
+   [
+    "Джим",
+    434,
+    {
+     "booker-prison": 3,
+     "booker-royalty": 8,
+     "copeland": 6,
+     "eddie": 4,
+     "flair": 15,
+     "hart": 304,
+     "heenan": 16,
+     "holly": 13,
+     "jericho": 9,
+     "lesnar": 5,
+     "piper": 23,
+     "wcw": 26,
+     "goldust": 2
+    }
+   ],
+   [
+    "Джимм",
+    96,
+    {
+     "booker-royalty": 3,
+     "eddie": 5,
+     "flair": 10,
+     "goldust": 1,
+     "hart": 27,
+     "heenan": 5,
+     "holly": 6,
+     "jericho": 1,
+     "piper": 35,
+     "wcw": 3
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "флер",
+  "total": 521,
+  "forms": [
+   [
+    "Флэр",
+    485,
+    {
+     "booker-prison": 2,
+     "booker-royalty": 73,
+     "copeland": 3,
+     "eddie": 13,
+     "flair": 3,
+     "hart": 75,
+     "heenan": 9,
+     "holly": 6,
+     "jericho": 21,
+     "piper": 50,
+     "wcw": 228,
+     "lesnar": 2
+    }
+   ],
+   [
+    "Флер",
+    36,
+    {
+     "flair": 16,
+     "holly": 7,
+     "jericho": 6,
+     "lesnar": 6,
+     "hart": 1
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "джон",
+  "total": 255,
+  "forms": [
+   [
+    "Джон",
+    138,
+    {
+     "booker-royalty": 8,
+     "copeland": 14,
+     "eddie": 9,
+     "flair": 2,
+     "hart": 10,
+     "heenan": 7,
+     "holly": 34,
+     "jericho": 26,
+     "lesnar": 19,
+     "piper": 9
+    }
+   ],
+   [
+    "Джонн",
+    117,
+    {
+     "booker-royalty": 2,
+     "copeland": 13,
+     "eddie": 10,
+     "flair": 12,
+     "hart": 5,
+     "heenan": 12,
+     "holly": 22,
+     "jericho": 25,
+     "piper": 12,
+     "wcw": 4
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "воин",
+  "total": 164,
+  "forms": [
+   [
+    "Воин",
+    158,
+    {
+     "booker-royalty": 16,
+     "copeland": 4,
+     "eddie": 5,
+     "hart": 70,
+     "heenan": 3,
+     "holly": 5,
+     "jericho": 7,
+     "wcw": 46,
+     "flair": 1,
+     "goldust": 1
+    }
+   ],
+   [
+    "Войн",
+    6,
+    {
+     "booker-royalty": 1,
+     "holly": 1,
+     "jericho": 2,
+     "hart": 2
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "джек",
+  "total": 126,
+  "forms": [
+   [
+    "Джек",
+    122,
+    {
+     "booker-prison": 1,
+     "booker-royalty": 12,
+     "eddie": 5,
+     "flair": 6,
+     "hart": 25,
+     "heenan": 13,
+     "holly": 5,
+     "jericho": 25,
+     "lesnar": 8,
+     "piper": 14,
+     "wcw": 7,
+     "copeland": 1
+    }
+   ],
+   [
+    "Джекк",
+    4,
+    {
+     "booker-prison": 1,
+     "booker-royalty": 1,
+     "hart": 2
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "тернер",
+  "total": 116,
+  "forms": [
+   [
+    "Тернер",
+    110,
+    {
+     "eddie": 1,
+     "hart": 21,
+     "heenan": 2,
+     "holly": 3,
+     "piper": 1,
+     "wcw": 82
+    }
+   ],
+   [
+    "Тёрнер",
+    6,
+    {
+     "booker-royalty": 6
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "севидж",
+  "total": 99,
+  "forms": [
+   [
+    "Сэвидж",
+    96,
+    {
+     "booker-royalty": 17,
+     "hart": 11,
+     "heenan": 7,
+     "holly": 5,
+     "piper": 13,
+     "wcw": 39,
+     "copeland": 2,
+     "eddie": 1,
+     "goldust": 1
+    }
+   ],
+   [
+    "Севидж",
+    3,
+    {
+     "jericho": 3
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "ган",
+  "total": 87,
+  "forms": [
+   [
+    "Гань",
+    62,
+    {
+     "booker-royalty": 3,
+     "flair": 18,
+     "hart": 9,
+     "heenan": 21,
+     "lesnar": 1,
+     "piper": 2,
+     "wcw": 8
+    }
+   ],
+   [
+    "Ганн",
+    25,
+    {
+     "booker-royalty": 4,
+     "holly": 12,
+     "lesnar": 1,
+     "eddie": 6,
+     "jericho": 2
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "шеин",
+  "total": 78,
+  "forms": [
+   [
+    "Шейн",
+    66,
+    {
+     "booker-royalty": 21,
+     "hart": 7,
+     "heenan": 2,
+     "holly": 7,
+     "jericho": 10,
+     "lesnar": 16,
+     "eddie": 2,
+     "wcw": 1
+    }
+   ],
+   [
+    "Шэйн",
+    12,
+    {
+     "wcw": 12
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "теикер",
+  "total": 76,
+  "forms": [
+   [
+    "Тэйкер",
+    71,
+    {
+     "booker-royalty": 6,
+     "hart": 63,
+     "copeland": 1,
+     "holly": 1
+    }
+   ],
+   [
+    "Тейкер",
+    5,
+    {
+     "holly": 4,
+     "jericho": 1
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "пеидж",
+  "total": 70,
+  "forms": [
+   [
+    "Пэйдж",
+    62,
+    {
+     "booker-royalty": 3,
+     "hart": 3,
+     "eddie": 5,
+     "holly": 2,
+     "wcw": 48,
+     "heenan": 1
+    }
+   ],
+   [
+    "Пейдж",
+    8,
+    {
+     "holly": 8
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "ден",
+  "total": 63,
+  "forms": [
+   [
+    "Дэнн",
+    33,
+    {
+     "booker-prison": 7,
+     "eddie": 1,
+     "hart": 6,
+     "holly": 1,
+     "jericho": 10,
+     "lesnar": 8
+    }
+   ],
+   [
+    "День",
+    26,
+    {
+     "booker-prison": 1,
+     "copeland": 3,
+     "eddie": 3,
+     "flair": 2,
+     "hart": 9,
+     "heenan": 3,
+     "holly": 2,
+     "lesnar": 1,
+     "wcw": 2
+    }
+   ],
+   [
+    "Денн",
+    4,
+    {
+     "flair": 1,
+     "hart": 2,
+     "jericho": 1
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "бред",
+  "total": 56,
+  "forms": [
+   [
+    "Брэд",
+    52,
+    {
+     "booker-royalty": 1,
+     "goldust": 2,
+     "hart": 1,
+     "lesnar": 29,
+     "wcw": 10,
+     "heenan": 6,
+     "jericho": 2,
+     "piper": 1
+    }
+   ],
+   [
+    "Бред",
+    4,
+    {
+     "goldust": 1,
+     "heenan": 1,
+     "jericho": 2
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "грем",
+  "total": 53,
+  "forms": [
+   [
+    "Грэм",
+    49,
+    {
+     "booker-royalty": 3,
+     "eddie": 4,
+     "flair": 8,
+     "goldust": 4,
+     "hart": 8,
+     "heenan": 12,
+     "jericho": 3,
+     "piper": 6,
+     "wcw": 1
+    }
+   ],
+   [
+    "Грэмм",
+    4,
+    {
+     "hart": 1,
+     "jericho": 3
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "макмен",
+  "total": 51,
+  "forms": [
+   [
+    "Макмэн",
+    47,
+    {
+     "booker-prison": 1,
+     "booker-royalty": 28,
+     "flair": 2,
+     "hart": 3,
+     "holly": 8,
+     "jericho": 3,
+     "wcw": 2
+    }
+   ],
+   [
+    "Макмен",
+    4,
+    {
+     "jericho": 4
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "теилор",
+  "total": 39,
+  "forms": [
+   [
+    "Тэйлор",
+    29,
+    {
+     "booker-prison": 3,
+     "hart": 6,
+     "heenan": 4,
+     "jericho": 2,
+     "wcw": 12,
+     "copeland": 2
+    }
+   ],
+   [
+    "Тейлор",
+    10,
+    {
+     "copeland": 1,
+     "eddie": 5,
+     "flair": 1,
+     "holly": 2,
+     "jericho": 1
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "конан",
+  "total": 39,
+  "forms": [
+   [
+    "Коннан",
+    31,
+    {
+     "booker-royalty": 8,
+     "eddie": 18,
+     "hart": 3,
+     "wcw": 2
+    }
+   ],
+   [
+    "Конан",
+    8,
+    {
+     "holly": 2,
+     "wcw": 5,
+     "jericho": 1
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "орндорф",
+  "total": 36,
+  "forms": [
+   [
+    "Орндорфф",
+    18,
+    {
+     "booker-royalty": 3,
+     "heenan": 3,
+     "piper": 9,
+     "hart": 3
+    }
+   ],
+   [
+    "Орндорф",
+    18,
+    {
+     "booker-royalty": 1,
+     "eddie": 6,
+     "hart": 1,
+     "heenan": 2,
+     "piper": 8
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "шармел",
+  "total": 33,
+  "forms": [
+   [
+    "Шармелл",
+    29,
+    {
+     "booker-prison": 1,
+     "booker-royalty": 27,
+     "holly": 1
+    }
+   ],
+   [
+    "Шармел",
+    4,
+    {
+     "booker-prison": 1,
+     "booker-royalty": 3
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "фред",
+  "total": 32,
+  "forms": [
+   [
+    "Фред",
+    19,
+    {
+     "booker-royalty": 7,
+     "flair": 3,
+     "goldust": 3,
+     "heenan": 1,
+     "jericho": 1,
+     "piper": 1,
+     "wcw": 1,
+     "eddie": 2
+    }
+   ],
+   [
+    "Фредд",
+    13,
+    {
+     "copeland": 1,
+     "eddie": 1,
+     "flair": 1,
+     "hart": 6,
+     "jericho": 1,
+     "piper": 3
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "хелен",
+  "total": 32,
+  "forms": [
+   [
+    "Хэлен",
+    22,
+    {
+     "hart": 22
+    }
+   ],
+   [
+    "Хелен",
+    10,
+    {
+     "hart": 10
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "шемрок",
+  "total": 30,
+  "forms": [
+   [
+    "Шэмрок",
+    18,
+    {
+     "copeland": 1,
+     "hart": 10,
+     "jericho": 6,
+     "wcw": 1
+    }
+   ],
+   [
+    "Шемрок",
+    12,
+    {
+     "holly": 8,
+     "jericho": 4
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "лен",
+  "total": 28,
+  "forms": [
+   [
+    "Ленн",
+    23,
+    {
+     "copeland": 9,
+     "holly": 6,
+     "jericho": 6,
+     "wcw": 2
+    }
+   ],
+   [
+    "Лэнн",
+    5,
+    {
+     "copeland": 1,
+     "heenan": 2,
+     "wcw": 2
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "денис",
+  "total": 28,
+  "forms": [
+   [
+    "Деннис",
+    16,
+    {
+     "copeland": 1,
+     "holly": 2,
+     "jericho": 6,
+     "wcw": 3,
+     "eddie": 1,
+     "hart": 2,
+     "heenan": 1
+    }
+   ],
+   [
+    "Дэннис",
+    10,
+    {
+     "jericho": 7,
+     "wcw": 3
+    }
+   ],
+   [
+    "Денис",
+    2,
+    {
+     "jericho": 2
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "хеис",
+  "total": 26,
+  "forms": [
+   [
+    "Хэйс",
+    18,
+    {
+     "booker-royalty": 7,
+     "copeland": 6,
+     "eddie": 1,
+     "piper": 3,
+     "heenan": 1
+    }
+   ],
+   [
+    "Хейс",
+    8,
+    {
+     "copeland": 1,
+     "heenan": 1,
+     "holly": 1,
+     "jericho": 2,
+     "piper": 2,
+     "hart": 1
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "кер",
+  "total": 25,
+  "forms": [
+   [
+    "Керр",
+    22,
+    {
+     "booker-prison": 1,
+     "eddie": 1,
+     "hart": 14,
+     "piper": 6
+    }
+   ],
+   [
+    "Кэрр",
+    3,
+    {
+     "eddie": 1,
+     "jericho": 2
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "медисон-сквер",
+  "total": 24,
+  "forms": [
+   [
+    "Медисон-Сквер",
+    15,
+    {
+     "hart": 14,
+     "wcw": 1
+    }
+   ],
+   [
+    "Мэдисон-Сквер",
+    9,
+    {
+     "booker-royalty": 1,
+     "hart": 4,
+     "holly": 4
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "медисон",
+  "total": 23,
+  "forms": [
+   [
+    "Мэдисон",
+    15,
+    {
+     "booker-royalty": 6,
+     "copeland": 1,
+     "hart": 2,
+     "holly": 1,
+     "jericho": 1,
+     "piper": 4
+    }
+   ],
+   [
+    "Медисон",
+    8,
+    {
+     "flair": 2,
+     "hart": 4,
+     "wcw": 2
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "рем",
+  "total": 23,
+  "forms": [
+   [
+    "Реем",
+    16,
+    {
+     "booker-royalty": 3,
+     "eddie": 10,
+     "flair": 1,
+     "heenan": 2
+    }
+   ],
+   [
+    "Рэем",
+    7,
+    {
+     "booker-royalty": 2,
+     "hart": 3,
+     "piper": 1,
+     "wcw": 1
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "уил",
+  "total": 20,
+  "forms": [
+   [
+    "Уилл",
+    16,
+    {
+     "booker-prison": 2,
+     "heenan": 3,
+     "jericho": 5,
+     "hart": 4,
+     "wcw": 2
+    }
+   ],
+   [
+    "Уиль",
+    4,
+    {
+     "booker-prison": 2,
+     "booker-royalty": 1,
+     "jericho": 1
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "болезн",
+  "total": 20,
+  "forms": [
+   [
+    "Болезн",
+    16,
+    {
+     "piper": 16
+    }
+   ],
+   [
+    "Болезнь",
+    4,
+    {
+     "piper": 4
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "андре",
+  "total": 17,
+  "forms": [
+   [
+    "Андре",
+    12,
+    {
+     "hart": 12
+    }
+   ],
+   [
+    "Андрэ",
+    5,
+    {
+     "hart": 4,
+     "wcw": 1
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "амарил",
+  "total": 16,
+  "forms": [
+   [
+    "Амариль",
+    9,
+    {
+     "booker-prison": 2,
+     "eddie": 1,
+     "hart": 6
+    }
+   ],
+   [
+    "Амарилл",
+    7,
+    {
+     "goldust": 3,
+     "hart": 4
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "пен",
+  "total": 13,
+  "forms": [
+   [
+    "Пень",
+    10,
+    {
+     "eddie": 9,
+     "wcw": 1
+    }
+   ],
+   [
+    "Пенн",
+    3,
+    {
+     "booker-royalty": 1,
+     "jericho": 2
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "геил",
+  "total": 12,
+  "forms": [
+   [
+    "Гейл",
+    9,
+    {
+     "booker-prison": 7,
+     "booker-royalty": 1,
+     "holly": 1
+    }
+   ],
+   [
+    "Гэйл",
+    3,
+    {
+     "booker-prison": 3
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "глен",
+  "total": 12,
+  "forms": [
+   [
+    "Гленн",
+    8,
+    {
+     "copeland": 7,
+     "lesnar": 1
+    }
+   ],
+   [
+    "Глен",
+    4,
+    {
+     "hart": 3,
+     "jericho": 1
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "дениелс",
+  "total": 12,
+  "forms": [
+   [
+    "Дэниелс",
+    5,
+    {
+     "copeland": 2,
+     "holly": 1,
+     "eddie": 1,
+     "hart": 1
+    }
+   ],
+   [
+    "Дэниэлс",
+    5,
+    {
+     "hart": 4,
+     "holly": 1
+    }
+   ],
+   [
+    "Дениэлс",
+    2,
+    {
+     "hart": 1,
+     "jericho": 1
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "маиви",
+  "total": 11,
+  "forms": [
+   [
+    "Майви",
+    8,
+    {
+     "flair": 1,
+     "hart": 4,
+     "holly": 2,
+     "jericho": 1
+    }
+   ],
+   [
+    "Маиви",
+    3,
+    {
+     "hart": 3
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "стенл",
+  "total": 11,
+  "forms": [
+   [
+    "Стэнл",
+    7,
+    {
+     "heenan": 1,
+     "holly": 1,
+     "jericho": 5
+    }
+   ],
+   [
+    "Стенл",
+    4,
+    {
+     "jericho": 4
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "сиетл",
+  "total": 10,
+  "forms": [
+   [
+    "Сиэттл",
+    7,
+    {
+     "booker-royalty": 4,
+     "heenan": 2,
+     "jericho": 1
+    }
+   ],
+   [
+    "Сиэтл",
+    3,
+    {
+     "eddie": 1,
+     "lesnar": 2
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "волф",
+  "total": 10,
+  "forms": [
+   [
+    "Вольфф",
+    7,
+    {
+     "piper": 7
+    }
+   ],
+   [
+    "Вольф",
+    3,
+    {
+     "piper": 3
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "сеибл",
+  "total": 9,
+  "forms": [
+   [
+    "Сэйбл",
+    6,
+    {
+     "copeland": 1,
+     "hart": 3,
+     "holly": 1,
+     "wcw": 1
+    }
+   ],
+   [
+    "Сейбл",
+    3,
+    {
+     "holly": 3
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "кертис",
+  "total": 8,
+  "forms": [
+   [
+    "Кертис",
+    5,
+    {
+     "heenan": 3,
+     "jericho": 1,
+     "wcw": 1
+    }
+   ],
+   [
+    "Кёртис",
+    3,
+    {
+     "booker-royalty": 1,
+     "jericho": 2
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "треис",
+  "total": 8,
+  "forms": [
+   [
+    "Трэйс",
+    4,
+    {
+     "copeland": 3,
+     "hart": 1
+    }
+   ],
+   [
+    "Трейс",
+    4,
+    {
+     "eddie": 1,
+     "hart": 3
+    }
+   ]
+  ]
+ },
+ {
+  "norm": "слем",
+  "total": 6,
+  "forms": [
+   [
+    "Слэмм",
+    3,
+    {
+     "hart": 3
+    }
+   ],
+   [
+    "Слэм",
+    3,
+    {
+     "holly": 3
+    }
+   ]
+  ]
+ }
+]

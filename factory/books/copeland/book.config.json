@@ -99,9 +99,10 @@
    "Теннесси"
   ]
  ],
- "theme": "vs",
+ "theme": "copeland",
  "incomplete": {
   "kind": "stalled",
   "label": "Переведены предисловие, пролог и главы 1–30 · остановился в 2012 году"
- }
+ },
+ "cover_image": "books/copeland/assets/cover-original.jpg"
 }

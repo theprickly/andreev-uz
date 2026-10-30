@@ -1,7 +1,7 @@
 {
  "slug": "booker",
  "id": "booker-from-prison-to-promise-vsplanet-ru",
- "title": "From Prison to Promise",
+ "title": "От тюрьмы к успеху",
  "subtitle": "Жизнь до ринга",
  "author": "Букер Т",
  "coauthors": [
@@ -13,9 +13,9 @@
  "eyebrow": "Букер Т · при участии Эндрю Уильяма Райта",
  "lead": "Первая автобиография Букера Т: детство в Хьюстоне, улица, ограбления и тюрьма — и путь из камеры к первым шагам на ринге.",
  "short_name": "Букер Т",
- "page_title": "From Prison to Promise — Букер Т, читать онлайн на русском · VSplanet Книги",
- "og_title": "From Prison to Promise — первая автобиография Букера Т",
- "description": "Первая автобиография Букера Т «From Prison to Promise» на русском. Перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
+ "page_title": "От тюрьмы к успеху — Букер Т, читать онлайн на русском · VSplanet Книги",
+ "og_title": "От тюрьмы к успеху — первая автобиография Букера Т",
+ "description": "Первая автобиография Букера Т «От тюрьмы к успеху» на русском. Перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.",
  "original": {
   "title": "Booker T: From Prison to Promise — Life Before the Squared Circle",
   "year": 2012
@@ -84,5 +84,6 @@
    "Шармелл"
   ]
  ],
- "theme": "booker"
+ "theme": "booker",
+ "cover_image": "books/booker-prison/assets/cover-original.jpg"
 }

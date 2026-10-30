@@ -47,13 +47,13 @@ for slug in SLUGS:
     words = [c.get('words') or len(re.sub(r'<[^>]+>', ' ', c['html']).split()) for c in data['chapters']]
     m = re.search(r'<style id="theme">[^<]*--accent:(#[0-9a-fA-F]{6})', page)
     accent = m[1] if m else '#ee2a24'                       # у Эдди своя красная тема
-    epub = re.search(r'href="(assets/[^"]+\.epub)"', page)[1]
+    em = re.search(r'href="(assets/[^"]+\.epub)"', page); epub = em[1] if em else None
     with Image.open(d / 'assets' / 'cover.jpg') as im:
         im = im.convert('RGB'); im.thumbnail((480, 720), Image.LANCZOS)
         im.save(OUT / 'covers' / f'{slug}.jpg', quality=82, optimize=True, progressive=True)
     books.append({'slug': slug, 'key': cfg['storageKey'], 'title': cfg['title'], 'subtitle': cfg.get('subtitle', ''),
                   'author': cfg['author'], 'credit': cfg['credit'], 'accent': accent, 'words': words,
-                  'chapters': len(words), 'epub': f'../{slug}/{epub}', 'orig': cfg.get('original') or {}, 'inc': cfg.get('incomplete'), 'era': ERAS.get(slug), 'tag': TAGLINE.get(slug, '')})
+                  'chapters': len(words), 'epub': f'../{slug}/{epub}' if epub else None, 'orig': cfg.get('original') or {}, 'inc': cfg.get('incomplete'), 'era': ERAS.get(slug), 'tag': TAGLINE.get(slug, '')})
 
 full = [b for b in books if not b['inc']]; partial = [b for b in books if b['inc']]
 total_words = sum(sum(b['words']) for b in books)
@@ -76,7 +76,7 @@ def card(b):
  {f'<p class="inc {b["inc"]["kind"]}"><i></i>{E(b["inc"]["label"])}</p>' if b['inc'] else ''}
  <p class="facts">{b['chapters']} {plural(b['chapters'], 'раздел', 'раздела', 'разделов')} · ≈{round(mins / 60)} ч чтения</p>
  <div class="progress" hidden><span><i></i></span><b></b></div>
- <div class="actions"><a class="btn" href="../{b['slug']}/">Читать</a><a class="ghost" href="{b['epub']}" download>EPUB</a></div></div>
+ <div class="actions"><a class="btn" href="../{b['slug']}/">Читать</a>{f'<a class="ghost" href="{b["epub"]}" download>EPUB</a>' if b['epub'] else ''}</div></div>
 </article>'''
 
 y0, y1 = 1940, 2010

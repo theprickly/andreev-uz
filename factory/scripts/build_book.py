@@ -16,6 +16,9 @@ import epub
 src, dst = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
 T = pathlib.Path(__file__).resolve().parents[1] / 'template'
 cfg = json.loads((src / 'book.config.json').read_text())
+if cfg.get('incomplete'):
+    for k in ('description', 'og_title', 'lead'): 
+        if cfg.get(k): cfg[k] = cfg[k].replace(', или скачайте EPUB', '').replace(' или скачайте EPUB', '').replace(' и скачать EPUB', '')
 book = json.loads((src / 'book.json').read_text())
 # адаптация: согласованные написания имён и правки редактора из конфига (только в тексте, не в разметке)
 fix_log = []
@@ -61,9 +64,13 @@ h12 = lambda b: hashlib.sha256(b).hexdigest()[:12]
 bj = json.dumps(book, ensure_ascii=False, separators=(',', ':')).encode()
 book_file = f'book-{h12(bj)}.json'; (dst / book_file).write_bytes(bj); (dst / 'book.json').write_bytes(bj)
 tmp_epub = dst / 'tmp.epub'
-epub.build(cfg, book, str(src / 'assets' / 'images'), str(src / 'assets' / 'cover.jpg'), str(tmp_epub))
-epub_file = f'assets/book-{h12(tmp_epub.read_bytes())}.epub'; tmp_epub.rename(dst / epub_file)
-epub_mb = f'{(dst / epub_file).stat().st_size / 1048576:.1f}'.replace('.', ',')
+INC = bool(cfg.get('incomplete'))      # у неполных книг нет EPUB и PWA
+if INC:
+    epub_file, epub_mb = '', '0'
+else:
+    epub.build(cfg, book, str(src / 'assets' / 'images'), str(src / 'assets' / 'cover.jpg'), str(tmp_epub))
+    epub_file = f'assets/book-{h12(tmp_epub.read_bytes())}.epub'; tmp_epub.rename(dst / epub_file)
+    epub_mb = f'{(dst / epub_file).stat().st_size / 1048576:.1f}'.replace('.', ',')
 
 # подсчёты
 plain = lambda s: re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', s))).strip()
@@ -114,9 +121,17 @@ R = {'JSONLD': '<script type="application/ld+json">' + json.dumps(ld, ensure_asc
 page = (T / 'index.tpl.html').read_text()
 for k, v in R.items(): page = page.replace('{{' + k + '}}', v)
 assert '{{' not in page, re.findall(r'\{\{\w+\}\}', page)
+if INC:
+    n0 = len(page)
+    page = re.sub(r'<link rel="manifest"[^>]*>|<link rel="apple-touch-icon"[^>]*>|<script src="pwa.js"[^>]*></script>', '', page)
+    page = re.sub(r'<section id="formats".*?</section>\s*', '', page, flags=re.S)
+    page = re.sub(r'<div class="app-settings">.*?</p></div>', '', page, flags=re.S)
+    page = re.sub(r'<dialog id="install-dialog".*?</dialog>\s*', '', page, flags=re.S)
+    for w in ('epub', 'manifest', 'pwa.js', 'install-dialog'):
+        for m in re.finditer(w, page, re.I): print('REMNANT', w, page[max(0,m.start()-80):m.end()+60].replace('\n',' '))
 if not photos: page = page.replace('<a href="#album">Альбом</a>', '')
 (dst / 'index.html').write_text(page)
-(dst / 'manifest.webmanifest').write_text(json.dumps({'id': './', 'name': f'{cfg["title"]} · VSplanet Книги', 'short_name': cfg['short_name'], 'description': cfg['description'],
+if not INC: (dst / 'manifest.webmanifest').write_text(json.dumps({'id': './', 'name': f'{cfg["title"]} · VSplanet Книги', 'short_name': cfg['short_name'], 'description': cfg['description'],
     'lang': 'ru', 'start_url': './', 'scope': './', 'display': 'standalone', 'background_color': TH['bg'], 'theme_color': TH['bg'],
     'icons': [{'src': 'assets/icons/cover-icon-192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'},
               {'src': 'assets/icons/cover-icon-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
@@ -142,11 +157,11 @@ except Exception as e:
 # версии файлов (кэш) + офлайн-список
 page = (dst / 'index.html').read_text()
 rel = []
-for name in ('style.css', 'app.js', 'pwa.js', 'manifest.webmanifest'):
+for name in ('style.css', 'app.js') if INC else ('style.css', 'app.js', 'pwa.js', 'manifest.webmanifest'):
     data = (dst / name).read_bytes(); stem, suf = name.rsplit('.', 1); target = f'{stem}-{h12(data)}.{suf}'
     (dst / target).write_bytes(data); page = page.replace(f'"{name}"', f'"{target}"'); rel.append(target)
 (dst / 'index.html').write_text(page)
-assets = ['./', 'index.html', 'book.json', book_file, epub_file] + rel
+assets = ['./', 'index.html', 'book.json', book_file] + ([] if INC else [epub_file]) + rel
 for d in ('assets/fonts', 'assets/icons', 'assets/images'):
     assets += sorted(f'{d}/{f}' for f in os.listdir(dst / d) if not f.endswith('.txt'))
 assets += ['assets/cover.jpg', 'assets/book-render.png', 'assets/vsplanet-logo.png']
@@ -155,7 +170,9 @@ sw = re.sub(r'const ASSETS=\[.*?\];', 'const ASSETS=' + json.dumps(assets, ensur
 sw = re.sub(r"const CACHE='[^']+';", f"const CACHE='book-{cfg['slug']}-{h12(page.encode() + bj)}';", sw)
 sw = sw.replace("key.startsWith('eddie-book-')", f"key.startsWith('book-{cfg['slug']}-')")
 (dst / 'sw.js').write_text(sw)
-for f in ('style.css', 'app.js', 'pwa.js', 'manifest.webmanifest'): (dst / f).unlink()
+if INC:   # сервис-воркер-«уборщик»: снимает ранее установленный офлайн-кэш
+    (dst / 'sw.js').write_text("self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.map(x=>caches.delete(x)))).then(()=>self.registration.unregister())));\n")
+for f in ('style.css', 'app.js', 'pwa.js', 'manifest.webmanifest'): (dst / f).unlink(missing_ok=True)
 
 # статические страницы глав и sitemap
 ch = book['chapters']; css = [r for r in rel if r.startswith('style-')][0]

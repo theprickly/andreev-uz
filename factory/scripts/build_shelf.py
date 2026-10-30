@@ -10,7 +10,7 @@ import base64, html, json, pathlib, re, shutil, sys
 from PIL import Image
 
 ROOT = pathlib.Path(sys.argv[1]).resolve()
-SLUGS = sys.argv[2:] or ['eddie', 'hart', 'jericho', 'wcw', 'heenan', 'lesnar', 'booker']
+SLUGS = sys.argv[2:] or ['eddie', 'hart', 'jericho', 'wcw', 'heenan', 'lesnar', 'booker', 'flair']
 T = pathlib.Path(__file__).resolve().parents[1] / 'template'
 OUT = ROOT / 'books'; (OUT / 'covers').mkdir(parents=True, exist_ok=True)
 BASE = 'https://andreev.uz/books/'
@@ -18,7 +18,7 @@ E = lambda s: html.escape(str(s), quote=True)
 
 # О каких годах рассказывает книга — для ленты эпох (приблизительно, по содержанию)
 ERAS = {'heenan': (1944, 2002), 'hart': (1957, 2007), 'booker': (1965, 1993), 'eddie': (1967, 2005),
-        'lesnar': (1977, 2010), 'wcw': (1988, 2001), 'jericho': (1999, 2008)}
+        'lesnar': (1977, 2010), 'wcw': (1988, 2001), 'jericho': (1999, 2008), 'flair': (1949, 1985)}
 TAGLINE = {
     'eddie': 'О семье Герреро, зависимости и пути к титулу чемпиона WWE.',
     'hart': 'Подземелье Стю, Монреальская подстава и жизнь, которую не придумать сценаристам.',
@@ -26,6 +26,7 @@ TAGLINE = {
     'wcw': 'Как самая горячая компания мира за пару лет растеряла всё.',
     'heenan': 'Самый острый язык рестлинга — о AWA, WWF и Горилле Монсуне.',
     'lesnar': 'Ферма, WWE, NFL, UFC и болезнь, которая едва не закончила всё.',
+    'flair': 'Усыновление в Мемфисе, первые бои и взлёт «Парня из природы» — главы 1–6, перевод не закончен.',
     'booker': 'Улицы Хьюстона, тюрьма и первый шаг на ринг.',
 }
 

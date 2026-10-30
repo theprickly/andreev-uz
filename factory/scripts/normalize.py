@@ -30,7 +30,7 @@ def roman(s):
         v = ROMAN[ch]; t += -v if i + 1 < len(s) and ROMAN[s[i + 1]] > v else v
     return t
 
-NUM = re.compile(r'(?i)(?:глава\s*#?\s*|^#\s*)(\d+|[IVXLC]+)(?:\.(\d+))?(?=$|[\s.:—–-])')
+NUM = re.compile(r'(?i)(?:глава\s*#?\s*|^#\s*|(?<=\s)#\s*)(\d+|[IVXLC]+)(?:\.(\d+))?(?=$|[\s.:—–-])')
 PART = re.compile(r'(?i)\(\s*ч\.?\s*(\d+)\s*\)')
 
 def parse_title(raw):

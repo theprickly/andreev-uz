@@ -52,7 +52,7 @@ def plain(s):
     return re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', s or ''))).strip()
 
 
-SERIES = re.compile(r'(?i)^(.*?)(?:[\s.,:—–-]*(?:глава|часть|chapter|ч\.)\s*[\dIVXLC]+.*)$')
+SERIES = re.compile(r'(?i)^(.*?)(?:[\s.,:—–-]*(?:(?:глава|часть|chapter|ч\.)\s*#?\s*[\dIVXLC]+|#\s*\d+).*)$')
 
 
 def discover(req, out):
@@ -61,7 +61,7 @@ def discover(req, out):
         report['categories'] = [{k: c[k] for k in ('id', 'name', 'slug', 'count')} for c in paged('/wp-json/wp/v2/categories')]
     except Exception as e:
         report['categories_error'] = str(e)
-    terms = req.get('terms') or ['глава', 'книга', 'автобиография', 'перевод книги', 'часть']
+    terms = req.get('terms') or ['глава', 'книга', 'автобиография', 'перевод книги', 'часть', '#1:', '#10', 'перевод']
     seen, posts = set(), []
     for t in terms:
         try:

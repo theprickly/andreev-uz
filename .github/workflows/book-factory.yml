@@ -1,0 +1,24 @@
+name: book-factory
+on:
+  push:
+    branches: [book-factory]
+    paths: ['factory/requests/**', 'factory/scripts/**', '.github/workflows/book-factory.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: book-factory
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install requests
+      - run: python factory/scripts/vsplanet.py
+      - name: Commit results
+        run: |
+          git config user.name "book-factory"
+          git config user.email "book-factory@users.noreply.github.com"
+          git add factory/out
+          git diff --cached --quiet || (git commit -m "factory: collected data" && git push)

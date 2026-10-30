@@ -2,7 +2,7 @@
  "slug": "heenan",
  "id": "heenan-vsplanet-ru",
  "title": "Плохиш из мира рестлинга",
- "subtitle": "",
+ "subtitle": "Вся правда от главного плохиша рестлинга",
  "author": "Бобби Хинан",
  "coauthors": [
   "Стив Андерсон"
@@ -43,7 +43,7 @@
  "about": [
   [
    "Книга",
-   "Bobby Heenan, Steve Anderson. <i>Bobby the Brain: Wrestling's Bad Boy Tells All.</i> Triumph Books, 2002."
+   "Bobby Heenan, Steve Anderson. <i>Bobby the Brain: Wrestling's Bad Boy Tells All.</i> Triumph Books, 2002. Предисловие — Халк Хоган."
   ],
   [
    "Перевод",
@@ -55,7 +55,7 @@
   ],
   [
    "Обложка",
-   "Обложка серии «VSplanet Книги» — не оригинальная обложка издания."
+   "Русская обложка издания."
   ],
   [
    "Шрифты",
@@ -96,5 +96,6 @@
    "Крокетты"
   ]
  ],
- "theme": "vs"
+ "theme": "vs",
+ "cover_image": "books/heenan/assets/cover-original.jpg"
 }

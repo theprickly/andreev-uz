@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://andreev.uz/eddie/sitemap.xml
+Sitemap: https://andreev.uz/jericho/sitemap.xml

@@ -395,3 +395,7 @@ legend{font-size:14px;color:#d6d6da;margin-bottom:8px}
 .hero .unfinished{margin:12px 0 0;max-width:500px;font-size:14px;line-height:1.45;color:#c9c9ce;padding:10px 14px;border-radius:14px;background:color-mix(in srgb,var(--accent) 10%,transparent);border:1px solid color-mix(in srgb,var(--accent) 28%,transparent)}
 .hero .unfinished span{display:block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-hi);margin-bottom:2px}
 .hero .unfinished a{color:var(--text);font-weight:600;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--accent) 60%,transparent);text-underline-offset:3px;white-space:nowrap}
+
+@media (max-width:520px){.chip-all{display:none}}
+
+@media (max-width:380px){.reader-header .vs-brand span{display:none}.reader-header .icon-button{width:34px;height:34px}.reader-tools{gap:0}}

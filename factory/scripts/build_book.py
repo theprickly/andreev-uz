@@ -34,7 +34,7 @@ for old, new in cfg.get('html_patches', []):            # точечные пр�
     assert len(hits) == 1, f'html_patch не найден однозначно: {old[:60]}'
     hits[0]['html'] = hits[0]['html'].replace(old, new, 1); fix_log.append(f'{hits[0]["title"]}: правка разметки')
 (src / 'adaptation.log').write_text('\n'.join(fix_log) + '\n')
-BASE = cfg.get('base_url', f'https://andreev.uz/{cfg["slug"]}/')
+BASE = cfg.get('base_url', f'https://andreev.uz/books/{cfg["slug"]}/')
 import themes
 TH = themes.resolve(cfg)
 cfg['accent'] = TH['accent']; cfg.setdefault('cover_bg', TH['bg'])
@@ -93,7 +93,7 @@ reader_cfg = {'id': cfg['id'], 'slug': cfg['slug'], 'storageKey': cfg['slug'] + 
 orig = cfg.get('original') or {}
 original_html = (f'<p class="orig"><span>Оригинал</span><i lang="en">{E(orig["title"])}</i><b>{E(orig["year"])}</b></p>' if orig else '')
 inc = cfg.get('incomplete')
-incomplete_html = (f'<p class="unfinished"><span>Перевод не закончен</span> {E(inc["label"])}. <a href="../books/#unfinished">Помочь закончить →</a></p>' if inc else '')
+incomplete_html = (f'<p class="unfinished"><span>Перевод не закончен</span> {E(inc["label"])}. <a href="../#unfinished">Помочь закончить →</a></p>' if inc else '')
 credit_html = E(cfg['credit']).replace('VSplanet.net', '<b>VSplanet.net</b>')
 stats = [(numbered or len(book['chapters']), plural(numbered or len(book['chapters']), 'глава', 'главы', 'глав')), (f'≈&#8239;{max(1, round(words / 200 / 60))}', 'часов чтения')]
 if photos: stats.append((photos, plural(photos, 'фотография', 'фотографии', 'фотографий')))
@@ -184,10 +184,10 @@ for f in ('style.css', 'app.js', 'pwa.js', 'manifest.webmanifest'): (dst / f).un
 # статические страницы глав и sitemap
 ch = book['chapters']; css = [r for r in rel if r.startswith('style-')][0]
 mark = lambda i, t: (f'{int(m[1]):02d}' if (m := re.match(r'^Глава\s+(\d+)', t)) else t.strip()[0].upper())
-BRAND = '<a class="vs-brand" href="../"><img src="../assets/vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a>'
+BRAND = '<a class="vs-brand" href="../../" aria-label="Все книги"><img src="../assets/vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a>'
 def spage(title, desc, canon, body, extra=''):
     return f'''<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{E(title)}</title><meta name="description" content="{E(desc)}"><link rel="canonical" href="{canon}"><meta property="og:title" content="{E(title)}"><meta property="og:image" content="{BASE}assets/og.jpg"><link rel="icon" href="../assets/icons/cover-favicon-32.png"><link rel="stylesheet" href="../{css}">{style_vars}{extra}</head>
-<body class="static theme-night"><header class="top wrap">{BRAND}<nav><a class="chip" href="./">Все главы</a></nav></header>{body}<footer class="page-foot wrap"><nav class="footer-nav"><a href="../">О книге</a><a href="../#about">О сайте</a></nav></footer></body></html>'''
+<body class="static theme-night"><header class="top wrap">{BRAND}<nav><a class="chip" href="../">К книге</a><a class="chip" href="./">Все главы</a></nav></header>{body}<footer class="page-foot wrap"><nav class="footer-nav"><a href="../../">Все книги</a><a href="../">О книге</a><a href="../#about">О сайте</a></nav></footer></body></html>'''
 (dst / 'chapters').mkdir()
 urls, items = [BASE, BASE + 'chapters/'], []
 for i, c in enumerate(ch):

@@ -1,8 +1,8 @@
 /* VSplanet Книги — единый service worker. Оболочка (полка) кэшируется сразу,
    книги — по кнопке «Скачать» (страница сама кладёт файлы в offline-book-<slug>@<версия>). */
 'use strict';
-const SHELL_CACHE='offline-shell-ef0e6f3e28b8';
-const SHELL=["./", "unfinished/", "quotes/", "shared/shelf-cbe315821fcd.css", "pwa.js?v=0cc6e05b3f3d", "shared/vsplanet-mark.svg", "shared/vsplanet-lockup.svg", "shared/fonts/geologica-cyr.woff2", "shared/fonts/geologica-lat.woff2", "shared/fonts/literata-cyrillic-normal.woff2", "shared/fonts/literata-cyrillic-italic.woff2", "shared/fonts/literata-latin-normal.woff2", "shared/fonts/literata-latin-italic.woff2", "shared/nav-689000bdde16.css", "shared/nav-7e6bb6b2e1c3.js", "icons/app-192.png", "covers/heenan.webp", "covers/piper.webp", "covers/copeland.webp", "covers/flair.webp", "covers/wcw.webp", "covers/eddie.webp", "covers/hart.webp", "covers/goldust.webp", "covers/jericho.webp", "covers/lesnar.webp", "covers/booker.webp", "covers/holly.webp", "covers/booker-royalty.webp"];
+const SHELL_CACHE='offline-shell-6e2d12e061b0';
+const SHELL=["./", "unfinished/", "quotes/", "shared/shelf-d507ca1c794d.css", "pwa.js?v=0cc6e05b3f3d", "shared/vsplanet-mark.svg", "shared/vsplanet-lockup.svg", "shared/fonts/geologica-cyr.woff2", "shared/fonts/geologica-lat.woff2", "shared/fonts/literata-cyrillic-normal.woff2", "shared/fonts/literata-cyrillic-italic.woff2", "shared/fonts/literata-latin-normal.woff2", "shared/fonts/literata-latin-italic.woff2", "shared/nav-1dbbb3cadf01.css", "shared/nav-7e6bb6b2e1c3.js", "icons/app-192.png", "shared/favicon.svg", "covers/heenan.webp", "covers/piper.webp", "covers/copeland.webp", "covers/flair.webp", "covers/wcw.webp", "covers/eddie.webp", "covers/hart.webp", "covers/goldust.webp", "covers/jericho.webp", "covers/lesnar.webp", "covers/booker.webp", "covers/holly.webp", "covers/booker-royalty.webp"];
 const BOOKS='offline-book-';
 const base=new URL('./',self.registration.scope);
 self.addEventListener('install',e=>e.waitUntil((async()=>{

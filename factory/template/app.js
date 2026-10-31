@@ -325,7 +325,7 @@ function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onloa
 function wrapLines(ctx,text,max){const words=text.split(' '),lines=[];let line='';for(const w of words){const t=line?line+' '+w:w;if(ctx.measureText(t).width>max&&line){lines.push(line);line=w;}else line=t;}if(line)lines.push(line);return lines;}
 async function makeQuoteCard(text,title){
  const W=1080,H=1920,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
- try{await Promise.all([document.fonts.load('56px Literata'),document.fonts.load('700 32px Geologica'),document.fonts.load('32px Geologica'),document.fonts.load('44px "GTA Russian"')]);}catch{}
+ try{await Promise.all([document.fonts.load('56px Literata'),document.fonts.load('700 32px Geologica'),document.fonts.load('32px Geologica')]);}catch{}
  x.fillStyle='#000';x.fillRect(0,0,W,H);
  const AC=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#7fa6d4',DF=getComputedStyle(document.documentElement).getPropertyValue('--display').trim()||'Geologica';const g=x.createRadialGradient(W/2,H-520,40,W/2,H-520,760);g.addColorStop(0,AC+'6b');g.addColorStop(1,AC+'00');x.fillStyle=g;x.fillRect(0,0,W,H);
  try{const img=await loadImg(CFG.render);x.drawImage(img,W/2-360,H-1010,720,720);}catch{}

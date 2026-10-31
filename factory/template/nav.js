@@ -76,3 +76,16 @@
  bar.addEventListener('pointerdown',()=>{if(bar.classList.contains('is-min')&&!document.body.classList.contains('q-body'))set(false);},{passive:true});
  if(document.body.classList.contains('q-body'))bar.addEventListener('click',e=>{if(bar.classList.contains('is-min')&&!e.target.closest('.tb-tab,.tb-fab')){}},{passive:true});
 })();
+/* заставка при запуске установленного приложения: знак на тёмном фоне, один раз за сеанс */
+(()=>{
+ const sa=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;if(!sa)return;
+ try{if(sessionStorage.getItem('vs-splash'))return;sessionStorage.setItem('vs-splash','1')}catch(e){}
+ const me=document.querySelector('script[src*="/nav-"],script[src^="nav-"]');if(!me)return;
+ const src=new URL('vsplanet-mark.svg',me.src).href,d=document.createElement('div');d.setAttribute('aria-hidden','true');
+ d.style.cssText='position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:radial-gradient(60% 40% at 50% 45%,#05246a99,#03060c 70%);transition:opacity .45s ease;pointer-events:none';
+ const im=new Image();im.src=src;im.style.cssText='width:min(52vw,300px);height:auto;transform:scale(.9);opacity:0;transition:transform .7s cubic-bezier(.3,1.3,.5,1),opacity .4s ease';
+ d.append(im);document.documentElement.append(d);
+ const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches;
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{im.style.opacity='1';im.style.transform='scale(1)'}));
+ setTimeout(()=>{d.style.opacity='0';setTimeout(()=>d.remove(),500)},reduce?350:900);
+})();

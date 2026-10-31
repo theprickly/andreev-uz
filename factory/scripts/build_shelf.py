@@ -121,10 +121,24 @@ js_books = [{k: b[k] for k in ('slug', 'key', 'title', 'author', 'accent', 'word
 import hashlib, subprocess
 (OUT / 'icons').mkdir(exist_ok=True)
 _logo = Image.open(T / 'assets' / 'vsplanet-icon.png').convert('RGBA')
-def _icon(size, frac, name):
-    bg = Image.new('RGBA', (size, size), (234, 242, 251, 255)); w = round(size * frac); h = round(w * _logo.height / _logo.width)
-    bg.alpha_composite(_logo.resize((w, h), Image.LANCZOS), ((size - w) // 2, (size - h) // 2)); bg.convert('RGB').save(OUT / 'icons' / name, optimize=True)
-for _sz, _fr, _nm in [(512, .72, 'app-512.png'), (192, .72, 'app-192.png'), (512, .54, 'app-maskable-512.png'), (180, .72, 'app-180.png'), (32, .92, 'favicon-32.png'), (48, .92, 'favicon-48.png')]: _icon(_sz, _fr, _nm)
+_full = Image.open(T / 'assets' / 'vsplanet-logo.png').convert('RGBA')
+def _grad(size):
+    import numpy as np
+    y, x = np.mgrid[0:size, 0:size] / (size - 1); t = ((x + y) / 2)[..., None]
+    c0, c1 = np.array([22, 58, 128]), np.array([3, 6, 12])
+    return Image.fromarray((c0 + (c1 - c0) * t).astype('uint8'), 'RGB').convert('RGBA')
+def _icon(size, frac, name, app=True):
+    bg, lg = (_grad(size), _full) if app else (Image.new('RGBA', (size, size), (234, 242, 251, 255)), _logo)
+    w = round(size * frac); h = round(w * lg.height / lg.width)
+    bg.alpha_composite(lg.resize((w, h), Image.LANCZOS), ((size - w) // 2, (size - h) // 2)); bg.convert('RGB').save(OUT / 'icons' / name, optimize=True)
+for _sz, _fr, _nm, _ap in [(512, .94, 'app-512.png', 1), (192, .94, 'app-192.png', 1), (512, .76, 'app-maskable-512.png', 1), (180, .94, 'app-180.png', 1), (32, .92, 'favicon-32.png', 0), (48, .92, 'favicon-48.png', 0)]: _icon(_sz, _fr, _nm, _ap)
+_emb = Image.open(T / 'assets' / 'vsplanet-logo.png').convert('RGBA')
+for _w, _h, _r in shared.STARTUP:
+    _W, _H = _w * _r, _h * _r; _bg = Image.new('RGB', (_W, _H), (3, 6, 12)); _glow = Image.new('RGB', (_W, _H), (5, 36, 100))
+    _mask = Image.radial_gradient('L').resize((_W, _W)).point(lambda v: max(0, 150 - v)); _m = Image.new('L', (_W, _H), 0); _m.paste(_mask, (0, (_H - _W) // 2 - _H // 12))
+    _bg = Image.composite(_glow, _bg, _m.point(lambda v: v // 2))
+    _lw = round(min(_W, _H) * .46); _lh = round(_lw * _emb.height / _emb.width); _bg = _bg.convert('RGBA')
+    _bg.alpha_composite(_emb.resize((_lw, _lh), Image.LANCZOS), ((_W - _lw) // 2, (_H - _lh) // 2 - _H // 24)); _bg.convert('RGB').save(OUT / 'icons' / f'startup-{_w}x{_h}.png', optimize=True)
 _pwa_src = (T / 'pwa.js').read_bytes(); PWA_V = hashlib.sha256(_pwa_src).hexdigest()[:12]
 shutil.copy(T / 'pwa.js', OUT / 'pwa.js')
 _ESB = pathlib.Path('/home/claude/tools/node_modules/.bin/esbuild')
@@ -164,14 +178,14 @@ def navbar(cur, act=''):
     return (f'<header class="navbar" data-navbar><a class="nb-brand" href="./" aria-label="VSplanet Книги"><img src="shared/vsplanet-lockup.svg" alt="VSplanet" width="1686" height="430"></a>'
             f'<span class="nb-title">{TITLES[cur]}</span><span class="nb-act">{act}</span></header>')
 
-MINI_FOOT = f'<footer class="credits mini"><div class="sign"><img src="shared/vsplanet-mark.svg" alt="" width="512" height="366" loading="lazy"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div></footer>'
+MINI_FOOT = f'<footer class="credits mini"><div class="dl-row"><span data-offline-sum data-empty=""></span><button class="ghost" data-offline-clear hidden>Удалить скачанное</button></div><div class="sign"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div></footer>'
 
 def page(path, title, desc, main, js, cur, extra='', act='', body_cls='shelf-body', foot=None):
     P = '../' if path else ''
     h = f"""<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>{E(title)}</title><meta name="description" content="{E(desc)}">
-<link rel="canonical" href="{BASE}{path}"><meta name="theme-color" content="#03060c"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/app-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Книги"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="canonical" href="{BASE}{path}"><meta name="theme-color" content="#03060c"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/app-180.png">{shared.startup_links("icons/")}<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Книги"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta property="og:type" content="website"><meta property="og:url" content="{BASE}{path}"><meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}"><meta property="og:image" content="{BASE}og.jpg"><meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="shared/favicon.svg"><link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png"><link rel="preload" href="shared/fonts/geologica-cyr.woff2" as="font" type="font/woff2" crossorigin>{extra}
 <link rel="stylesheet" href="shared/{SHELF_CSS}"><link rel="stylesheet" href="shared/{SH[2]}"><script src="shared/{SH[3]}" defer></script></head><body class="{body_cls}" data-page="{cur}">
@@ -190,12 +204,13 @@ def wrap(inner, foot):
     return f'<div class="wrap"><main>\n{inner}\n</main>\n{foot}</div>'
 
 ABOUT = f"""<footer class="credits" id="about">
-<div class="cr-brand"><img src="shared/vsplanet-mark.svg" alt="" width="512" height="366" loading="lazy"><div><b>VSplanet Книги</b><p>Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.</p></div></div>
+<div class="cr-brand"><div><b>VSplanet Книги</b><p>Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.</p></div></div>
 <div class="cr-grid">
 <div><h4>О проекте</h4><p>С 2011 года читатели VSplanet переводят книги звёзд рестлинга. Здесь они собраны в одной читалке: закладки, поиск по тексту, офлайн-режим и EPUB. Регистрации нет, а прогресс чтения хранится только в вашем браузере.</p></div>
 <div><h4>Присоединяйтесь</h4><p>Недопереведённые книги ждут продолжения. Возьмите главу — и ваше имя появится в выходных данных книги.</p><p><a class="cr-link" href="https://vsplanet.net/" rel="noopener">Редакция VSplanet.net →</a></p></div>
 </div>
-<div class="sign"><img src="shared/vsplanet-mark.svg" alt="" width="512" height="366" loading="lazy"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div>
+<div class="dl-row"><span data-offline-sum data-empty=""></span><button class="ghost" data-offline-clear hidden>Удалить скачанное</button></div>
+<div class="sign"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div>
 </footer>"""
 
 # ---- JS страниц ----

@@ -71,10 +71,15 @@ def plural(n, a, b, c):
     n = abs(n) % 100; n1 = n % 10
     return c if 10 < n < 20 else a if n1 == 1 else b if 2 <= n1 <= 4 else c
 
+def badge(b):
+    if not b['inc']: return ''
+    return '<span class="badge ' + b['inc']['kind'] + '">' + ('Переводится' if b['inc']['kind'] == 'ongoing' else 'Заброшено') + '</span>'
+
+
 def card(b):
     mins = round(sum(b['words']) / 180)
     return f'''<article class="book" data-slug="{b['slug']}" style="--a:{b['accent']}">
- <a class="cover" href="{b['slug']}/" aria-label="{E(b['author'])} — {E(b['title'])}"><img src="covers/{b['slug']}.webp" alt="" width="480" height="720" decoding="async" loading="{'eager' if b['slug'] in EAGER else 'lazy'}"><span class="ring" hidden></span></a>
+ <a class="cover" href="{b['slug']}/" aria-label="{E(b['author'])} — {E(b['title'])}"><img src="covers/{b['slug']}.webp" alt="" width="480" height="720" decoding="async" loading="{'eager' if b['slug'] in EAGER else 'lazy'}"><span class="ring" hidden></span>{badge(b)}</a>
  <div class="meta"><p class="author">{E(b['author'])}</p><h3><a href="{b['slug']}/">{E(b['title'])}</a></h3>
  <p class="tag">{E(b['tag'])}</p>
  {f'<p class="orig"><i lang="en">{E(b["orig"]["title"])}</i> · {b["orig"]["year"]}</p>' if b['orig'] else ''}
@@ -177,6 +182,12 @@ html,body{{overflow-x:clip}}.manifest p{{margin:0 0 14px}}.manifest p:last-child
 .hero{{padding:34px 0 8px}}.hero h1{{font-size:clamp(28px,4.2vw,48px);max-width:none;line-height:1.05;letter-spacing:-.035em}}.hero .eyebrow{{margin-bottom:10px}}
 .hero .stats{{gap:8px 22px;margin:16px 0 0;align-items:baseline}}.hero .stats li{{display:flex;align-items:baseline;gap:6px}}.hero .stats b{{display:inline;font-size:18px}}.hero .stats span{{font-size:14px}}
 #shelf{{margin-top:28px}}
+/* неполные переводы — отдельная зона: пунктирная янтарная рамка и метки */
+#unfinished{{margin-top:64px;padding:30px 26px 34px;border:2px dashed #f2b24aa6;border-radius:26px;background:linear-gradient(180deg,#f2b24a1c,transparent 50%)}}
+#unfinished h2{{display:flex;align-items:center;gap:10px}}#unfinished h2::before{{content:"";width:10px;height:10px;border-radius:50%;background:#f2b24a;box-shadow:0 0 0 5px #f2b24a26}}
+.badge{{position:absolute;left:10px;bottom:10px;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.01em;background:#f2b24a;color:#1a1000;box-shadow:0 6px 16px -6px #000}}.badge.stalled{{background:#0d0d10;color:#f2b24a;border:1px solid #f2b24a99}}
+#unfinished .help{{border-color:#f2b24a40}}
+@media (max-width:640px){{#unfinished{{padding:22px 14px 26px;border-radius:20px;margin-left:-4px;margin-right:-4px}}.hero .stats li:nth-child(3),.hero .stats li:nth-child(5){{display:none}}}}
 /* — компактная цитата, канаты между секциями, титры — */
 main>section{{position:relative}}main>section+section{{margin-top:64px;padding-top:44px}}
 .qs{{margin-top:56px}}.qhead{{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px}}.qhead .eyebrow{{margin:0}}
@@ -201,8 +212,7 @@ footer.credits{{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px
 <div class="wrap">
 <header class="top"><a class="brand" href="./"><img src="vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a><span class="nav"><a class="chip" href="#quotes">Цитаты</a><a class="chip" href="#unfinished">Неполные</a><a class="chip" href="#eras">Эпохи</a></span></header>
 <main>
-<div class="hero"><p class="eyebrow">Библиотека переводов VSplanet.net</p>
-<h1>Рестлинг, рассказанный изнутри</h1>
+<div class="hero"><h1>Рестлинг, рассказанный изнутри</h1>
 
 <ul class="stats"><li><b>{len(full)}</b><span>{plural(len(full), 'книга', 'книги', 'книг')} целиком</span></li><li><b>{len(partial)}</b><span>{plural(len(partial), 'неполная', 'неполные', 'неполных')}</span></li><li><b>{sum(b['chapters'] for b in books)}</b><span>глав и разделов</span></li><li><b>≈{hours} ч</b><span>чтения</span></li><li><b>EPUB</b><span>для любой читалки</span></li></ul>
 <div id="resume"></div></div>

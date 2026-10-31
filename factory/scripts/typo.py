@@ -17,12 +17,12 @@ GLOSS = []
 _gp = pathlib.Path(__file__).resolve().parents[1] / 'glossary.json'
 if _gp.exists():
     for e in json.loads(_gp.read_text())['entries']:
-        pairs = [(v, e['canonical']) for v in e['variants']]
+        pairs = [(v, e['canonical']) for v in e['variants']]; guard = e.get('guard', '')
         if e.get('common'):   # нарицательное слово: правим и строчную, и заглавную форму
             pairs += [(v[0].upper() + v[1:], e['canonical'][0].upper() + e['canonical'][1:]) for v in e['variants']]
         for v, cn in pairs:
             skip = r'(?!' + re.escape(cn[len(v):]) + ')' if cn.startswith(v) and len(cn) > len(v) else ''   # «Орндорф» → «Орндорфф», но не трогать уже верное
-            GLOSS.append((re.compile(r'(?<![А-Яа-яЁёA-Za-z])' + re.escape(v) + skip + r'(?=[а-яё]{0,4}(?![А-Яа-яЁёA-Za-z]))'), v, cn))
+            GLOSS.append((re.compile(r'(?<![А-Яа-яЁёA-Za-z])' + re.escape(v) + skip + guard + r'(?=[а-яё]{0,4}(?![А-Яа-яЁёA-Za-z]))'), v, cn))
 
 class Log:
     def __init__(self): self.items = []; self.flags = []; self.counts = {}

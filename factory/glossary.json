@@ -217,6 +217,89 @@
    "category": "люди",
    "decided": "2026-10-31",
    "why": "Sharmell"
+  },
+  {
+   "canonical": "Шэмрок",
+   "variants": [
+    "Шемрок"
+   ],
+   "category": "люди",
+   "decided": "2026-10-31",
+   "why": "Ken Shamrock: 18 против 12"
+  },
+  {
+   "canonical": "Хэлен",
+   "variants": [
+    "Хелен"
+   ],
+   "category": "люди",
+   "decided": "2026-10-31",
+   "why": "Helen: 22 против 10, в стиле Хэйс, Пэйдж"
+  },
+  {
+   "canonical": "Тэйлор",
+   "variants": [
+    "Тейлор"
+   ],
+   "category": "люди",
+   "decided": "2026-10-31",
+   "why": "Taylor: 31 против 10"
+  },
+  {
+   "canonical": "Кертис",
+   "variants": [
+    "Кёртис"
+   ],
+   "category": "люди",
+   "decided": "2026-10-31",
+   "why": "Curtis: 12 против 4"
+  },
+  {
+   "canonical": "Дэниелс",
+   "variants": [
+    "Дэниэлс",
+    "Дениэлс"
+   ],
+   "category": "люди",
+   "decided": "2026-10-31",
+   "why": "Daniels: основная форма"
+  },
+  {
+   "canonical": "Сэйбл",
+   "variants": [
+    "Сейбл"
+   ],
+   "category": "люди",
+   "decided": "2026-10-31",
+   "why": "Sable: 7 против 6, в стиле Хэйс, Пэйдж"
+  },
+  {
+   "canonical": "Сиэтл",
+   "variants": [
+    "Сиэттл"
+   ],
+   "category": "места",
+   "decided": "2026-10-31",
+   "why": "Нормативное написание (Seattle)"
+  },
+  {
+   "canonical": "Деннис",
+   "variants": [
+    "Дэннис"
+   ],
+   "category": "люди",
+   "decided": "2026-10-31",
+   "why": "Dennis: 18 против 10"
+  },
+  {
+   "canonical": "Коннан",
+   "variants": [
+    "Конан"
+   ],
+   "category": "люди",
+   "decided": "2026-10-31",
+   "why": "Konnan (рестлер). Конан О`Брайан — отдельный человек, не меняется",
+   "guard": "(?![а-яё]{0,4}\\s+О.Брайан)"
   }
  ]
 }

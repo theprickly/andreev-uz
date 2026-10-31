@@ -1,7 +1,7 @@
 /* VSplanet Книги — единый service worker. Оболочка (полка) кэшируется сразу,
    книги — по кнопке «Скачать» (страница сама кладёт файлы в offline-book-<slug>@<версия>). */
 'use strict';
-const SHELL_CACHE='offline-shell-9dfef777f2f4';
+const SHELL_CACHE='offline-shell-7e08b819251c';
 const SHELL=["./", "unfinished/", "quotes/", "shared/shelf-cbe315821fcd.css", "pwa.js?v=0cc6e05b3f3d", "shared/vsplanet-mark.svg", "shared/vsplanet-wordmark.svg", "shared/fonts/geologica-cyr.woff2", "shared/fonts/geologica-lat.woff2", "shared/fonts/literata-cyrillic-normal.woff2", "shared/fonts/literata-cyrillic-italic.woff2", "shared/fonts/literata-latin-normal.woff2", "shared/fonts/literata-latin-italic.woff2", "shared/nav-9a6a7426ee02.css", "shared/nav-7e6bb6b2e1c3.js", "icons/app-192.png", "covers/heenan.webp", "covers/piper.webp", "covers/copeland.webp", "covers/flair.webp", "covers/wcw.webp", "covers/eddie.webp", "covers/hart.webp", "covers/goldust.webp", "covers/jericho.webp", "covers/lesnar.webp", "covers/booker.webp", "covers/holly.webp", "covers/booker-royalty.webp"];
 const BOOKS='offline-book-';
 const base=new URL('./',self.registration.scope);

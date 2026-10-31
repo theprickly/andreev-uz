@@ -1,8 +1,8 @@
 /* VSplanet Книги — единый service worker. Оболочка (полка) кэшируется сразу,
    книги — по кнопке «Скачать» (страница сама кладёт файлы в offline-book-<slug>@<версия>). */
 'use strict';
-const SHELL_CACHE='offline-shell-bffde8e56163';
-const SHELL=["./", "pwa.js?v=4403b29edb81", "shared/vsplanet-logo.png", "shared/fonts/geologica-cyr.woff2", "shared/fonts/geologica-lat.woff2", "shared/fonts/literata-cyrillic-normal.woff2", "shared/fonts/literata-cyrillic-italic.woff2", "shared/fonts/literata-latin-normal.woff2", "shared/fonts/literata-latin-italic.woff2", "shared/nav-f70878d03e23.css", "shared/nav-cfdffac9f939.js", "icons/app-192.png", "covers/heenan.webp", "covers/piper.webp", "covers/copeland.webp", "covers/flair.webp", "covers/wcw.webp", "covers/eddie.webp", "covers/hart.webp", "covers/goldust.webp", "covers/jericho.webp", "covers/lesnar.webp", "covers/booker.webp", "covers/holly.webp", "covers/booker-royalty.webp"];
+const SHELL_CACHE='offline-shell-cfdd4aab4c6c';
+const SHELL=["./", "shelf/", "quotes/", "unfinished/", "shared/shelf-961434bd68b7.css", "pwa.js?v=0cc6e05b3f3d", "shared/vsplanet-logo.png", "shared/fonts/geologica-cyr.woff2", "shared/fonts/geologica-lat.woff2", "shared/fonts/literata-cyrillic-normal.woff2", "shared/fonts/literata-cyrillic-italic.woff2", "shared/fonts/literata-latin-normal.woff2", "shared/fonts/literata-latin-italic.woff2", "shared/nav-235c77c1ef3b.css", "shared/nav-cb10df8a148d.js", "icons/app-192.png", "covers/heenan.webp", "covers/piper.webp", "covers/copeland.webp", "covers/flair.webp", "covers/wcw.webp", "covers/eddie.webp", "covers/hart.webp", "covers/goldust.webp", "covers/jericho.webp", "covers/lesnar.webp", "covers/booker.webp", "covers/holly.webp", "covers/booker-royalty.webp"];
 const BOOKS='offline-book-';
 const base=new URL('./',self.registration.scope);
 self.addEventListener('install',e=>e.waitUntil((async()=>{
@@ -29,7 +29,7 @@ async function nav(req){
 self.addEventListener('fetch',e=>{
  const r=e.request;if(r.method!=='GET')return;
  const u=new URL(r.url);if(u.origin!==location.origin||!u.pathname.startsWith(base.pathname))return;
- if(/\/(sw\.js|files\.json|manifest\.webmanifest)$/.test(u.pathname))return;      // всегда из сети
+ if(/\/(sw\.js|files\.json|version\.json|manifest\.webmanifest)$/.test(u.pathname))return;      // всегда из сети
  if(r.mode==='navigate'){e.respondWith(nav(r));return;}
  e.respondWith((async()=>{const hit=await caches.match(r);return hit||fetch(r);})());
 });

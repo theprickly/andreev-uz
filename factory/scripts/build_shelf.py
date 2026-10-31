@@ -161,10 +161,10 @@ def tabbar(cur):
 
 TITLES = {'shelf': 'Полка', 'unfinished': 'В работе', 'quotes': 'Цитаты'}
 def navbar(cur, act=''):
-    return (f'<header class="navbar" data-navbar><a class="nb-brand" href="./" aria-label="VSplanet Книги"><img src="shared/vsplanet-mark.svg" alt="" width="525" height="390"></a>'
+    return (f'<header class="navbar" data-navbar><a class="nb-brand" href="./" aria-label="VSplanet Книги"><img src="shared/vsplanet-lockup.svg" alt="VSplanet" width="1686" height="430"></a>'
             f'<span class="nb-title">{TITLES[cur]}</span><span class="nb-act">{act}</span></header>')
 
-MINI_FOOT = f'<footer class="credits mini"><div class="sign"><img src="shared/vsplanet-mark.svg" alt="" width="525" height="390" loading="lazy"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div></footer>'
+MINI_FOOT = f'<footer class="credits mini"><div class="sign"><img src="shared/vsplanet-mark.svg" alt="" width="512" height="366" loading="lazy"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div></footer>'
 
 def page(path, title, desc, main, js, cur, extra='', act='', body_cls='shelf-body', foot=None):
     P = '../' if path else ''
@@ -190,12 +190,12 @@ def wrap(inner, foot):
     return f'<div class="wrap"><main>\n{inner}\n</main>\n{foot}</div>'
 
 ABOUT = f"""<footer class="credits" id="about">
-<div class="cr-brand"><img src="shared/vsplanet-mark.svg" alt="" width="525" height="390" loading="lazy"><div><b>VSplanet Книги</b><p>Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.</p></div></div>
+<div class="cr-brand"><img src="shared/vsplanet-mark.svg" alt="" width="512" height="366" loading="lazy"><div><b>VSplanet Книги</b><p>Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.</p></div></div>
 <div class="cr-grid">
 <div><h4>О проекте</h4><p>С 2011 года читатели VSplanet переводят книги звёзд рестлинга. Здесь они собраны в одной читалке: закладки, поиск по тексту, офлайн-режим и EPUB. Регистрации нет, а прогресс чтения хранится только в вашем браузере.</p></div>
 <div><h4>Присоединяйтесь</h4><p>Недопереведённые книги ждут продолжения. Возьмите главу — и ваше имя появится в выходных данных книги.</p><p><a class="cr-link" href="https://vsplanet.net/" rel="noopener">Редакция VSplanet.net →</a></p></div>
 </div>
-<div class="sign"><img src="shared/vsplanet-mark.svg" alt="" width="525" height="390" loading="lazy"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div>
+<div class="sign"><img src="shared/vsplanet-mark.svg" alt="" width="512" height="366" loading="lazy"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div>
 </footer>"""
 
 # ---- JS страниц ----
@@ -292,7 +292,7 @@ PAGES = {
 
 for _p, _h in PAGES.items():
     (OUT / _p).mkdir(parents=True, exist_ok=True); (OUT / _p / 'index.html').write_text(_h)
-_shell = ['./', 'unfinished/', 'quotes/', f'shared/{SHELF_CSS}', f'pwa.js?v={PWA_V}', 'shared/vsplanet-mark.svg', 'shared/vsplanet-wordmark.svg', 'shared/fonts/geologica-cyr.woff2', 'shared/fonts/geologica-lat.woff2', 'shared/fonts/literata-cyrillic-normal.woff2', 'shared/fonts/literata-cyrillic-italic.woff2', 'shared/fonts/literata-latin-normal.woff2', 'shared/fonts/literata-latin-italic.woff2', f'shared/{SH[2]}', f'shared/{SH[3]}', 'icons/app-192.png'] + [f'covers/{b["slug"]}.webp' for b in books]
+_shell = ['./', 'unfinished/', 'quotes/', f'shared/{SHELF_CSS}', f'pwa.js?v={PWA_V}', 'shared/vsplanet-mark.svg', 'shared/vsplanet-lockup.svg', 'shared/fonts/geologica-cyr.woff2', 'shared/fonts/geologica-lat.woff2', 'shared/fonts/literata-cyrillic-normal.woff2', 'shared/fonts/literata-cyrillic-italic.woff2', 'shared/fonts/literata-latin-normal.woff2', 'shared/fonts/literata-latin-italic.woff2', f'shared/{SH[2]}', f'shared/{SH[3]}', 'icons/app-192.png'] + [f'covers/{b["slug"]}.webp' for b in books]
 (OUT / 'version.json').write_text(json.dumps({'version': shared.version()[0], 'name': shared.version()[1], 'label': shared.version_label()}, ensure_ascii=False))
 _seed = json.dumps(_shell) + PWA_V + (T / 'sw-app.js').read_text() + shared.version_label() + ''.join(hashlib.sha256(h.encode()).hexdigest()[:8] for h in PAGES.values())
 (OUT / 'sw.js').write_text((T / 'sw-app.js').read_text().replace('%SHELL%', json.dumps(_shell)).replace('%SHELL_V%', hashlib.sha256(_seed.encode()).hexdigest()[:12]))

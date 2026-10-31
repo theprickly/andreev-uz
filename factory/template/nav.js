@@ -1,6 +1,13 @@
 'use strict';
 /* Нижняя панель навигации (мобильная): активная вкладка, «стеклянный» индикатор, скролл к разделам, жест «назад» в установленном приложении. */
 (()=>{
+ /* шторки: потянуть за заголовок вниз — закрыть (как в iOS) */
+ (()=>{let d=null,y0=0,dy=0;
+  document.addEventListener('touchstart',e=>{const h=e.target.closest('dialog[open] .dialog-heading');if(!h)return;if(innerWidth>720)return;d=h.closest('dialog');y0=e.touches[0].clientY;dy=0;d.classList.remove('settling');d.classList.add('is-dragging');},{passive:true});
+  document.addEventListener('touchmove',e=>{if(!d)return;dy=Math.max(0,e.touches[0].clientY-y0);if(dy>6)d.style.transform='translateY('+dy+'px)';},{passive:true});
+  document.addEventListener('touchend',()=>{if(!d)return;const x=d;d=null;x.classList.remove('is-dragging');
+   if(dy>110){x.close();x.style.transform='';}else{x.classList.add('settling');x.style.transform='';setTimeout(()=>x.classList.remove('settling'),320);}},{passive:true});
+ })();
  const bar=document.querySelector('[data-tabbar]');if(!bar)return;
  const $=(s,r=document)=>r.querySelector(s),pill=$('.tb-pill',bar),ind=$('.tb-ind',bar),tabs=[...bar.querySelectorAll('.tb-tab')];
  const target=t=>t.dataset.scroll?$(t.dataset.scroll):null;

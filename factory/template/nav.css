@@ -56,3 +56,37 @@
 }
 @media (display-mode:standalone){.ibanner{display:none!important}}
 @media (prefers-reduced-motion:reduce){.ibanner{animation:none}}
+
+/* ===== мобильное приложение: шторки, отступы, тач-цели ===== */
+@media (max-width:720px){
+ html{-webkit-text-size-adjust:100%}
+ .top,#landing>.top,#page>.top{margin-top:env(safe-area-inset-top)}
+ /* диалоги — нижние шторки */
+ dialog.library-dialog,dialog.settings-dialog,dialog.install-dialog{width:100%;max-width:none;margin:auto 0 0;border-radius:28px 28px 0 0;border-bottom:0;max-height:min(90dvh,90vh);padding-bottom:env(safe-area-inset-bottom);overscroll-behavior:contain;box-shadow:0 -20px 60px rgba(0,0,0,.6)}
+ dialog.library-dialog[open],dialog.settings-dialog[open],dialog.install-dialog[open]{animation:sheet-in .42s cubic-bezier(.3,1.08,.4,1)}
+ dialog.library-dialog{height:min(88dvh,88vh)}
+ @keyframes sheet-in{from{transform:translateY(100%)}}
+ dialog.is-dragging{transition:none!important}
+ dialog.settling{transition:transform .3s cubic-bezier(.3,1,.4,1)}
+ .dialog-heading{padding-top:22px;touch-action:none}
+ .dialog-heading::before{content:"";position:absolute;top:8px;left:50%;width:40px;height:5px;margin-left:-20px;border-radius:3px;background:rgba(255,255,255,.3)}
+ dialog::backdrop{background:rgba(0,0,0,.55)}
+ /* поля ввода ≥16px — iOS не увеличивает страницу при фокусе */
+ input,select,textarea,#toc-filter,.search-input{font-size:16px!important}
+ /* тач-цели ≥44px */
+ .reader-header .icon-button{width:44px;height:44px}
+ .dialog-heading .icon-button{width:44px;height:44px}
+ .dialog-tabs button{height:38px;padding:0 14px}
+ .chip,.button,.btn{min-height:44px}
+ .filters button{height:40px}
+ /* страница книги: обложка компактнее — кнопка «Читать» видна на первом экране */
+ .hero-book{width:min(280px,70vw);margin:-4px auto -18px}
+ .hero-glow{left:10%}
+ /* полка: меньше пустоты сверху */
+ .shelf-body .hero{padding-top:12px}
+ .shelf-body section{padding-top:30px}
+ .shelf-body .hero h1{max-width:none}
+ .mylib .install-trigger{display:none}
+}
+@media (max-width:380px){.reader-header .icon-button{width:40px;height:40px}}
+@media (display-mode:standalone){html,body{overscroll-behavior-y:none}}

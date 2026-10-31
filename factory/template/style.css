@@ -21,7 +21,7 @@
  --serif:Literata,Georgia,serif;
  --reader-bg:#0b0b0c;--reader-ink:#e6e3de;--reader-dim:#8b8a88;
  --font:var(--serif);--size:20px;--leading:1.75;--measure:680px;
- --head-h:56px;--side-w:290px;
+ --head-h:calc(56px + env(safe-area-inset-top));--side-w:290px;
  --r-s:12px;--r-m:16px;--r-l:22px;
  --h1:clamp(52px,7vw,96px);--h2:clamp(32px,4vw,48px);--h3:20px;
  --gap:clamp(64px,8vw,104px);
@@ -138,7 +138,7 @@ dialog{color:var(--text)}
 #reader{background:var(--reader-bg);min-height:100vh;color:var(--reader-ink)}
 .reading-progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:31}
 .reading-progress i{display:block;height:100%;width:0;background:var(--red);transition:width .3s}
-.reader-header{position:fixed;top:0;left:0;right:0;height:var(--head-h);z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 16px;background:color-mix(in srgb,var(--reader-bg) 78%,transparent);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border-bottom:1px solid var(--line);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+.reader-header{position:fixed;top:0;left:0;right:0;height:var(--head-h);padding-top:env(safe-area-inset-top);box-sizing:border-box;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;padding-inline:16px;background:color-mix(in srgb,var(--reader-bg) 78%,transparent);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border-bottom:1px solid var(--line);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
 .reader-header .vs-brand img{width:34px}
 .reader-header .vs-brand b{font-size:16px}
 .reader-header .vs-brand small{font-size:10px}
@@ -341,7 +341,7 @@ legend{font-size:14px;color:#d6d6da;margin-bottom:8px}
  #header-chapter{display:none}
 }
 @media (max-width:600px){
- :root{--head-h:52px;--gap:64px}
+ :root{--head-h:calc(52px + env(safe-area-inset-top));--gap:64px}
  .wrap{width:calc(100% - 40px)}
  .top{padding:12px 0}
  .vs-brand img{width:36px}
@@ -356,7 +356,7 @@ legend{font-size:14px;color:#d6d6da;margin-bottom:8px}
  .match b{font-size:14px}
  .match-ticker{display:none}
  .edition-credits{flex-direction:column;gap:12px}
- .reader-header{padding:0 6px 0 12px}
+ .reader-header{padding-inline:6px 6px}
  .reader-header .vs-brand img{width:30px}
  .reading-main{padding:calc(var(--head-h) + 26px) 20px 100px}
  .chapter-head{margin-bottom:26px;padding-bottom:20px}

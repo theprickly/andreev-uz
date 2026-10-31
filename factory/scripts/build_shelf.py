@@ -120,11 +120,11 @@ js_books = [{k: b[k] for k in ('slug', 'key', 'title', 'author', 'accent', 'word
 # ---- единое PWA «VSplanet Книги» (scope /books/) ----
 import hashlib, subprocess
 (OUT / 'icons').mkdir(exist_ok=True)
-_logo = Image.open(T / 'assets' / 'vsplanet-logo.png').convert('RGBA')
+_logo = Image.open(T / 'assets' / 'vsplanet-icon.png').convert('RGBA')
 def _icon(size, frac, name):
-    bg = Image.new('RGBA', (size, size), (3, 6, 12, 255)); w = round(size * frac); h = round(w * _logo.height / _logo.width)
+    bg = Image.new('RGBA', (size, size), (234, 242, 251, 255)); w = round(size * frac); h = round(w * _logo.height / _logo.width)
     bg.alpha_composite(_logo.resize((w, h), Image.LANCZOS), ((size - w) // 2, (size - h) // 2)); bg.convert('RGB').save(OUT / 'icons' / name, optimize=True)
-for _sz, _fr, _nm in [(512, .66, 'app-512.png'), (192, .66, 'app-192.png'), (512, .5, 'app-maskable-512.png'), (180, .66, 'app-180.png')]: _icon(_sz, _fr, _nm)
+for _sz, _fr, _nm in [(512, .72, 'app-512.png'), (192, .72, 'app-192.png'), (512, .54, 'app-maskable-512.png'), (180, .72, 'app-180.png'), (32, .92, 'favicon-32.png'), (48, .92, 'favicon-48.png')]: _icon(_sz, _fr, _nm)
 _pwa_src = (T / 'pwa.js').read_bytes(); PWA_V = hashlib.sha256(_pwa_src).hexdigest()[:12]
 shutil.copy(T / 'pwa.js', OUT / 'pwa.js')
 _ESB = pathlib.Path('/home/claude/tools/node_modules/.bin/esbuild')
@@ -173,7 +173,7 @@ def page(path, title, desc, main, js, cur, extra='', act='', body_cls='shelf-bod
 <title>{E(title)}</title><meta name="description" content="{E(desc)}">
 <link rel="canonical" href="{BASE}{path}"><meta name="theme-color" content="#03060c"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/app-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Книги"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta property="og:type" content="website"><meta property="og:url" content="{BASE}{path}"><meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}"><meta property="og:image" content="{BASE}og.jpg"><meta name="twitter:card" content="summary_large_image">
-<link rel="icon" type="image/svg+xml" href="shared/vsplanet-mark.svg"><link rel="preload" href="shared/fonts/geologica-cyr.woff2" as="font" type="font/woff2" crossorigin>{extra}
+<link rel="icon" type="image/svg+xml" href="shared/favicon.svg"><link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png"><link rel="preload" href="shared/fonts/geologica-cyr.woff2" as="font" type="font/woff2" crossorigin>{extra}
 <link rel="stylesheet" href="shared/{SHELF_CSS}"><link rel="stylesheet" href="shared/{SH[2]}"><script src="shared/{SH[3]}" defer></script></head><body class="{body_cls}" data-page="{cur}">
 <div class="glow"></div>
 {navbar(cur, act)}
@@ -292,7 +292,7 @@ PAGES = {
 
 for _p, _h in PAGES.items():
     (OUT / _p).mkdir(parents=True, exist_ok=True); (OUT / _p / 'index.html').write_text(_h)
-_shell = ['./', 'unfinished/', 'quotes/', f'shared/{SHELF_CSS}', f'pwa.js?v={PWA_V}', 'shared/vsplanet-mark.svg', 'shared/vsplanet-lockup.svg', 'shared/fonts/geologica-cyr.woff2', 'shared/fonts/geologica-lat.woff2', 'shared/fonts/literata-cyrillic-normal.woff2', 'shared/fonts/literata-cyrillic-italic.woff2', 'shared/fonts/literata-latin-normal.woff2', 'shared/fonts/literata-latin-italic.woff2', f'shared/{SH[2]}', f'shared/{SH[3]}', 'icons/app-192.png'] + [f'covers/{b["slug"]}.webp' for b in books]
+_shell = ['./', 'unfinished/', 'quotes/', f'shared/{SHELF_CSS}', f'pwa.js?v={PWA_V}', 'shared/vsplanet-mark.svg', 'shared/vsplanet-lockup.svg', 'shared/fonts/geologica-cyr.woff2', 'shared/fonts/geologica-lat.woff2', 'shared/fonts/literata-cyrillic-normal.woff2', 'shared/fonts/literata-cyrillic-italic.woff2', 'shared/fonts/literata-latin-normal.woff2', 'shared/fonts/literata-latin-italic.woff2', f'shared/{SH[2]}', f'shared/{SH[3]}', 'icons/app-192.png', 'shared/favicon.svg'] + [f'covers/{b["slug"]}.webp' for b in books]
 (OUT / 'version.json').write_text(json.dumps({'version': shared.version()[0], 'name': shared.version()[1], 'label': shared.version_label()}, ensure_ascii=False))
 _seed = json.dumps(_shell) + PWA_V + (T / 'sw-app.js').read_text() + shared.version_label() + ''.join(hashlib.sha256(h.encode()).hexdigest()[:8] for h in PAGES.values())
 (OUT / 'sw.js').write_text((T / 'sw-app.js').read_text().replace('%SHELL%', json.dumps(_shell)).replace('%SHELL_V%', hashlib.sha256(_seed.encode()).hexdigest()[:12]))

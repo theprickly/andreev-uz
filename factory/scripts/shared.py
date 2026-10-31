@@ -12,7 +12,7 @@ def build(books_dir):
         if len(names) == 4 and all((d / n).exists() for n in names): return tuple(names)
     (d / 'fonts').mkdir(parents=True, exist_ok=True)
     for f in (T / 'assets' / 'fonts').iterdir(): shutil.copy(f, d / 'fonts' / f.name)
-    shutil.copy(T / 'assets' / 'vsplanet-mark.svg', d); shutil.copy(T / 'assets' / 'vsplanet-lockup.svg', d)
+    shutil.copy(T / 'assets' / 'vsplanet-mark.svg', d); shutil.copy(T / 'assets' / 'vsplanet-lockup.svg', d); shutil.copy(T / 'assets' / 'favicon.svg', d)
     names = []
     for f in ('style.css', 'app.js', 'nav.css', 'nav.js'):
         tmp = d / ('_' + f); shutil.copy(T / f, tmp)

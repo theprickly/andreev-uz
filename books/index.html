@@ -75,6 +75,12 @@ html,body{overflow-x:clip}.manifest p{margin:0 0 14px}.manifest p:last-child{mar
 .hero{padding:34px 0 8px}.hero h1{font-size:clamp(28px,4.2vw,48px);max-width:none;line-height:1.05;letter-spacing:-.035em}.hero .eyebrow{margin-bottom:10px}
 .hero .stats{gap:8px 22px;margin:16px 0 0;align-items:baseline}.hero .stats li{display:flex;align-items:baseline;gap:6px}.hero .stats b{display:inline;font-size:18px}.hero .stats span{font-size:14px}
 #shelf{margin-top:28px}
+/* неполные переводы — отдельная зона: пунктирная янтарная рамка и метки */
+#unfinished{margin-top:64px;padding:30px 26px 34px;border:2px dashed #f2b24aa6;border-radius:26px;background:linear-gradient(180deg,#f2b24a1c,transparent 50%)}
+#unfinished h2{display:flex;align-items:center;gap:10px}#unfinished h2::before{content:"";width:10px;height:10px;border-radius:50%;background:#f2b24a;box-shadow:0 0 0 5px #f2b24a26}
+.badge{position:absolute;left:10px;bottom:10px;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.01em;background:#f2b24a;color:#1a1000;box-shadow:0 6px 16px -6px #000}.badge.stalled{background:#0d0d10;color:#f2b24a;border:1px solid #f2b24a99}
+#unfinished .help{border-color:#f2b24a40}
+@media (max-width:640px){#unfinished{padding:22px 14px 26px;border-radius:20px;margin-left:-4px;margin-right:-4px}.hero .stats li:nth-child(3),.hero .stats li:nth-child(5){display:none}}
 /* — компактная цитата, канаты между секциями, титры — */
 main>section{position:relative}main>section+section{margin-top:64px;padding-top:44px}
 .qs{margin-top:56px}.qhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px}.qhead .eyebrow{margin:0}
@@ -99,8 +105,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
 <div class="wrap">
 <header class="top"><a class="brand" href="./"><img src="vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a><span class="nav"><a class="chip" href="#quotes">Цитаты</a><a class="chip" href="#unfinished">Неполные</a><a class="chip" href="#eras">Эпохи</a></span></header>
 <main>
-<div class="hero"><p class="eyebrow">Библиотека переводов VSplanet.net</p>
-<h1>Рестлинг, рассказанный изнутри</h1>
+<div class="hero"><h1>Рестлинг, рассказанный изнутри</h1>
 
 <ul class="stats"><li><b>7</b><span>книг целиком</span></li><li><b>6</b><span>неполных</span></li><li><b>328</b><span>глав и разделов</span></li><li><b>≈85 ч</b><span>чтения</span></li><li><b>EPUB</b><span>для любой читалки</span></li></ul>
 <div id="resume"></div></div>
@@ -188,7 +193,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
 <a class="btn" href="https://vsplanet.net/" rel="noopener">Предложить помощь</a></div>
 <div class="grid">
 <article class="book" data-slug="piper" style="--a:#ffc61a">
- <a class="cover" href="piper/" aria-label="Родди Пайпер — В яме с Пайпером"><img src="covers/piper.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span></a>
+ <a class="cover" href="piper/" aria-label="Родди Пайпер — В яме с Пайпером"><img src="covers/piper.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span><span class="badge stalled">Заброшено</span></a>
  <div class="meta"><p class="author">Родди Пайпер</p><h3><a href="piper/">В яме с Пайпером</a></h3>
  <p class="tag">Буян Родди: от трудного детства до звёздных лет — с предисловием Брета Харта.</p>
  <p class="orig"><i lang="en">In the Pit with Piper: Roddy Gets Rowdy</i> · 2002</p>
@@ -198,7 +203,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
  <div class="actions"><a class="btn" href="piper/">Читать</a></div></div>
 </article>
 <article class="book" data-slug="copeland" style="--a:#f6e7a6">
- <a class="cover" href="copeland/" aria-label="Адам Коупленд (Эдж) — На грани"><img src="covers/copeland.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span></a>
+ <a class="cover" href="copeland/" aria-label="Адам Коупленд (Эдж) — На грани"><img src="covers/copeland.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span><span class="badge stalled">Заброшено</span></a>
  <div class="meta"><p class="author">Адам Коупленд (Эдж)</p><h3><a href="copeland/">На грани</a></h3>
  <p class="tag">Детство в Канаде, путь в рестлинг и первые годы Эджа в WWF.</p>
  <p class="orig"><i lang="en">Adam Copeland on Edge</i> · 2004</p>
@@ -208,7 +213,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
  <div class="actions"><a class="btn" href="copeland/">Читать</a></div></div>
 </article>
 <article class="book" data-slug="flair" style="--a:#ffcf1f">
- <a class="cover" href="flair/" aria-label="Рик Флэр — Быть мужчиной"><img src="covers/flair.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span></a>
+ <a class="cover" href="flair/" aria-label="Рик Флэр — Быть мужчиной"><img src="covers/flair.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span><span class="badge stalled">Заброшено</span></a>
  <div class="meta"><p class="author">Рик Флэр</p><h3><a href="flair/">Быть мужчиной</a></h3>
  <p class="tag">Усыновление в Мемфисе, первые бои и взлёт «Парня из природы».</p>
  <p class="orig"><i lang="en">Ric Flair: To Be the Man</i> · 2004</p>
@@ -218,7 +223,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
  <div class="actions"><a class="btn" href="flair/">Читать</a></div></div>
 </article>
 <article class="book" data-slug="goldust" style="--a:#d9ac3c">
- <a class="cover" href="goldust/" aria-label="Дастин Роудс (Голдаст) — Кросс-Роудс"><img src="covers/goldust.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span></a>
+ <a class="cover" href="goldust/" aria-label="Дастин Роудс (Голдаст) — Кросс-Роудс"><img src="covers/goldust.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span><span class="badge ongoing">Переводится</span></a>
  <div class="meta"><p class="author">Дастин Роудс (Голдаст)</p><h3><a href="goldust/">Кросс-Роудс</a></h3>
  <p class="tag">Сын «Американской мечты», болезнь и путь из тьмы к свету.</p>
  <p class="orig"><i lang="en">Cross Rhodes: Goldust, Out of the Darkness</i> · 2010</p>
@@ -228,7 +233,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
  <div class="actions"><a class="btn" href="goldust/">Читать</a></div></div>
 </article>
 <article class="book" data-slug="holly" style="--a:#c8442f">
- <a class="cover" href="holly/" aria-label="Боб Холли — Хардкорная правда"><img src="covers/holly.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span></a>
+ <a class="cover" href="holly/" aria-label="Боб Холли — Хардкорная правда"><img src="covers/holly.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span><span class="badge ongoing">Переводится</span></a>
  <div class="meta"><p class="author">Боб Холли</p><h3><a href="holly/">Хардкорная правда</a></h3>
  <p class="tag">Алабама, годы в WWF, травмы и жизнь после ринга — без прикрас.</p>
  <p class="orig"><i lang="en">The Hardcore Truth: The Bob Holly Story</i> · 2013</p>
@@ -238,7 +243,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
  <div class="actions"><a class="btn" href="holly/">Читать</a></div></div>
 </article>
 <article class="book" data-slug="booker-royalty" style="--a:#f5b638">
- <a class="cover" href="booker-royalty/" aria-label="Букер Т — Моё восхождение к вершинам рестлинга"><img src="covers/booker-royalty.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span></a>
+ <a class="cover" href="booker-royalty/" aria-label="Букер Т — Моё восхождение к вершинам рестлинга"><img src="covers/booker-royalty.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span><span class="badge stalled">Заброшено</span></a>
  <div class="meta"><p class="author">Букер Т</p><h3><a href="booker-royalty/">Моё восхождение к вершинам рестлинга</a></h3>
  <p class="tag">От падения WCW до Зала славы WWE.</p>
  <p class="orig"><i lang="en">Booker T: My Rise to Wrestling Royalty</i> · 2015</p>

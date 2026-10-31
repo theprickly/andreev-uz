@@ -401,7 +401,7 @@
   {
    "name": "Словарь · PPV (ППВ)",
    "date": "2026-10-31",
-   "commit": null,
+   "commit": "2ae5b92d542107f806e282c7ea4a320d5c1afcad",
    "counts": {
     "словарь": 26
    },

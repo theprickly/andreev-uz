@@ -399,3 +399,6 @@ legend{font-size:14px;color:#d6d6da;margin-bottom:8px}
 @media (max-width:520px){.chip-all{display:none}}
 
 @media (max-width:380px){.reader-header .vs-brand span{display:none}.reader-header .icon-button{width:34px;height:34px}.reader-tools{gap:0}}
+
+/* офлайн-кнопка книги */
+.off-chip{cursor:pointer}.off-chip[data-st=busy]{background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 50%,transparent) var(--p,0%),transparent 0);pointer-events:none}.off-chip[data-st=ready]{color:#7dd39a;border-color:#7dd39a66}.off-chip[data-st=update]{color:var(--accent-hi)}.off-chip[data-st=error]{color:#ff8a80}

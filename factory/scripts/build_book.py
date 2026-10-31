@@ -44,11 +44,12 @@ E = lambda s: html.escape(str(s), quote=True)
 
 shutil.rmtree(dst, ignore_errors=True)
 (dst / 'assets' / 'icons').mkdir(parents=True)
-for f in ('app.js', 'pwa.js', 'sw.js', 'style.css'): shutil.copy(T / f, dst / f)
+for f in ('app.js', 'style.css'): shutil.copy(T / f, dst / f)
+PWA_V = hashlib.sha256((T / 'pwa.js').read_bytes()).hexdigest()[:12]      # общий /books/pwa.js; версия — в адресе
 import subprocess
 _ESB = pathlib.Path('/home/claude/tools/node_modules/.bin/esbuild')
 if _ESB.exists():     # минификация (без неё сайт работает так же, только тяжелее)
-    for f in ('app.js', 'pwa.js', 'style.css'):
+    for f in ('app.js', 'style.css'):
         subprocess.run([str(_ESB), str(dst / f), '--minify', '--allow-overwrite', f'--outfile={dst / f}', '--log-level=error'], check=True)
 shutil.copytree(T / 'assets' / 'fonts', dst / 'assets' / 'fonts')
 shutil.copy(T / 'assets' / 'vsplanet-logo.png', dst / 'assets')
@@ -64,13 +65,13 @@ cov = Image.open(src / 'assets' / 'cover.jpg').convert('RGB')
 def icon(size, frac, name):
     bg = Image.new('RGB', (size, size), (0, 0, 0)); h = round(size * frac); w = round(h * cov.width / cov.height)
     bg.paste(cov.resize((w, h), Image.LANCZOS), ((size - w) // 2, (size - h) // 2)); bg.save(dst / 'assets' / 'icons' / name, optimize=True)
-for size, frac, name in [(512, 1, 'cover-icon-512.png'), (192, 1, 'cover-icon-192.png'), (512, .8, 'cover-icon-maskable-512.png'), (180, 1, 'cover-apple-touch.png'), (32, 1, 'cover-favicon-32.png')]:
+for size, frac, name in [(192, 1, 'cover-icon-192.png'), (32, 1, 'cover-favicon-32.png')]:
     icon(size, frac, name)
 
 # книга и EPUB
 h12 = lambda b: hashlib.sha256(b).hexdigest()[:12]
 bj = json.dumps(book, ensure_ascii=False, separators=(',', ':')).encode()
-book_file = f'book-{h12(bj)}.json'; (dst / book_file).write_bytes(bj); (dst / 'book.json').write_bytes(bj)
+book_file = f'book-{h12(bj)}.json'; (dst / book_file).write_bytes(bj)
 tmp_epub = dst / 'tmp.epub'
 INC = bool(cfg.get('incomplete'))      # у неполных книг нет EPUB и PWA
 if INC:
@@ -125,13 +126,14 @@ R = {'JSONLD': '<script type="application/ld+json">' + json.dumps(ld, ensure_asc
      'MEMORIAL': memorial, 'H1': E(cfg['title'] + ' — ' + cfg.get('subtitle', cfg['author'])), 'EYEBROW': E(cfg['eyebrow']), 'LEAD': E(cfg['lead']),
      'CREDIT_HTML': credit_html, 'ORIGINAL_HTML': original_html, 'INCOMPLETE_HTML': incomplete_html, 'RENDER_ALT': 'Книга «' + E(cfg['title']) + '»', 'TITLE': E(cfg['title']), 'QUOTE_SECTION': quote_section,
      'LETTER_SECTION': letter_section, 'IMPRINT': imprint, 'EPUB': epub_file, 'EPUB_NAME': E(f'{cfg["author"]} — {cfg["title"]}.epub'),
-     'EPUB_META': f'{epub_mb} МБ' + (' · с иллюстрациями' if photos else ''), 'ABOUT': about}
+     'EPUB_META': f'{epub_mb} МБ' + (' · с иллюстрациями' if photos else ''), 'ABOUT': about, 'SLUG': cfg['slug'], 'PWA_V': PWA_V,
+     'OFFLINE_MB': f"{sum(f.stat().st_size for f in dst.rglob('*') if f.is_file() and f.suffix not in ('.epub', '.txt')) / 1048576:.1f}".replace('.', ',')}
 page = (T / 'index.tpl.html').read_text()
 for k, v in R.items(): page = page.replace('{{' + k + '}}', v)
 assert '{{' not in page, re.findall(r'\{\{\w+\}\}', page)
 if INC:
     n0 = len(page)
-    page = re.sub(r'<link rel="manifest"[^>]*>|<link rel="apple-touch-icon"[^>]*>|<script src="pwa.js"[^>]*></script>', '', page)
+    page = re.sub(r'<link rel="manifest"[^>]*>|<link rel="apple-touch-icon"[^>]*>|<script src="\.\./pwa\.js[^"]*"[^>]*></script>', '', page)
     page = re.sub(r'<section id="formats".*?</section>\s*', '', page, flags=re.S)
     page = re.sub(r'<div class="app-settings">.*?</p></div>', '', page, flags=re.S)
     page = re.sub(r'<dialog id="install-dialog".*?</dialog>\s*', '', page, flags=re.S)
@@ -139,12 +141,6 @@ if INC:
         for m in re.finditer(w, page, re.I): print('REMNANT', w, page[max(0,m.start()-80):m.end()+60].replace('\n',' '))
 if not photos: page = page.replace('<a href="#album">Альбом</a>', '')
 (dst / 'index.html').write_text(page)
-if not INC: (dst / 'manifest.webmanifest').write_text(json.dumps({'id': './', 'name': f'{cfg["title"]} · VSplanet Книги', 'short_name': cfg['short_name'], 'description': cfg['description'],
-    'lang': 'ru', 'start_url': './', 'scope': './', 'display': 'standalone', 'background_color': TH['bg'], 'theme_color': TH['bg'],
-    'icons': [{'src': 'assets/icons/cover-icon-192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'},
-              {'src': 'assets/icons/cover-icon-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
-              {'src': 'assets/icons/cover-icon-maskable-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'}]}, ensure_ascii=False, indent=1))
-
 # превью для соцсетей
 try:
     import base64
@@ -165,22 +161,19 @@ except Exception as e:
 # версии файлов (кэш) + офлайн-список
 page = (dst / 'index.html').read_text()
 rel = []
-for name in ('style.css', 'app.js') if INC else ('style.css', 'app.js', 'pwa.js', 'manifest.webmanifest'):
+for name in ('style.css', 'app.js'):
     data = (dst / name).read_bytes(); stem, suf = name.rsplit('.', 1); target = f'{stem}-{h12(data)}.{suf}'
     (dst / target).write_bytes(data); page = page.replace(f'"{name}"', f'"{target}"'); rel.append(target)
 (dst / 'index.html').write_text(page)
-assets = ['./', 'index.html', 'book.json', book_file] + ([] if INC else [epub_file]) + rel
+assets = ['./', book_file] + rel
 for d in ('assets/fonts', 'assets/icons', 'assets/images'):
     assets += sorted(f'{d}/{f}' for f in os.listdir(dst / d) if not f.endswith('.txt'))
 assets += ['assets/cover.jpg', 'assets/book-render.webp', 'assets/vsplanet-logo.png']
-sw = (dst / 'sw.js').read_text()
-sw = re.sub(r'const ASSETS=\[.*?\];', 'const ASSETS=' + json.dumps(assets, ensure_ascii=False) + ';', sw)
-sw = re.sub(r"const CACHE='[^']+';", f"const CACHE='book-{cfg['slug']}-{h12(page.encode() + bj)}';", sw)
-sw = sw.replace("key.startsWith('eddie-book-')", f"key.startsWith('book-{cfg['slug']}-')")
-(dst / 'sw.js').write_text(sw)
-if INC:   # сервис-воркер-«уборщик»: снимает ранее установленный офлайн-кэш
-    (dst / 'sw.js').write_text("self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.map(x=>caches.delete(x)))).then(()=>self.registration.unregister())));\n")
-for f in ('style.css', 'app.js', 'pwa.js', 'manifest.webmanifest'): (dst / f).unlink(missing_ok=True)
+sizes = [(a, os.path.getsize(dst / ('index.html' if a == './' else a))) for a in assets]
+json.dump({'v': h12(page.encode() + bj), 'bytes': sum(x[1] for x in sizes), 'files': [[a, n] for a, n in sizes]}, open(dst / 'files.json', 'w'), ensure_ascii=False, separators=(',', ':'))
+# сервис-воркер-«уборщик»: снимает кэши и регистрации прежних PWA отдельных книг (теперь одно приложение на /books/)
+(dst / 'sw.js').write_text("self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil((async()=>{for(const k of await caches.keys())if(k.startsWith('book-')||k.startsWith('eddie-book-'))await caches.delete(k);await self.registration.unregister();for(const c of await self.clients.matchAll())c.navigate(c.url)})()));\n")
+for f in ('style.css', 'app.js'): (dst / f).unlink(missing_ok=True)
 
 # статические страницы глав и sitemap
 ch = book['chapters']; css = [r for r in rel if r.startswith('style-')][0]

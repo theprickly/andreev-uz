@@ -45,6 +45,7 @@ for slug in SLUGS:
     cfg = json.loads(re.search(r'window\.BOOK_CONFIG=(\{.*?\});?</script>', page, re.S)[1])
     data = json.loads((d / cfg.get('bookFile', 'book.json').split('?')[0]).read_text()) if (d / cfg.get('bookFile', '')).is_file() else \
         json.loads(sorted(d.glob('book-*.json'))[0].read_text())
+    _fj = d / 'files.json'; offline_bytes = json.loads(_fj.read_text())['bytes'] if _fj.exists() else 0
     qs = _q.extract(slug, data)
     words = [c.get('words') or len(re.sub(r'<[^>]+>', ' ', c['html']).split()) for c in data['chapters']]
     m = re.search(r'<style id="theme">[^<]*--accent:(#[0-9a-fA-F]{6})', page)
@@ -56,7 +57,7 @@ for slug in SLUGS:
         im.save(OUT / 'covers' / f'{slug}.webp', quality=78, method=6)
     books.append({'q': qs, 'slug': slug, 'key': cfg['storageKey'], 'title': cfg['title'], 'subtitle': cfg.get('subtitle', ''),
                   'author': cfg['author'], 'credit': cfg['credit'], 'translator': cfg.get('translator'), 'accent': accent, 'words': words,
-                  'chapters': len(words), 'epub': f'{slug}/{epub}' if epub else None, 'orig': cfg.get('original') or {}, 'inc': cfg.get('incomplete'), 'era': ERAS.get(slug), 'tag': TAGLINE.get(slug, '')})
+                  'chapters': len(words), 'bytes': offline_bytes, 'epub': f'{slug}/{epub}' if epub else None, 'orig': cfg.get('original') or {}, 'inc': cfg.get('incomplete'), 'era': ERAS.get(slug), 'tag': TAGLINE.get(slug, '')})
 
 books.sort(key=lambda b: ((b['orig'] or {}).get('year', 9999), b['slug']))
 EAGER = {b['slug'] for b in books if not b['inc']}.intersection({b['slug'] for b in books[:4]})
@@ -76,6 +77,12 @@ def badge(b):
     return '<span class="badge ' + b['inc']['kind'] + '">' + ('Переводится' if b['inc']['kind'] == 'ongoing' else 'Заброшено') + '</span>'
 
 
+def offline_btn(b):
+    if b['inc']: return ''
+    return (f'<button class="off" data-offline="{b["slug"]}" aria-label="Скачать книгу для чтения без сети" title="Скачать для офлайн"><svg class="dl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-4-4 4 4 4-4M5 20h14"/></svg>'
+            '<svg class="ok" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button>')
+
+
 def card(b):
     mins = round(sum(b['words']) / 180)
     return f'''<article class="book" data-slug="{b['slug']}" style="--a:{b['accent']}">
@@ -86,7 +93,7 @@ def card(b):
  {f'<p class="inc {b["inc"]["kind"]}"><i></i>{E(b["inc"]["label"])}</p>' if b['inc'] else ''}
  <p class="facts">{b['chapters']} {plural(b['chapters'], 'раздел', 'раздела', 'разделов')} · ≈{round(mins / 60)} ч чтения</p>
  <div class="progress" hidden><span><i></i></span><b></b></div>
- <div class="actions"><a class="btn" href="{b['slug']}/">Читать</a>{f'<a class="ghost" href="{b["epub"]}" download>EPUB</a>' if b['epub'] else ''}</div></div>
+ <div class="actions"><a class="btn" href="{b['slug']}/">Читать</a>{offline_btn(b)}{f'<a class="ghost" href="{b["epub"]}" download>EPUB</a>' if b['epub'] else ''}</div></div>
 </article>'''
 
 y0, y1 = 1940, 2010
@@ -105,11 +112,31 @@ ld = {'@context': 'https://schema.org', '@type': 'CollectionPage', 'name': 'VSpl
 QUOTES = [dict(s=b['slug'], **x) for b in books for x in b['q']]
 js_books = [{k: b[k] for k in ('slug', 'key', 'title', 'author', 'accent', 'words')} for b in books]
 
+
+# ---- единое PWA «VSplanet Книги» (scope /books/) ----
+import hashlib, subprocess
+(OUT / 'icons').mkdir(exist_ok=True)
+_logo = Image.open(T / 'assets' / 'vsplanet-logo.png').convert('RGBA')
+def _icon(size, frac, name):
+    bg = Image.new('RGBA', (size, size), (3, 6, 12, 255)); w = round(size * frac); h = round(w * _logo.height / _logo.width)
+    bg.alpha_composite(_logo.resize((w, h), Image.LANCZOS), ((size - w) // 2, (size - h) // 2)); bg.convert('RGB').save(OUT / 'icons' / name, optimize=True)
+for _sz, _fr, _nm in [(512, .66, 'app-512.png'), (192, .66, 'app-192.png'), (512, .5, 'app-maskable-512.png'), (180, .66, 'app-180.png')]: _icon(_sz, _fr, _nm)
+_pwa_src = (T / 'pwa.js').read_bytes(); PWA_V = hashlib.sha256(_pwa_src).hexdigest()[:12]
+shutil.copy(T / 'pwa.js', OUT / 'pwa.js')
+_ESB = pathlib.Path('/home/claude/tools/node_modules/.bin/esbuild')
+if _ESB.exists(): subprocess.run([str(_ESB), str(OUT / 'pwa.js'), '--minify', '--allow-overwrite', f'--outfile={OUT / "pwa.js"}', '--log-level=error'], check=True)
+(OUT / 'manifest.webmanifest').write_text(json.dumps({'id': '/books/', 'name': 'VSplanet Книги', 'short_name': 'Книги', 'description': 'Переводы автобиографий рестлеров: читалка с закладками и офлайн-режимом',
+    'lang': 'ru', 'start_url': '/books/', 'scope': '/books/', 'display': 'standalone', 'background_color': '#03060c', 'theme_color': '#03060c',
+    'icons': [{'src': 'icons/app-192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'}, {'src': 'icons/app-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
+              {'src': 'icons/app-maskable-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'}]}, ensure_ascii=False, indent=1))
+_shell = ['./', f'pwa.js?v={PWA_V}', 'vsplanet-logo.png', 'geologica-cyr.woff2', 'geologica-lat.woff2', 'icons/app-192.png'] + [f'covers/{b["slug"]}.webp' for b in books]
+(OUT / 'sw.js').write_text((T / 'sw-app.js').read_text().replace('%SHELL%', json.dumps(_shell)).replace('%SHELL_V%', hashlib.sha256((PAGE_SEED := json.dumps(_shell) + PWA_V + (T / 'sw-app.js').read_text()).encode()).hexdigest()[:12]))
+
 PAGE = f'''<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>VSplanet Книги — автобиографии рестлеров на русском</title>
 <meta name="description" content="{len(books)} автобиографий звёзд рестлинга в переводах VSplanet.net: Эдди Герреро, Брет Харт, Крис Джерико, Брок Леснар и другие. Читайте онлайн без регистрации или скачайте EPUB.">
-<link rel="canonical" href="{BASE}"><meta name="theme-color" content="#03060c">
+<link rel="canonical" href="{BASE}"><meta name="theme-color" content="#03060c"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/app-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Книги">
 <meta property="og:type" content="website"><meta property="og:url" content="{BASE}"><meta property="og:title" content="VSplanet Книги — автобиографии рестлеров на русском">
 <meta property="og:description" content="{len(books)} книг, ≈{hours} часов чтения. Онлайн и в EPUB."><meta property="og:image" content="{BASE}og.jpg"><meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="vsplanet-logo.png"><link rel="preload" href="geologica-cyr.woff2" as="font" type="font/woff2" crossorigin>
@@ -206,6 +233,15 @@ footer.credits{{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px
 .cr-end{{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-between;margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:13px}}.cr-fin{{color:#7fa6d4;font-style:italic}}
 @media (max-width:860px){{.cr-grid{{grid-template-columns:1fr;gap:28px}}}}
 @media (max-width:640px){{.qband{{grid-template-columns:1fr;padding:20px 18px}}.qband figcaption{{flex-wrap:wrap}}.qband cite{{max-width:none;flex:1}}.qband .go{{width:100%;justify-content:center}}.qshuf{{display:none}}}}
+/* офлайн: кнопка ↓ на обложке и строка «На устройстве» */
+.actions{{align-items:center}}
+.off{{position:relative;flex:none;display:inline-grid;place-items:center;width:40px;height:40px;padding:0;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--mute);cursor:pointer}}
+.off svg{{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}}.off .ok{{display:none}}.off:hover{{color:var(--text);border-color:#ffffff40}}
+.off[data-st=busy]{{color:#7fa6d4;border-color:transparent;background:conic-gradient(#7fa6d4 var(--p,0%),#ffffff1c 0);pointer-events:none}}.off[data-st=busy]::before{{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--bg)}}.off[data-st=busy] svg{{position:relative}}
+.off[data-st=ready]{{color:#7dd39a;border-color:#7dd39a66}}.off[data-st=ready] .dl{{display:none}}.off[data-st=ready] .ok{{display:block}}.off[data-st=update]{{color:#a5c3e6;border-color:#7fa6d4}}.off[data-st=error]{{color:#ff8a80;border-color:#ff8a8066}}
+.mylib{{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;margin:0 0 22px;padding:12px 16px;border-radius:14px;background:var(--s1);border:1px solid var(--line);font-size:14px;color:var(--mute)}}.mylib-b{{display:flex;flex-wrap:wrap;gap:8px}}.mylib .ghost{{cursor:pointer;background:none;font-family:inherit}}.mylib [hidden]{{display:none}}
+#toast{{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);max-width:min(92vw,460px);padding:12px 18px;border-radius:14px;background:#1b2436;color:#f2f4f8;font-size:14px;line-height:1.45;opacity:0;pointer-events:none;transition:.25s;z-index:50}}#toast.show{{opacity:1;transform:translateX(-50%)}}
+@media (max-width:640px){{.actions .ghost{{display:none}}.mylib .ghost{{display:inline-flex}}}}
 @media (prefers-reduced-motion:reduce){{*{{transition:none!important}}}}
 </style></head><body>
 <div class="glow"></div>
@@ -217,6 +253,7 @@ footer.credits{{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px
 <ul class="stats"><li><b>{len(full)}</b><span>{plural(len(full), 'книга', 'книги', 'книг')} целиком</span></li><li><b>{len(partial)}</b><span>{plural(len(partial), 'неполная', 'неполные', 'неполных')}</span></li><li><b>{sum(b['chapters'] for b in books)}</b><span>глав и разделов</span></li><li><b>≈{hours} ч</b><span>чтения</span></li><li><b>EPUB</b><span>для любой читалки</span></li></ul>
 <div id="resume"></div></div>
 <section id="shelf" aria-labelledby="shelf-h"><h2 id="shelf-h">Полка</h2><p class="sub">Прогресс сохраняется в вашем браузере и подтягивается сюда сам.</p>
+<div class="mylib" id="mylib"><span class="mylib-t" data-offline-sum data-empty="Нажмите ↓ на обложке — книга сохранится на устройстве и откроется без сети.">Нажмите ↓ на обложке — книга сохранится на устройстве и откроется без сети.</span><span class="mylib-b"><button class="ghost" data-offline-all>Скачать все полные · ≈{round(sum(b['bytes'] for b in full) / 1048576)} МБ</button><button class="ghost" data-offline-clear hidden>Удалить скачанное</button><button class="ghost install-trigger" data-install-auto hidden>Установить приложение</button></span></div>
 <div class="filters" id="filters" hidden><button aria-pressed="true" data-f="all">Все</button><button aria-pressed="false" data-f="reading">Читаю</button><button aria-pressed="false" data-f="new">Не начато</button><button aria-pressed="false" data-f="done">Прочитано</button></div>
 <div class="grid">
 {chr(10).join(card(b) for b in full)}
@@ -287,6 +324,7 @@ if(Object.keys(st).length){{const f=document.getElementById('filters');f.hidden=
   f.addEventListener('click',e=>{{const k=e.target.dataset.f;if(!k)return;f.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===e.target)));
     document.querySelectorAll('.book').forEach(el=>el.hidden=k!=='all'&&el.dataset.state!==k);}});}}
 </script>
+<script src="pwa.js?v={PWA_V}" defer></script>
 </body></html>'''
 (OUT / 'index.html').write_text(PAGE)
 (OUT / 'sitemap.xml').write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{BASE}</loc></url></urlset>\n')

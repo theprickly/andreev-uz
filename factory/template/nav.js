@@ -59,3 +59,25 @@
  }
  tick();
 })();
+/* iOS 27: прозрачность стекла, сворачивание заголовка, сжатие нижней панели при прокрутке */
+(()=>{
+ const root=document.documentElement;
+ const apply=v=>root.style.setProperty('--glass-a',String(+(0.96-v/100*0.62).toFixed(2)));
+ let sv=null;try{sv=localStorage.getItem('vs-glass')}catch(e){}
+ if(sv!==null&&sv!=='')apply(+sv);
+ const sl=document.getElementById('glass');
+ if(sl){if(sv!==null&&sv!=='')sl.value=sv;sl.addEventListener('input',()=>{apply(+sl.value);try{localStorage.setItem('vs-glass',sl.value)}catch(e){}});}
+ const nb=document.querySelector('[data-navbar]'),bar=document.querySelector('[data-tabbar]'),lt=document.querySelector('[data-ltitle]');
+ if(nb&&lt&&'IntersectionObserver' in window){new IntersectionObserver(([e])=>nb.classList.toggle('on',!e.isIntersecting),{rootMargin:'-56px 0px 0px 0px'}).observe(lt);}
+ else if(nb)nb.classList.add('on');
+ if(!bar)return;
+ let y=scrollY,min=document.body.classList.contains('q-body'),acc=0;
+ const set=m=>{if(m===min&&bar.classList.contains('is-min')===m)return;min=m;bar.classList.toggle('is-min',m);clearTimeout(set.t);set.t=setTimeout(()=>dispatchEvent(new Event('resize')),480);};
+ if(min)set(true);
+ addEventListener('scroll',()=>{const n=scrollY,d=n-y;y=n;if(document.body.classList.contains('q-body'))return;
+  if(n<40){set(false);acc=0;return;}
+  acc=Math.sign(d)===Math.sign(acc)?acc+d:d;
+  if(acc>28)set(true);else if(acc<-18)set(false);},{passive:true});
+ bar.addEventListener('pointerdown',()=>{if(bar.classList.contains('is-min')&&!document.body.classList.contains('q-body'))set(false);},{passive:true});
+ if(document.body.classList.contains('q-body'))bar.addEventListener('click',e=>{if(bar.classList.contains('is-min')&&!e.target.closest('.tb-tab,.tb-fab')){}},{passive:true});
+})();

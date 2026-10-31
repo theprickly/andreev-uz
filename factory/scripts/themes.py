@@ -18,8 +18,7 @@ THEMES = {
 
 
 def resolve(cfg):
-    th = cfg.get('theme', 'vs')
-    own = THEMES.get(th, {}) if isinstance(th, str) else th
+    own = THEMES['vs']          # v1.2: единый цвет интерфейса у всех книг, цвет обложки не красит кнопки
     res = {**THEMES['vs'], **own}
     if own is not THEMES['vs'] and 'accent_fill' not in own: res.pop('accent_fill', None)   # градиент — только у своей темы
     return res

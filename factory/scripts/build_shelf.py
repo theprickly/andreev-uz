@@ -279,7 +279,7 @@ SHELF = f"""<div data-install-banner></div>
 <div class="grid">
 {chr(10).join(card(b) for b in full)}
 </div></section>
-{eras(full, 'О каких годах рассказывает каждая книга — читайте историю рестлинга по порядку.')}"""
+"""
 
 UNF = f"""<h1 class="ltitle" data-ltitle>В работе</h1>
 <p class="lsub">Книги, которые переведены не до конца или переводятся прямо сейчас. Читать можно уже то, что есть.</p>
@@ -290,7 +290,7 @@ UNF = f"""<h1 class="ltitle" data-ltitle>В работе</h1>
 <section id="unfinished" aria-label="Неполные книги"><div class="grid">
 {chr(10).join(card(b) for b in partial)}
 </div></section>
-{eras(partial, 'О каких годах рассказывают эти книги — они ждут продолжения.')}"""
+"""
 
 QPAGE = f"""<div class="qbg" id="qbg" aria-hidden="true"></div><div class="qshade" aria-hidden="true"></div>
 <main class="qmain" aria-label="Карусель цитат"><div class="qtrack" id="qtrack" tabindex="0"></div>

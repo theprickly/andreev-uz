@@ -4,7 +4,7 @@
 *{box-sizing:border-box}[hidden]{display:none!important}html{-webkit-text-size-adjust:100%;scroll-padding-top:96px}
 body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.5 G,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:clip;min-height:100dvh}
 a{color:inherit;text-decoration:none}img{display:block;max-width:100%}button{font-family:inherit}
-.wrap{width:min(1180px,100% - 32px);margin:0 auto;padding-top:calc(84px + env(safe-area-inset-top))}
+.wrap{width:min(1180px,100% - 32px);margin:0 auto;padding-top:calc(84px + env(safe-area-inset-top));padding-bottom:calc(118px + env(safe-area-inset-bottom))}
 .glow{position:absolute;inset:-10% 0 auto;height:640px;background:radial-gradient(60% 55% at 75% 15%,#05246a80,transparent 70%),radial-gradient(40% 45% at 8% 5%,#68a0d922,transparent 70%);pointer-events:none;z-index:-1}
 /* большой заголовок (при прокрутке превращается в заголовок панели) */
 .ltitle{margin:10px 0 4px;font-size:clamp(34px,6vw,54px);line-height:1.05;letter-spacing:-.04em;font-weight:800}

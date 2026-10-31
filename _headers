@@ -1,0 +1,18 @@
+/books/shared/*
+  Cache-Control: public, max-age=31536000, immutable
+/books/*/text/*
+  Cache-Control: public, max-age=31536000, immutable
+/books/*/book-*.json
+  Cache-Control: public, max-age=31536000, immutable
+/books/covers/*
+  Cache-Control: public, max-age=2592000
+/books/icons/*
+  Cache-Control: public, max-age=2592000
+/books/*/assets/*
+  Cache-Control: public, max-age=2592000
+/books/sw.js
+  Cache-Control: no-cache
+/books/*/files.json
+  Cache-Control: no-cache
+/books/version.json
+  Cache-Control: no-cache

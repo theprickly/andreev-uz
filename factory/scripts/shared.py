@@ -25,4 +25,8 @@ def build(books_dir):
 def version():
     import json
     v = json.loads((T.parent / 'VERSION.json').read_text())
-    return v['version'], v['name']
+    return v['version'], v.get('name', '')
+
+def version_label():
+    n, t = version()
+    return n + (f' «{t}»' if t else '')

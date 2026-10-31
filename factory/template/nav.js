@@ -29,6 +29,7 @@
  const sc=tabs.filter(t=>t.dataset.scroll);let cur=null;
  function update(){
   if(!pill.offsetWidth)return;
+  if(!sc.length){const f=tabs.find(t=>t.hasAttribute('data-cur'));if(f&&cur!==f){cur=f;mark(f);}return;}
   const land=$('#landing'),pg=$('#page');
   if((land&&land.hidden)&&(pg&&!pg.hidden)){mark(null);return;}
   let a=sc[0]||null;const line=innerHeight*.45;

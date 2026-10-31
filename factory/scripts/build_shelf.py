@@ -127,166 +127,74 @@ if _ESB.exists(): subprocess.run([str(_ESB), str(OUT / 'pwa.js'), '--minify', '-
     'lang': 'ru', 'start_url': '/books/', 'scope': '/books/', 'display': 'standalone', 'background_color': '#03060c', 'theme_color': '#03060c',
     'icons': [{'src': 'icons/app-192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'}, {'src': 'icons/app-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
               {'src': 'icons/app-maskable-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'}]}, ensure_ascii=False, indent=1))
-_shell = ['./', f'pwa.js?v={PWA_V}', 'shared/vsplanet-logo.png', 'shared/fonts/geologica-cyr.woff2', 'shared/fonts/geologica-lat.woff2', 'shared/fonts/literata-cyrillic-normal.woff2', 'shared/fonts/literata-cyrillic-italic.woff2', 'shared/fonts/literata-latin-normal.woff2', 'shared/fonts/literata-latin-italic.woff2', f'shared/{SH[2]}', f'shared/{SH[3]}', 'icons/app-192.png'] + [f'covers/{b["slug"]}.webp' for b in books]
-(OUT / 'sw.js').write_text((T / 'sw-app.js').read_text().replace('%SHELL%', json.dumps(_shell)).replace('%SHELL_V%', hashlib.sha256((PAGE_SEED := json.dumps(_shell) + PWA_V + (T / 'sw-app.js').read_text()).encode()).hexdigest()[:12]))
+# ---- общий CSS полки: один файл на все страницы ----
+_ESB = pathlib.Path('/home/claude/tools/node_modules/.bin/esbuild')
+_css = (T / 'shelf.css').read_text()
+if _ESB.exists():
+    _css = subprocess.run([str(_ESB), '--minify', '--loader=css'], input=_css, capture_output=True, text=True, check=True).stdout
+SHELF_CSS = 'shelf-' + hashlib.sha256(_css.encode()).hexdigest()[:12] + '.css'
+(OUT / 'shared' / SHELF_CSS).write_text(_css)
 
-PAGE = f'''<!doctype html>
+def rel(h, P):
+    """Страницы второго уровня (/books/shelf/…): относительные ссылки получают ../ """
+    if not P: return h
+    return re.sub(r'(?P<a>\b(?:href|src)=")(?!https?:|#|/|\.\./|data:|mailto:|tel:|javascript:)(?P<v>[^"]*)"',
+                  lambda m: m['a'] + ('../' if m['v'] in ('./', '') else '../' + m['v']) + '"', h)
+
+I_HOME = '<path d="M4 11.5 12 5l8 6.5V19a1 1 0 0 1-1 1h-4v-5h-6v5H5a1 1 0 0 1-1-1z"/>'
+I_BOOKS = '<path d="M5 4h4v16H5zM11 4h4v16h-4z"/><path d="m17 6.5 3.7-1 2 14-3.7 1z" transform="translate(-1.5 0)"/>'
+I_QUOTE = '<path d="M7 7h4v5c0 3-1.5 4.7-4 5.5M14 7h4v5c0 3-1.5 4.7-4 5.5"/>'
+I_WORK = '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>'
+FAB = '<button class="tb-fab install-trigger" type="button" data-install-auto hidden aria-label="Установить приложение"><svg viewBox="0 0 24 24" aria-hidden="true" style="fill:none"><path d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 20h14"/></svg></button>'
+def tabbar(cur):
+    tabs = [('home', './', 'Главная', I_HOME), ('shelf', 'shelf/', 'Полка', I_BOOKS), ('quotes', 'quotes/', 'Цитаты', I_QUOTE), ('unfinished', 'unfinished/', 'В работе', I_WORK)]
+    return ('<nav class="tabbar" data-tabbar data-home="./" aria-label="Разделы"><div class="tb-pill"><i class="tb-ind"></i>' + ''.join(
+        f'<a class="tb-tab" href="{h}"{" data-cur" if k == cur else ""}><svg viewBox="0 0 24 24" aria-hidden="true">{ic}</svg><span>{t}</span></a>' for k, h, t, ic in tabs) + '</div>' + FAB + '</nav>')
+
+def header(cur):
+    chips = ''.join(f'<a class="chip" href="{h}"{" aria-current=page" if k == cur else ""}>{t}</a>' for k, h, t in [('shelf', 'shelf/', 'Полка'), ('quotes', 'quotes/', 'Цитаты'), ('unfinished', 'unfinished/', 'Неполные')])
+    return ('<header class="top"><a class="brand" href="./"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a>'
+            f'<span class="nav">{chips}</span></header>')
+
+BACK = '<a class="back" href="./"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Главная</a>'
+MINI_FOOT = f'<footer class="credits mini"><div class="cr-end"><span>Сайт собрал Никита Андреев, 2026</span><span class="app-ver">Версия {shared.version_label()}</span></div></footer>'
+
+def page(path, title, desc, main, js, cur, extra=''):
+    P = '../' if path else ''
+    h = f"""<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>VSplanet Книги — автобиографии рестлеров на русском</title>
-<meta name="description" content="{len(books)} автобиографий звёзд рестлинга в переводах VSplanet.net: Эдди Герреро, Брет Харт, Крис Джерико, Брок Леснар и другие. Читайте онлайн без регистрации или скачайте EPUB.">
-<link rel="canonical" href="{BASE}"><meta name="theme-color" content="#03060c"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/app-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Книги">
-<meta property="og:type" content="website"><meta property="og:url" content="{BASE}"><meta property="og:title" content="VSplanet Книги — автобиографии рестлеров на русском">
-<meta property="og:description" content="{len(books)} книг, ≈{hours} часов чтения. Онлайн и в EPUB."><meta property="og:image" content="{BASE}og.jpg"><meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="shared/vsplanet-logo.png"><link rel="preload" href="shared/fonts/geologica-cyr.woff2" as="font" type="font/woff2" crossorigin>
-<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
-<style>
-@font-face{{font-family:G;src:url(shared/fonts/geologica-cyr.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0400-045F,U+2116}}
-@font-face{{font-family:G;src:url(shared/fonts/geologica-lat.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+2000-206F,U+20AC}}
-:root{{--bg:#03060c;--s1:#0b111d;--s2:#121a2a;--line:#ffffff14;--text:#f2f4f8;--mute:#8e98a8;--steel:#7fa6d4;--fill:linear-gradient(180deg,#c3d8ef 0%,#8fb2db 45%,#5f87b9 100%);color-scheme:dark}}
-*{{box-sizing:border-box}}[hidden]{{display:none!important}}html{{-webkit-text-size-adjust:100%}}
-body{{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.5 G,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}}
-a{{color:inherit;text-decoration:none}}img{{display:block;max-width:100%}}
-.wrap{{width:min(1180px,100% - 32px);margin:0 auto}}
-.glow{{position:absolute;inset:-20% 0 auto;height:720px;background:radial-gradient(60% 60% at 70% 30%,#2f5b8f40,transparent 70%);pointer-events:none;z-index:-1}}
-header.top{{display:flex;align-items:center;justify-content:space-between;padding:22px 0}}
-.brand{{display:flex;align-items:center;gap:12px}}.brand img{{width:46px;height:auto}}.brand b{{display:block;font-size:19px;font-weight:700;letter-spacing:-.02em;line-height:1}}.brand small{{display:block;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;margin-top:3px}}
-.chip{{display:inline-flex;align-items:center;height:36px;padding:0 15px;border-radius:999px;font-size:14px;font-weight:500;background:#ffffff0f;border:1px solid var(--line)}}
-.hero{{padding:56px 0 28px}}
-.eyebrow{{color:var(--steel);font-weight:600;font-size:14px;letter-spacing:.02em;margin:0 0 14px}}
-h1{{font-size:clamp(36px,6vw,72px);line-height:.98;letter-spacing:-.045em;font-weight:800;margin:0;max-width:13ch}}
-.lead{{color:#c9d0db;font-size:clamp(17px,2vw,20px);max-width:56ch;margin:20px 0 0}}
-.stats{{display:flex;flex-wrap:wrap;gap:10px 28px;margin:28px 0 0;padding:0;list-style:none}}.stats b{{display:block;font-size:28px;font-weight:700;letter-spacing:-.03em}}.stats span{{color:var(--mute);font-size:14px}}
-.resume{{display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;margin:36px 0 0;padding:16px 20px 16px 16px;border-radius:22px;background:linear-gradient(110deg,color-mix(in srgb,var(--a) 22%,var(--s1)),var(--s1) 60%);border:1px solid color-mix(in srgb,var(--a) 35%,transparent)}}
-.resume img{{width:64px;border-radius:6px;box-shadow:0 10px 30px #0008}}.resume small{{color:var(--mute);font-size:13px}}.resume strong{{display:block;font-size:19px;letter-spacing:-.02em;line-height:1.2;margin:2px 0}}.resume p{{margin:0;color:#c9d0db;font-size:14px}}
-.btn{{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 18px;border-radius:999px;font-weight:600;font-size:14px;color:#06101f;background:var(--fill);white-space:nowrap}}
-.book .btn{{background:var(--a);color:#fff;text-shadow:0 1px 1px #0004}}.ghost{{display:inline-flex;align-items:center;height:40px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--mute);border:1px solid var(--line)}}.ghost:hover{{color:var(--text)}}
-section{{padding:48px 0 0}}h2{{font-size:clamp(24px,3vw,32px);line-height:1.15;letter-spacing:-.03em;margin:0 0 6px}}.sub{{color:var(--mute);margin:0 0 24px;font-size:15px}}
-.filters{{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 24px}}.filters button{{font:inherit;font-size:14px;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--mute);cursor:pointer}}.filters button[aria-pressed=true]{{background:#ffffff14;color:var(--text);border-color:#ffffff30}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:40px 28px}}
-.book{{display:flex;flex-direction:column;gap:16px}}.book[hidden]{{display:none}}
-.cover{{position:relative;display:block;perspective:900px}}.cover img{{width:100%;height:auto;aspect-ratio:2/3;object-fit:cover;border-radius:4px 10px 10px 4px;box-shadow:0 24px 50px -18px #000,0 0 0 1px #ffffff12,inset 0 0 0 1px #fff2;transition:transform .5s cubic-bezier(.2,.7,.2,1),box-shadow .5s}}
-.cover::after{{content:"";position:absolute;inset:auto 10% -10px;height:40px;background:radial-gradient(closest-side,color-mix(in srgb,var(--a) 55%,transparent),transparent);filter:blur(10px);opacity:0;transition:opacity .5s;z-index:-1}}
-.book:hover .cover img{{transform:rotateY(-10deg) translateY(-6px);box-shadow:20px 34px 60px -20px #000,0 0 0 1px #ffffff18}}.book:hover .cover::after{{opacity:1}}
-.ring{{position:absolute;top:10px;right:10px;padding:4px 9px;border-radius:999px;font-size:12px;font-weight:700;background:#000b;backdrop-filter:blur(6px);color:#fff;border:1px solid color-mix(in srgb,var(--a) 60%,transparent)}}
-.meta{{display:flex;flex-direction:column;gap:6px;flex:1}}.author{{margin:0;color:var(--a);font-size:13px;font-weight:600;filter:brightness(1.25)}}
-h3{{margin:0;font-size:22px;line-height:1.15;letter-spacing:-.03em}}.tag{{margin:0;color:#c3cad5;font-size:14.5px;line-height:1.5}}.nav{{display:flex;gap:8px}}
-.inc{{margin:0;display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.5;color:#d7c9a3}}.inc i{{flex:none;width:8px;height:8px;margin-top:6px;border-radius:50%;background:#e8b84a}}.inc.ongoing{{color:#a9d8b8}}.inc.ongoing i{{background:#4fcf86;box-shadow:0 0 0 3px #4fcf8633}}
-.help{{display:grid;grid-template-columns:1fr auto;gap:20px 32px;align-items:center;margin:0 0 36px;padding:24px;border-radius:22px;background:linear-gradient(115deg,#2f5b8f33,var(--s1) 70%);border:1px solid #7fa6d433}}.help h3{{font-size:24px;margin:0 0 8px}}.help p{{margin:0 0 12px;color:#c9d0db;max-width:62ch}}.help ol{{margin:0;padding-left:20px;color:#c9d0db;font-size:15px}}.help li+li{{margin-top:4px}}
-@media (max-width:640px){{.help{{grid-template-columns:1fr}}}}
-.orig{{margin:0;color:#aab3c0;font-size:13px;line-height:1.5}}.orig i{{font-style:italic}}.facts{{margin:0;color:var(--mute);font-size:13px}}
-.progress{{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mute)}}.progress span{{flex:1;height:4px;border-radius:9px;background:#ffffff14;overflow:hidden}}.progress i{{display:block;height:100%;background:var(--a);border-radius:inherit}}
-.actions{{display:flex;gap:8px;margin-top:auto;padding-top:8px}}
-.eras{{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:22px;background:var(--s1);border:1px solid var(--line)}}
-.era{{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center;font-size:14px}}.era-name{{color:#c9d0db;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
-.era-bar{{position:relative;height:26px;border-radius:8px;background:repeating-linear-gradient(90deg,#ffffff08 0 1px,transparent 1px calc(100%/7))}}
-.era-bar span{{position:absolute;left:var(--l);width:var(--w);top:0;bottom:0;border-radius:8px;background:linear-gradient(90deg,color-mix(in srgb,var(--a) 85%,#fff 0%),color-mix(in srgb,var(--a) 50%,transparent));display:flex;align-items:center;padding:0 9px;font-size:12px;font-weight:600;color:#fff;white-space:nowrap;text-shadow:0 1px 2px #0008;transition:filter .2s}}
-.era:hover .era-bar span{{filter:brightness(1.25)}}
-.axis{{display:grid;grid-template-columns:150px 1fr;gap:14px;color:var(--mute);font-size:12px}}.axis div{{display:flex;justify-content:space-between}}
-footer{{margin:72px 0 0;padding:28px 0 40px;border-top:1px solid var(--line);color:var(--mute);font-size:14px;display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between}}
-@media (max-width:640px){{.hero{{padding-top:28px}}.resume{{grid-template-columns:auto 1fr}}.resume .btn{{grid-column:1/-1}}.grid{{grid-template-columns:repeat(2,1fr);gap:32px 16px}}h3{{font-size:18px}}.tag{{display:none}}.actions .ghost{{display:none}}.era,.axis{{grid-template-columns:96px 1fr;gap:10px}}.era-bar span{{font-size:0;padding:0}}.axis div span:nth-child(even){{visibility:hidden}}}}
-.qwrap{{position:relative}}.qtrack{{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 18px;scrollbar-width:none;outline:none}}.qtrack::-webkit-scrollbar{{display:none}}
-.qcard{{flex:0 0 min(420px,86%);scroll-snap-align:start;display:flex;flex-direction:column;justify-content:space-between;gap:22px;min-height:250px;padding:26px 24px 22px;border-radius:22px;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 22%,#0a0e16),#0a0e16 70%);border:1px solid color-mix(in srgb,var(--a) 35%,transparent);position:relative;overflow:hidden}}
-.qcard::before{{content:"«";position:absolute;right:14px;bottom:-34px;font-size:140px;font-weight:800;line-height:1;color:color-mix(in srgb,var(--a) 16%,transparent);pointer-events:none;z-index:0}}
-.qcard blockquote{{margin:0;position:relative;font-size:clamp(18px,2.1vw,21px);line-height:1.45;letter-spacing:-.01em;font-weight:500;text-wrap:pretty}}
-.qcard footer{{position:relative;z-index:1;display:flex;align-items:center;gap:12px}}.qcard img{{width:42px;height:63px;object-fit:cover;border-radius:3px 6px 6px 3px;box-shadow:0 8px 18px -6px #000,0 0 0 1px #fff1}}
-.qcard cite{{display:block;font-style:normal;font-size:13.5px;line-height:1.5;color:#c3cad5;flex:1}}.qcard cite b{{display:block;color:#fff;font-weight:600}}
-.qcard .go{{flex:none;display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;background:var(--a);color:var(--ink,#fff);font-size:13.5px;font-weight:600}}
-/* спокойная палитра: интерфейс полки — один фирменный акцент; цвет книги — только точка у автора и обложка */
-.book .btn,.qcard .go{{background:#7fa6d4;color:#06101f;text-shadow:none}}.book .btn:hover,.qcard .go:hover{{background:#a5c3e6}}
-.author{{color:var(--mute);filter:none;display:flex;align-items:center;gap:7px}}.author::before{{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--a)}}
-.cover::after{{background:radial-gradient(closest-side,#7fa6d455,transparent)}}
-.ring{{border-color:#ffffff26}}.progress i{{background:#7fa6d4}}
-.resume{{background:var(--s1);border-color:var(--line)}}
-.qcard{{background:linear-gradient(160deg,#121a2a,#0a0e16 70%);border-color:var(--line)}}.qcard::before{{color:#7fa6d414}}
-.era-bar span{{background:#2f4d78;color:#e6eefa;text-shadow:none}}.era:hover .era-bar span{{background:#7fa6d4;color:#06101f;filter:none}}.era:hover .era-name{{color:#fff}}
-.qctl{{display:flex;gap:8px;align-items:center}}.qctl button{{font:inherit;font-size:16px;height:38px;min-width:38px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text,#fff);cursor:pointer}}.qctl button:hover{{border-color:#fff6}}.qctl .qshuf{{font-size:14px;color:var(--mute);margin-left:auto}}
-@media (max-width:640px){{.qcard{{min-height:280px;padding:22px 18px 18px}}.qcard footer{{flex-wrap:wrap}}.qcard cite{{flex-basis:calc(100% - 56px)}}.qcard .go{{width:100%;justify-content:center}}}}
-html,body{{overflow-x:clip}}.manifest p{{margin:0 0 14px}}.manifest p:last-child{{margin:0}}@media (max-width:480px){{.nav{{gap:6px}}.nav .chip{{padding:0 11px;font-size:13px}}.brand span{{display:none}}}}
-@media (prefers-reduced-motion:no-preference){{.qtrack{{scroll-behavior:smooth}}}}
-/* компактный верх: заголовок в одну строку и цифры в ряд */
-.hero{{padding:34px 0 8px}}.hero h1{{font-size:clamp(28px,4.2vw,48px);max-width:none;line-height:1.05;letter-spacing:-.035em}}.hero .eyebrow{{margin-bottom:10px}}
-.hero .stats{{gap:8px 22px;margin:16px 0 0;align-items:baseline}}.hero .stats li{{display:flex;align-items:baseline;gap:6px}}.hero .stats b{{display:inline;font-size:18px}}.hero .stats span{{font-size:14px}}
-#shelf{{margin-top:28px}}
-/* неполные переводы — отдельная зона: пунктирная янтарная рамка и метки */
-#unfinished{{margin-top:64px;padding:30px 26px 34px;border:2px dashed #f2b24aa6;border-radius:26px;background:linear-gradient(180deg,#f2b24a1c,transparent 50%)}}
-#unfinished h2{{display:flex;align-items:center;gap:10px}}#unfinished h2::before{{content:"";width:10px;height:10px;border-radius:50%;background:#f2b24a;box-shadow:0 0 0 5px #f2b24a26}}
-.badge{{position:absolute;left:10px;bottom:10px;padding:5px 10px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.01em;background:#f2b24a;color:#1a1000;box-shadow:0 6px 16px -6px #000}}.badge.stalled{{background:#0d0d10;color:#f2b24a;border:1px solid #f2b24a99}}
-#unfinished .help{{border-color:#f2b24a40}}
-@media (max-width:640px){{#unfinished{{padding:22px 14px 26px;border-radius:20px;margin-left:-4px;margin-right:-4px}}.hero .stats li:nth-child(3),.hero .stats li:nth-child(5){{display:none}}}}
-/* — компактная цитата, канаты между секциями, титры — */
-main>section{{position:relative}}main>section+section{{margin-top:64px;padding-top:44px}}
-.qs{{margin-top:56px}}.qhead{{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px}}.qhead .eyebrow{{margin:0}}
-.qctl{{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mute)}}#qcount{{min-width:46px;text-align:center;font-variant-numeric:tabular-nums}}
-.qband{{margin:0;display:grid;grid-template-columns:1fr auto;gap:18px 36px;align-items:end;padding:22px 26px;border-radius:18px;background:var(--s1);border:1px solid var(--line);position:relative;overflow:hidden;transition:opacity .18s}}
-.qband.out{{opacity:0}}.qband::before{{content:"«";position:absolute;left:14px;top:-26px;font-size:120px;font-weight:800;line-height:1;color:#7fa6d414;pointer-events:none}}
-.qband blockquote{{margin:0;position:relative;font-size:clamp(17px,2vw,22px);line-height:1.45;font-weight:500;letter-spacing:-.01em;text-wrap:pretty;padding-left:8px}}
-.qband figcaption{{display:flex;align-items:center;gap:12px}}.qband img{{width:42px;height:63px;object-fit:cover;border-radius:3px 6px 6px 3px;box-shadow:0 8px 18px -6px #000,0 0 0 1px #fff1}}
-.qband cite{{font-style:normal;font-size:13.5px;line-height:1.5;color:#c3cad5;max-width:200px}}.qband cite b{{display:block;color:#fff;font-weight:600}}
-.qband .go{{flex:none;display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;background:#7fa6d4;color:#06101f;font-size:13.5px;font-weight:600;white-space:nowrap}}.qband .go:hover{{background:#a5c3e6}}
-footer.credits{{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px solid var(--line);color:var(--mute);font-size:14px}}
-.cr-brand{{display:flex;align-items:center;gap:14px;margin-bottom:34px}}.cr-brand img{{width:46px;height:auto}}.cr-brand b{{display:block;color:var(--text);font-size:18px;letter-spacing:-.01em}}.cr-brand p{{margin:2px 0 0;max-width:44ch}}
-.cr-grid{{display:grid;grid-template-columns:1.4fr 1fr;gap:34px 48px}}.cr-grid h4{{margin:0 0 12px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#7fa6d4;font-weight:600}}.cr-grid p{{margin:0 0 10px;line-height:1.5}}
-.cr-list{{margin:0;display:grid;gap:10px}}.cr-list dt{{color:var(--text);font-weight:600;line-height:1.5}}.cr-list dd{{margin:2px 0 0;font-size:13px;line-height:1.5}}
-.cr-link{{color:var(--text);border-bottom:1px solid #7fa6d480;padding-bottom:1px}}.cr-link:hover{{border-color:#a5c3e6}}
-.cr-end{{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-between;margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:13px}}.cr-fin{{color:#7fa6d4;font-style:italic}}
-@media (max-width:860px){{.cr-grid{{grid-template-columns:1fr;gap:28px}}}}
-@media (max-width:640px){{.qband{{grid-template-columns:1fr;padding:20px 18px}}.qband figcaption{{flex-wrap:wrap}}.qband cite{{max-width:none;flex:1}}.qband .go{{width:100%;justify-content:center}}.qshuf{{display:none}}}}
-/* офлайн: кнопка ↓ на обложке и строка «На устройстве» */
-.actions{{align-items:center}}
-.off{{position:relative;flex:none;display:inline-grid;place-items:center;width:40px;height:40px;padding:0;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--mute);cursor:pointer}}
-.off svg{{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}}.off .ok{{display:none}}.off:hover{{color:var(--text);border-color:#ffffff40}}
-.off[data-st=busy]{{color:#7fa6d4;border-color:transparent;background:conic-gradient(#7fa6d4 var(--p,0%),#ffffff1c 0);pointer-events:none}}.off[data-st=busy]::before{{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--bg)}}.off[data-st=busy] svg{{position:relative}}
-.off[data-st=ready]{{color:#7dd39a;border-color:#7dd39a66}}.off[data-st=ready] .dl{{display:none}}.off[data-st=ready] .ok{{display:block}}.off[data-st=update]{{color:#a5c3e6;border-color:#7fa6d4}}.off[data-st=error]{{color:#ff8a80;border-color:#ff8a8066}}
-.mylib{{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;margin:0 0 22px;padding:12px 16px;border-radius:14px;background:var(--s1);border:1px solid var(--line);font-size:14px;color:var(--mute)}}.mylib-b{{display:flex;flex-wrap:wrap;gap:8px}}.mylib .ghost{{cursor:pointer;background:none;font-family:inherit}}.mylib [hidden]{{display:none}}
-#toast{{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);max-width:min(92vw,460px);padding:12px 18px;border-radius:14px;background:#1b2436;color:#f2f4f8;font-size:14px;line-height:1.45;opacity:0;pointer-events:none;transition:.25s;z-index:50}}#toast.show{{opacity:1;transform:translateX(-50%)}}
-.mylib button{{line-height:1.5}}
-@media (max-width:640px){{.actions .ghost{{display:none}}.mylib .ghost{{display:inline-flex}}}}
-@media (prefers-reduced-motion:reduce){{*{{transition:none!important}}}}
-</style><link rel="stylesheet" href="shared/{SH[2]}"><script src="shared/{SH[3]}" defer></script></head><body class="shelf-body">
+<title>{E(title)}</title><meta name="description" content="{E(desc)}">
+<link rel="canonical" href="{BASE}{path}"><meta name="theme-color" content="#03060c"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/app-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Книги"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta property="og:type" content="website"><meta property="og:url" content="{BASE}{path}"><meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}"><meta property="og:image" content="{BASE}og.jpg"><meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="shared/vsplanet-logo.png"><link rel="preload" href="shared/fonts/geologica-cyr.woff2" as="font" type="font/woff2" crossorigin>{extra}
+<link rel="stylesheet" href="shared/{SHELF_CSS}"><link rel="stylesheet" href="shared/{SH[2]}"><script src="shared/{SH[3]}" defer></script></head><body class="shelf-body" data-page="{cur}">
 <div class="glow"></div>
 <div class="wrap">
-<header class="top"><a class="brand" href="./"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a><span class="nav"><a class="chip" href="#quotes">Цитаты</a><a class="chip" href="#unfinished">Неполные</a><a class="chip" href="#eras">Эпохи</a></span></header>
+{header(cur)}
 <main>
-<div data-install-banner></div>
-<div class="hero"><h1>Рестлинг, рассказанный изнутри</h1>
-
-<ul class="stats"><li><b>{len(full)}</b><span>{plural(len(full), 'книга', 'книги', 'книг')} целиком</span></li><li><b>{len(partial)}</b><span>{plural(len(partial), 'неполная', 'неполные', 'неполных')}</span></li><li><b>{sum(b['chapters'] for b in books)}</b><span>глав и разделов</span></li><li><b>≈{hours} ч</b><span>чтения</span></li><li><b>EPUB</b><span>для любой читалки</span></li></ul>
-<div id="resume"></div></div>
-<section id="shelf" aria-labelledby="shelf-h"><h2 id="shelf-h">Полка</h2><p class="sub">Прогресс сохраняется в вашем браузере и подтягивается сюда сам.</p>
-<div class="mylib" id="mylib"><span class="mylib-t" data-offline-sum data-empty="Нажмите ↓ на обложке — книга сохранится на устройстве и откроется без сети.">Нажмите ↓ на обложке — книга сохранится на устройстве и откроется без сети.</span><span class="mylib-b"><button class="ghost" data-offline-all>Скачать все полные · ≈{round(sum(b['bytes'] for b in full) / 1048576)} МБ</button><button class="ghost" data-offline-clear hidden>Удалить скачанное</button><button class="ghost install-trigger" data-install-auto hidden>Установить приложение</button></span></div>
-<div class="filters" id="filters" hidden><button aria-pressed="true" data-f="all">Все</button><button aria-pressed="false" data-f="reading">Читаю</button><button aria-pressed="false" data-f="new">Не начато</button><button aria-pressed="false" data-f="done">Прочитано</button></div>
-<div class="grid">
-{chr(10).join(card(b) for b in full)}
-</div></section>
-<section id="quotes" class="qs" aria-label="Цитата из книги"><div class="qhead"><span class="eyebrow">Строка из книги</span><span class="qctl"><button id="qprev" aria-label="Предыдущая">←</button><span id="qcount" aria-hidden="true"></span><button id="qnext" aria-label="Следующая">→</button><button id="qshuf" class="qshuf">Другая</button></span></div>
-<figure class="qband" id="qband" aria-live="polite"></figure></section>
-<section id="unfinished" aria-labelledby="unf-h"><h2 id="unf-h">Неполные переводы</h2>
-<p class="sub">Эти книги начали переводить, но не довели до конца, или переводят прямо сейчас. Читать можно уже то, что есть.</p>
-<div class="help"><div><h3>Помогите дописать</h3>
-<p>Знаете английский и любите рестлинг? Возьмите одну главу — и у книги появится продолжение. Идеальный литературный текст не нужен: вёрстку, проверку орфографии и EPUB берёт на себя сайт, готовая глава сразу попадает в читалку.</p>
-<ol><li>Выберите книгу ниже и посмотрите, чего не хватает.</li><li>Напишите в редакцию VSplanet.net, какую главу берёте.</li><li>Пришлите перевод — и ваше имя появится в выходных данных книги.</li></ol></div>
-<a class="btn" href="https://vsplanet.net/" rel="noopener">Предложить помощь</a></div>
-<div class="grid">
-{chr(10).join(card(b) for b in partial)}
-</div></section>
-<section id="eras" aria-labelledby="eras-h"><h2 id="eras-h">Эпохи</h2><p class="sub">О каких годах рассказывает каждая книга — читайте историю рестлинга по порядку.</p>
-<div class="eras">
-{chr(10).join(era_row(b) for b in sorted(books, key=lambda b: b['era']) if b['era'])}
-<div class="axis"><span></span><div>{''.join(f'<span>{y}</span>' for y in range(y0, y1 + 1, 10))}</div></div>
-</div></section>
+{main}
 </main>
-<nav class="tabbar" data-tabbar aria-label="Разделы"><div class="tb-pill"><i class="tb-ind"></i><a class="tb-tab" href="#shelf" data-scroll="#shelf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4v16H5zM11 4h4v16h-4z"/><path d="m17 6.5 3.7-1 2 14-3.7 1z" transform="translate(-1.5 0)"/></svg><span>Полка</span></a><a class="tb-tab" href="#quotes" data-scroll="#quotes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h4v5c0 3-1.5 4.7-4 5.5M14 7h4v5c0 3-1.5 4.7-4 5.5"/></svg><span>Цитаты</span></a><a class="tb-tab" href="#unfinished" data-scroll="#unfinished"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>В работе</span></a><a class="tb-tab" href="#about" data-scroll="#about"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 7.8v.01"/></svg><span>О проекте</span></a></div><button class="tb-fab install-trigger" type="button" data-install-auto hidden aria-label="Установить приложение"><svg viewBox="0 0 24 24" aria-hidden="true" style="fill:none"><path d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 20h14"/></svg></button></nav>
-<footer class="credits" id="about">
+{tabbar(cur)}
+{MINI_FOOT if cur != 'home' else ABOUT}
+</div>
+<script>
+{js}
+</script>
+<script src="pwa.js?v={PWA_V}" defer></script>
+</body></html>"""
+    return rel(h, P)
+
+ABOUT = f"""<footer class="credits" id="about">
 <div class="cr-brand"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648" loading="lazy"><div><b>VSplanet Книги</b><p>Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.</p></div></div>
 <div class="cr-grid">
 <div><h4>О проекте</h4><p>С 2011 года читатели VSplanet переводят книги звёзд рестлинга. Здесь они собраны в одной читалке: закладки, поиск по тексту, офлайн-режим и EPUB. Регистрации нет, а прогресс чтения хранится только в вашем браузере.</p></div>
 <div><h4>Присоединяйтесь</h4><p>Недопереведённые книги ждут продолжения. Возьмите главу — и ваше имя появится в выходных данных книги.</p><p><a class="cr-link" href="https://vsplanet.net/" rel="noopener">Редакция VSplanet.net →</a></p></div>
 </div>
-<div class="cr-end"><span>Сайт собрал Никита Андреев, 2026</span><span class="app-ver">Версия {VER[0]} «{VER[1]}»</span></div>
-</footer>
-</div>
-<script>
-const BOOKS={json.dumps(js_books, ensure_ascii=False)};
+<div class="cr-end"><span>Сайт собрал Никита Андреев, 2026</span><span class="app-ver">Версия {shared.version_label()}</span></div>
+</footer>"""
+
+# ---- JS страниц ----
+JS_COMMON = f"""const BOOKS={json.dumps(js_books, ensure_ascii=False)};
 const st={{}};
 for(const b of BOOKS){{
   let s=null;try{{s=JSON.parse(localStorage.getItem(b.key)||'null')}}catch(e){{}}
@@ -296,7 +204,8 @@ for(const b of BOOKS){{
   st[b.slug]={{pct,chapter:p.chapter,t:Date.parse(s.updated||s.started||0)||0}};
 }}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}})[c]);
-const QUOTES={json.dumps(QUOTES, ensure_ascii=False)};
+"""
+JS_QUOTES = f"""const QUOTES={json.dumps(QUOTES, ensure_ascii=False)};
 (()=>{{const by=Object.fromEntries(BOOKS.map(b=>[b.slug,b])),el=document.getElementById('qband'),cnt=document.getElementById('qcount');
 const shuf=a=>{{a=a.slice();for(let i=a.length-1;i>0;i--){{const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}}return a}};
 let list=[],i=0,timer=null,paused=false;
@@ -312,23 +221,81 @@ document.getElementById('qnext').onclick=()=>go(1);document.getElementById('qpre
 document.getElementById('qshuf').onclick=()=>{{mix();show(0);auto()}};
 const sec=document.getElementById('quotes');sec.addEventListener('mouseenter',()=>paused=true);sec.addEventListener('mouseleave',()=>paused=false);sec.addEventListener('focusin',()=>paused=true);sec.addEventListener('focusout',()=>paused=false);
 mix();show(0,false);auto()}})();
-document.querySelectorAll('.book').forEach(el=>{{
+(()=>{{const by=Object.fromEntries(BOOKS.map(b=>[b.slug,b]));
+document.getElementById('qlist').innerHTML=QUOTES.map(q=>{{const b=by[q.s];return `<article class="qitem" style="--a:${{b.accent}}"><blockquote>${{esc(q.t)}}</blockquote><footer><img src="covers/${{q.s}}.webp" alt="" loading="lazy" width="32" height="48"><span><b>${{esc(b.author)}}</b><br>«${{esc(b.title)}}»</span><a href="${{q.s}}/#read/${{q.c}}/${{q.p}}">В книге →</a></footer></article>`}}).join('')}})();
+"""
+JS_SHELF = f"""document.querySelectorAll('.book').forEach(el=>{{
   const x=st[el.dataset.slug];el.dataset.state=!x?'new':x.pct>=98?'done':'reading';if(!x)return;
   const pr=el.querySelector('.progress');pr.hidden=false;pr.querySelector('i').style.width=x.pct+'%';pr.querySelector('b').textContent=x.pct>=98?'Прочитано':x.pct+'%';
   const r=el.querySelector('.ring');r.hidden=false;r.textContent=x.pct>=98?'✓':x.pct+'%';
   const btn=el.querySelector('.btn');btn.textContent=x.pct>=98?'Перечитать':'Продолжить';btn.href=el.dataset.slug+'/#read/'+x.chapter;
 }});
-const reading=BOOKS.filter(b=>st[b.slug]&&st[b.slug].pct<98).sort((a,b)=>st[b.slug].t-st[a.slug].t||st[b.slug].pct-st[a.slug].pct);
-if(reading.length){{const b=reading[0],x=st[b.slug];
-  document.getElementById('resume').innerHTML=`<a class="resume" style="--a:${{b.accent}}" href="${{b.slug}}/#read/${{x.chapter}}"><img src="covers/${{b.slug}}.webp" alt=""><div><small>Продолжить чтение</small><strong>${{esc(b.title)}}</strong><p>${{esc(b.author)}} · прочитано ${{x.pct}}%</p></div><span class="btn">Продолжить</span></a>`;}}
 if(Object.keys(st).length){{const f=document.getElementById('filters');f.hidden=false;
   f.addEventListener('click',e=>{{const k=e.target.dataset.f;if(!k)return;f.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===e.target)));
     document.querySelectorAll('.book').forEach(el=>el.hidden=k!=='all'&&el.dataset.state!==k);}});}}
-</script>
-<script src="pwa.js?v={PWA_V}" defer></script>
-</body></html>'''
-(OUT / 'index.html').write_text(PAGE)
-(OUT / 'sitemap.xml').write_text(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{BASE}</loc></url></urlset>\n')
+"""
+JS_RESUME = f"""const reading=BOOKS.filter(b=>st[b.slug]&&st[b.slug].pct<98).sort((a,b)=>st[b.slug].t-st[a.slug].t||st[b.slug].pct-st[a.slug].pct);
+if(reading.length){{const b=reading[0],x=st[b.slug];
+  document.getElementById('resume').innerHTML=`<a class="resume" style="--a:${{b.accent}}" href="${{b.slug}}/#read/${{x.chapter}}"><img src="covers/${{b.slug}}.webp" alt=""><div><small>Продолжить чтение</small><strong>${{esc(b.title)}}</strong><p>${{esc(b.author)}} · прочитано ${{x.pct}}%</p></div><span class="btn">Продолжить</span></a>`;}}
+"""
+
+# ---- страницы ----
+_sample = sorted((q for q in QUOTES if 60 < len(q['t']) < 150), key=lambda q: len(q['t']))
+_sample = _sample[len(_sample) // 2]['t'] if _sample else QUOTES[0]['t']
+_fan = ''.join(f'<img src="covers/{b["slug"]}.webp" alt="" loading="lazy" width="160" height="240" style="left:{i * 15}%;transform:rotate({(i - 2) * 4}deg);z-index:{i}">' for i, b in enumerate(full[:5]))
+_mini = ''.join(f'<img src="covers/{b["slug"]}.webp" alt="" loading="lazy" width="46" height="69">' for b in partial)
+HERO = f"""<div class="hero"><h1>Рестлинг, рассказанный изнутри</h1>
+
+<ul class="stats"><li><b>{len(full)}</b><span>{plural(len(full), 'книга', 'книги', 'книг')} целиком</span></li><li><b>{len(partial)}</b><span>{plural(len(partial), 'неполная', 'неполные', 'неполных')}</span></li><li><b>{sum(b['chapters'] for b in books)}</b><span>глав и разделов</span></li><li><b>≈{hours} ч</b><span>чтения</span></li><li><b>EPUB</b><span>для любой читалки</span></li></ul>
+<div id="resume"></div></div>"""
+MAIN = f"""<div data-install-banner></div>
+{HERO}
+<section class="doors" aria-label="Разделы">
+<a class="door door-shelf" href="shelf/"><div><span class="eyebrow">Читать · скачивать</span><h2>Полка</h2><p>{len(full)} {plural(len(full), 'книга', 'книги', 'книг')} целиком: читайте онлайн, сохраняйте для чтения без сети или скачивайте EPUB. Прогресс запоминается.</p><span class="door-go">Открыть полку →</span></div><div class="fan" aria-hidden="true">{_fan}</div></a>
+<a class="door door-quotes" href="quotes/"><span class="eyebrow">Строка из книги</span><blockquote>{E(_sample)}</blockquote><span class="door-go">Все цитаты →</span></a>
+<a class="door door-unf" href="unfinished/"><span class="badge ongoing">Переводятся</span><div><h2>Неполные переводы</h2><p>{len(partial)} {plural(len(partial), 'книга', 'книги', 'книг')} ждут продолжения. Можно читать уже переведённое — и помочь дописать.</p></div><div class="mini" aria-hidden="true">{_mini}</div><span class="door-go">Посмотреть →</span></a>
+</section>"""
+SHELF = f"""{BACK}<div class="phead"><h1 class="pt">Полка</h1><p class="sub">Прогресс сохраняется в вашем браузере и подтягивается сюда сам.</p></div>
+<section id="shelf" aria-label="Книги">
+<div class="mylib" id="mylib"><span class="mylib-t" data-offline-sum data-empty="Нажмите ↓ на обложке — книга сохранится на устройстве и откроется без сети.">Нажмите ↓ на обложке — книга сохранится на устройстве и откроется без сети.</span><span class="mylib-b"><button class="ghost" data-offline-all>Скачать все полные · ≈{round(sum(b['bytes'] for b in full) / 1048576)} МБ</button><button class="ghost" data-offline-clear hidden>Удалить скачанное</button><button class="ghost install-trigger" data-install-auto hidden>Установить приложение</button></span></div>
+<div class="filters" id="filters" hidden><button aria-pressed="true" data-f="all">Все</button><button aria-pressed="false" data-f="reading">Читаю</button><button aria-pressed="false" data-f="new">Не начато</button><button aria-pressed="false" data-f="done">Прочитано</button></div>
+<div class="grid">
+{chr(10).join(card(b) for b in full)}
+</div></section>
+<section id="eras" aria-labelledby="eras-h"><h2 id="eras-h">Эпохи</h2><p class="sub">О каких годах рассказывает каждая книга — читайте историю рестлинга по порядку.</p>
+<div class="eras">
+{chr(10).join(era_row(b) for b in sorted(books, key=lambda b: b['era']) if b['era'])}
+<div class="axis"><span></span><div>{''.join(f'<span>{y}</span>' for y in range(y0, y1 + 1, 10))}</div></div>
+</div></section>"""
+
+UNF = f"""{BACK}<section id="unfinished" aria-labelledby="unf-h"><h1 class="pt" id="unf-h">Неполные переводы</h1>
+<p class="sub">Эти книги начали переводить, но не довели до конца, или переводят прямо сейчас. Читать можно уже то, что есть.</p>
+<div class="help"><div><h3>Помогите дописать</h3>
+<p>Знаете английский и любите рестлинг? Возьмите одну главу — и у книги появится продолжение. Идеальный литературный текст не нужен: вёрстку, проверку орфографии и EPUB берёт на себя сайт, готовая глава сразу попадает в читалку.</p>
+<ol><li>Выберите книгу ниже и посмотрите, чего не хватает.</li><li>Напишите в редакцию VSplanet.net, какую главу берёте.</li><li>Пришлите перевод — и ваше имя появится в выходных данных книги.</li></ol></div>
+<a class="btn" href="https://vsplanet.net/" rel="noopener">Предложить помощь</a></div>
+<div class="grid">
+{chr(10).join(card(b) for b in partial)}
+</div></section>"""
+QPAGE = f"""{BACK}<div class="phead"><h1 class="pt">Цитаты</h1><p class="sub">Строки из книг. Нажмите «В книге» — и откроется то самое место.</p></div>
+<section id="quotes" class="qs" aria-label="Цитата из книги"><div class="qhead"><span class="eyebrow">Случайная строка</span><span class="qctl"><button id="qprev" aria-label="Предыдущая">←</button><span id="qcount" aria-hidden="true"></span><button id="qnext" aria-label="Следующая">→</button><button id="qshuf" class="qshuf">Другая</button></span></div>
+<figure class="qband" id="qband" aria-live="polite"></figure></section>
+<section aria-labelledby="ql-h"><h2 id="ql-h">Все цитаты</h2><div class="qlist" id="qlist"></div></section>"""
+
+_DESC = f'{len(books)} автобиографий звёзд рестлинга в переводах VSplanet.net: читать онлайн бесплатно, без регистрации, или скачать EPUB.'
+PAGES = {
+    '': page('', 'VSplanet Книги — автобиографии рестлеров на русском', _DESC, MAIN, JS_COMMON + JS_RESUME, 'home', f'<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'),
+    'shelf/': page('shelf/', 'Полка — VSplanet Книги', f'{len(full)} книг целиком: читать онлайн, сохранять для чтения без сети, скачивать EPUB.', SHELF, JS_COMMON + JS_SHELF, 'shelf'),
+    'quotes/': page('quotes/', 'Цитаты из книг — VSplanet Книги', 'Строки из автобиографий рестлеров: нажмите, чтобы открыть то самое место в книге.', QPAGE, JS_COMMON + JS_QUOTES, 'quotes'),
+    'unfinished/': page('unfinished/', 'Неполные переводы — VSplanet Книги', 'Книги, которые переведены не до конца или переводятся сейчас. Можно читать уже готовое и помочь дописать.', UNF, JS_COMMON + JS_SHELF, 'unfinished'),
+}
+for _p, _h in PAGES.items():
+    (OUT / _p).mkdir(parents=True, exist_ok=True); (OUT / _p / 'index.html').write_text(_h)
+_shell = ['./', 'shelf/', 'quotes/', 'unfinished/', f'shared/{SHELF_CSS}', f'pwa.js?v={PWA_V}', 'shared/vsplanet-logo.png', 'shared/fonts/geologica-cyr.woff2', 'shared/fonts/geologica-lat.woff2', 'shared/fonts/literata-cyrillic-normal.woff2', 'shared/fonts/literata-cyrillic-italic.woff2', 'shared/fonts/literata-latin-normal.woff2', 'shared/fonts/literata-latin-italic.woff2', f'shared/{SH[2]}', f'shared/{SH[3]}', 'icons/app-192.png'] + [f'covers/{b["slug"]}.webp' for b in books]
+(OUT / 'version.json').write_text(json.dumps({'version': shared.version()[0], 'name': shared.version()[1], 'label': shared.version_label()}, ensure_ascii=False))
+_seed = json.dumps(_shell) + PWA_V + (T / 'sw-app.js').read_text() + shared.version_label() + ''.join(hashlib.sha256(h.encode()).hexdigest()[:8] for h in PAGES.values())
+(OUT / 'sw.js').write_text((T / 'sw-app.js').read_text().replace('%SHELL%', json.dumps(_shell)).replace('%SHELL_V%', hashlib.sha256(_seed.encode()).hexdigest()[:12]))
+(OUT / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' + ''.join(f'<url><loc>{BASE}{p}</loc></url>' for p in PAGES) + '</urlset>\n')
 
 # og.jpg — веер обложек
 from playwright.sync_api import sync_playwright

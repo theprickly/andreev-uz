@@ -29,7 +29,7 @@ async function nav(req){
 self.addEventListener('fetch',e=>{
  const r=e.request;if(r.method!=='GET')return;
  const u=new URL(r.url);if(u.origin!==location.origin||!u.pathname.startsWith(base.pathname))return;
- if(/\/(sw\.js|files\.json|manifest\.webmanifest)$/.test(u.pathname))return;      // всегда из сети
+ if(/\/(sw\.js|files\.json|version\.json|manifest\.webmanifest)$/.test(u.pathname))return;      // всегда из сети
  if(r.mode==='navigate'){e.respondWith(nav(r));return;}
  e.respondWith((async()=>{const hit=await caches.match(r);return hit||fetch(r);})());
 });

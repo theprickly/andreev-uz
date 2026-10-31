@@ -102,7 +102,20 @@
   n.querySelector('.ib-go').addEventListener('click',()=>{if(installEvent){install();return;}const st=n.querySelector('.ib-steps');st.hidden=!st.hidden;});
  })();
  /* ---- запуск ---- */
- if('serviceWorker' in navigator&&window.isSecureContext)navigator.serviceWorker.register(ROOT+'sw.js',{scope:ROOT,updateViaCache:'none'}).catch(()=>{});
- if('caches' in window){const l=slugs();l.forEach(s=>S[s]={st:'idle'});const cur=location.pathname.split('/').filter(Boolean).pop();if(!l.includes(cur)&&location.pathname.split('/').filter(Boolean).length>1)S[cur]={st:'idle'};Object.keys(S).forEach(refresh);}
+ if('serviceWorker' in navigator&&window.isSecureContext){
+  const had=!!navigator.serviceWorker.controller;let shown=false;
+  async function updated(){
+   if(shown)return;shown=true;let v='';try{const r=await fetch(ROOT+'version.json',{cache:'no-store'});if(r.ok)v=(await r.json()).label||'';}catch{}
+   const n=document.createElement('div');n.className='upd';n.setAttribute('role','status');
+   n.innerHTML='<span>'+(v?'Вышла версия <b>'+v+'</b>':'Вышла новая версия приложения')+'</span><button type="button" class="upd-go">Обновить</button><button type="button" class="upd-x" aria-label="Позже">×</button>';
+   document.body.append(n);n.querySelector('.upd-go').onclick=()=>location.reload();n.querySelector('.upd-x').onclick=()=>n.remove();
+  }
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had)updated();});
+  navigator.serviceWorker.register(ROOT+'sw.js',{scope:ROOT,updateViaCache:'none'}).then(reg=>{
+   const chk=()=>reg.update().catch(()=>{});
+   document.addEventListener('visibilitychange',()=>{if(!document.hidden)chk();});setInterval(chk,30*60*1000);
+  }).catch(()=>{});
+ }
+ if('caches' in window){const l=slugs();l.forEach(s=>S[s]={st:'idle'});const cur=location.pathname.split('/').filter(Boolean).pop();if(window.BOOK_CONFIG&&!l.includes(cur))S[cur]={st:'idle'};Object.keys(S).forEach(refresh);}
  render();
 })();

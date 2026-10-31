@@ -138,6 +138,49 @@
    "variants": [],
    "decided": "2026-10-31",
    "why": "Вместо «хаус-шоу»; склоняется, поэтому заменено вручную в 13 местах"
+  },
+  {
+   "canonical": "WrestleMania",
+   "variants": [
+    "Wrestlemania",
+    "Рестлмани"
+   ],
+   "decided": "2026-10-31",
+   "why": "Названия шоу — только латиницей"
+  },
+  {
+   "canonical": "SmackDown",
+   "variants": [
+    "Smackdown",
+    "Смэкдаун"
+   ],
+   "decided": "2026-10-31",
+   "why": "Названия шоу — только латиницей"
+  },
+  {
+   "canonical": "SummerSlam",
+   "variants": [
+    "Summerslam"
+   ],
+   "decided": "2026-10-31",
+   "why": "Названия шоу — только латиницей"
+  },
+  {
+   "canonical": "Raw",
+   "variants": [
+    "RAW"
+   ],
+   "decided": "2026-10-31",
+   "why": "Названия шоу — только латиницей; написание Raw"
+  },
+  {
+   "canonical": "Nitro",
+   "variants": [
+    "Нитро",
+    "«Найтро»"
+   ],
+   "decided": "2026-10-31",
+   "why": "Названия шоу — только латиницей"
   }
  ]
 }

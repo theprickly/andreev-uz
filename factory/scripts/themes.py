@@ -1,6 +1,6 @@
 """Цветовые темы книг. vs — по умолчанию (логотип VSplanet). Добавляйте тематические пресеты сюда."""
 THEMES = {
-    'vs':   {'accent_fill': 'linear-gradient(180deg,#c3d8ef 0%,#8fb2db 45%,#5f87b9 100%)', 'accent': '#7fa6d4', 'accent_hi': '#a5c3e6', 'accent_deep': '#2f5b8f', 'accent_ink': '#06101f', 'bg': '#03060c', 'surface': '#0b111d', 'surface_2': '#121a2a', 'reader_bg': '#070b13'},
+    'vs':   {'accent_fill': 'linear-gradient(100deg,#f19454 0%,#e43764 50%,#311466 100%)', 'accent': '#68a0d9', 'accent_hi': '#9cc2ea', 'accent_deep': '#052464', 'accent_ink': '#ffffff', 'bg': '#03060c', 'surface': '#0a1226', 'surface_2': '#101a36', 'reader_bg': '#060a14'},
     'hart': {'accent': '#ef2a95', 'accent_hi': '#ff62b6', 'accent_deep': '#a1105f', 'accent_ink': '#ffffff', 'bg': '#0a0605', 'surface': '#17100d', 'surface_2': '#221813', 'reader_bg': '#0e0908'},
     'booker_prison': {'accent': '#f2994a', 'accent_hi': '#ffbf85', 'accent_deep': '#a85a14', 'accent_ink': '#140a00', 'bg': '#060505', 'surface': '#131110', 'surface_2': '#1d1a18', 'reader_bg': '#0b0a09'},
     'royalty': {'accent': '#f5b638', 'accent_hi': '#ffd77a', 'accent_deep': '#6a2f9a', 'accent_ink': '#150b00', 'bg': '#07040b', 'surface': '#130c1c', 'surface_2': '#1d1329', 'reader_bg': '#0b0710'},

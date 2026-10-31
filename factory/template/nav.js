@@ -59,14 +59,9 @@
  }
  tick();
 })();
-/* iOS 27: прозрачность стекла, сворачивание заголовка, сжатие нижней панели при прокрутке */
+/* iOS 27: сворачивание заголовка, сжатие нижней панели при прокрутке */
 (()=>{
  const root=document.documentElement;
- const apply=v=>root.style.setProperty('--glass-a',String(+(0.96-v/100*0.62).toFixed(2)));
- let sv=null;try{sv=localStorage.getItem('vs-glass')}catch(e){}
- if(sv!==null&&sv!=='')apply(+sv);
- const sl=document.getElementById('glass');
- if(sl){if(sv!==null&&sv!=='')sl.value=sv;sl.addEventListener('input',()=>{apply(+sl.value);try{localStorage.setItem('vs-glass',sl.value)}catch(e){}});}
  const nb=document.querySelector('[data-navbar]'),bar=document.querySelector('[data-tabbar]'),lt=document.querySelector('[data-ltitle]');
  if(nb&&lt&&'IntersectionObserver' in window){new IntersectionObserver(([e])=>nb.classList.toggle('on',!e.isIntersecting),{rootMargin:'-56px 0px 0px 0px'}).observe(lt);}
  else if(nb)nb.classList.add('on');

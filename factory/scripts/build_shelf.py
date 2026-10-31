@@ -49,7 +49,7 @@ for slug in SLUGS:
     qs = _q.extract(slug, data)
     words = [c.get('words') or len(re.sub(r'<[^>]+>', ' ', c['html']).split()) for c in data['chapters']]
     m = re.search(r'<style id="theme">[^<]*--accent:(#[0-9a-fA-F]{6})', page)
-    accent = '#7fa6d4'                                      # единый цвет интерфейса: цвет обложки не красит кнопки
+    accent = '#68a0d9'                                      # единый цвет интерфейса: цвет обложки не красит кнопки
     em = re.search(r'href="(assets/[^"]+\.epub)"', page); epub = em[1] if em else None
     with Image.open(d / 'assets' / 'cover.jpg') as im:
         im = im.convert('RGB'); im.thumbnail((480, 720), Image.LANCZOS)
@@ -97,13 +97,14 @@ def card(b):
 y0, y1 = 1940, 2010
 def era_row(b):
     s, e = b['era']; left = (s - y0) / (y1 - y0) * 100; width = (e - s) / (y1 - y0) * 100
-    return (f'<a class="era" href="{b["slug"]}/" style="--l:{left:.2f}%;--w:{width:.2f}%">'
-            f'<span class="era-name">{E(ERA_LABEL.get(b["slug"]) or ("Смерть WCW" if b["slug"] == "wcw" else b["author"]))}</span><span class="era-bar"><span>{s}–{e}</span></span></a>')
+    flip = ' in' if width >= 36 else (' flip' if left > 100 - left - width else '')
+    return (f'<a class="era" href="{b["slug"]}/"><span class="era-name">{E(ERA_LABEL.get(b["slug"]) or ("Смерть WCW" if b["slug"] == "wcw" else b["author"]))}</span>'
+            f'<span class="era-bar{flip}" style="--l:{left:.2f}%;--w:{width:.2f}%"><i></i><b>{s}–{e}</b></span></a>')
 
 def eras(group, sub):
     rows = ''.join(era_row(b) for b in sorted(group, key=lambda b: b['era']) if b['era'])
     return (f'<section class="eras-sec" aria-labelledby="eras-h"><h2 class="sh" id="eras-h">Эпохи</h2><p class="sub">{sub}</p>'
-            f'<div class="eras">{rows}<div class="axis"><span></span><div>{"".join(f"<span>{y}</span>" for y in range(y0, y1 + 1, 10))}</div></div></div></section>')
+            f'<div class="eras">{rows}<div class="axis"><span></span><div>{"".join(f'<span style="--l:{(y - y0) / (y1 - y0) * 100:.2f}%">{y}</span>' for y in range(y0, y1 + 1, 10))}</div></div></div></section>')
 
 ld = {'@context': 'https://schema.org', '@type': 'CollectionPage', 'name': 'VSplanet Книги', 'url': BASE, 'inLanguage': 'ru',
       'description': 'Автобиографии звёзд рестлинга в переводах VSplanet.net: читать онлайн бесплатно или скачать EPUB.',
@@ -163,7 +164,7 @@ def navbar(cur, act=''):
     return (f'<header class="navbar" data-navbar><a class="nb-brand" href="./" aria-label="VSplanet Книги"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648"></a>'
             f'<span class="nb-title">{TITLES[cur]}</span><span class="nb-act">{act}</span></header>')
 
-MINI_FOOT = f'<footer class="credits mini"><div class="cr-end"><span>Сайт собрал Никита Андреев, 2026</span><span class="app-ver">Версия {shared.version_label()}</span></div></footer>'
+MINI_FOOT = f'<footer class="credits mini"><div class="sign"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648" loading="lazy"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div></footer>'
 
 def page(path, title, desc, main, js, cur, extra='', act='', body_cls='shelf-body', foot=None):
     P = '../' if path else ''
@@ -194,8 +195,7 @@ ABOUT = f"""<footer class="credits" id="about">
 <div><h4>О проекте</h4><p>С 2011 года читатели VSplanet переводят книги звёзд рестлинга. Здесь они собраны в одной читалке: закладки, поиск по тексту, офлайн-режим и EPUB. Регистрации нет, а прогресс чтения хранится только в вашем браузере.</p></div>
 <div><h4>Присоединяйтесь</h4><p>Недопереведённые книги ждут продолжения. Возьмите главу — и ваше имя появится в выходных данных книги.</p><p><a class="cr-link" href="https://vsplanet.net/" rel="noopener">Редакция VSplanet.net →</a></p></div>
 </div>
-<label class="cr-set"><span>Прозрачность стекла</span><input type="range" id="glass" min="0" max="100" step="5" value="55" aria-label="Прозрачность стекла"></label>
-<div class="cr-end"><span>Сайт собрал Никита Андреев, 2026</span><span class="app-ver">Версия {shared.version_label()}</span></div>
+<div class="sign"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648" loading="lazy"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div>
 </footer>"""
 
 # ---- JS страниц ----
@@ -223,7 +223,8 @@ function build(){{list=deck();
 <div class="qs-act"><a class="btn big" href="${{q.s}}/#read/${{q.c}}/${{q.p}}">Читать в книге</a><button class="icon" data-share="${{i}}" aria-label="Поделиться цитатой"><svg viewBox="0 0 24 24" aria-hidden="true">{I_SHARE}</svg></button></div></div></article>`}}).join('');
  if(io)io.disconnect();io=new IntersectionObserver(es=>{{for(const e of es)if(e.isIntersecting&&e.intersectionRatio>.6)setCur(+e.target.dataset.i)}},{{root:track,threshold:[.6]}});
  track.querySelectorAll('.qs-slide').forEach(s=>io.observe(s));track.scrollTo({{left:0}});setCur(0)}}
-function setCur(i){{cur=i;cnt.textContent=(i+1)+' / '+list.length;const q=list[i];if(q&&bg.dataset.s!==q.s){{bg.dataset.s=q.s;bg.style.backgroundImage=`url(../covers/${{q.s}}.webp)`}}
+function fit(el){{if(!el)return;const bq=el.querySelector('blockquote'),inn=el.querySelector('.qs-in');bq.style.fontSize='';let fs=parseFloat(getComputedStyle(bq).fontSize),n=0;while(inn.scrollHeight>inn.clientHeight+1&&fs>15&&n++<40){{fs-=1;bq.style.fontSize=fs+'px'}}}}
+function setCur(i){{cur=i;fit(track.children[i]);cnt.textContent=(i+1)+' / '+list.length;const q=list[i];if(q&&bg.dataset.s!==q.s){{bg.dataset.s=q.s;bg.style.backgroundImage=`url(../covers/${{q.s}}.webp)`}}
  try{{if(navigator.userActivation&&navigator.userActivation.hasBeenActive&&navigator.vibrate&&matchMedia('(pointer:coarse)').matches)navigator.vibrate(4)}}catch(e){{}}}}
 const go=d=>{{const n=Math.max(0,Math.min(list.length-1,cur+d));track.children[n].scrollIntoView({{behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',inline:'center',block:'nearest'}})}};
 document.getElementById('qprev').onclick=()=>go(-1);document.getElementById('qnext').onclick=()=>go(1);
@@ -233,7 +234,7 @@ function toast(t){{let n=document.getElementById('toast');if(!n){{n=document.cre
 track.addEventListener('click',async e=>{{const b=e.target.closest('[data-share]');if(!b)return;const q=list[+b.dataset.share],a=by[q.s],url=location.origin+location.pathname.replace(/quotes\\/$/,'')+q.s+'/#read/'+q.c+'/'+q.p,text='«'+q.t+'» — '+a.author+', «'+a.title+'»';
  try{{if(navigator.share){{await navigator.share({{text,url}});return}}}}catch(err){{if(err&&err.name==='AbortError')return}}
  try{{await navigator.clipboard.writeText(text+'\\n'+url);toast('Цитата скопирована')}}catch(err){{toast('Не удалось скопировать')}}}});
-build()}})();
+build();addEventListener('resize',()=>fit(track.children[cur]));document.fonts&&document.fonts.ready.then(()=>fit(track.children[cur]))}})();
 """
 JS_SHELF = f"""document.querySelectorAll('.book').forEach(el=>{{
   const x=st[el.dataset.slug];el.dataset.state=!x?'new':x.pct>=98?'done':'reading';if(!x)return;

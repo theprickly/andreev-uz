@@ -8,7 +8,7 @@
 
 :root{
  /* ТЕМА КНИГИ — по умолчанию стиль логотипа VS (сталь + тёмно-синий). Книга переопределяет в <style id="theme">. */
- --accent:#7fa6d4;--accent-hi:#a5c3e6;--accent-deep:#2f5b8f;--accent-ink:#06101f;
+ --accent:#68a0d9;--accent-hi:#9cc2ea;--accent-deep:#052464;--accent-ink:#fff;
  --bg:#03060c;--surface:#0b111d;--surface-2:#121a2a;--reader-bg-night:#070b13;
  --display:Geologica,-apple-system,system-ui,sans-serif;--display-weight:800;--display-tracking:-.045em;--display-leading:.95;
 }
@@ -50,15 +50,15 @@ dialog{color:var(--text)}
 .credit b{font-weight:700;color:var(--text)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;height:48px;padding:0 22px;border-radius:999px;font-size:16px;font-weight:600;white-space:nowrap;transition:background .2s,transform .2s,border-color .2s}
 .btn svg{width:19px;height:19px;stroke-width:2.2}
-.btn-primary{color:var(--accent-ink);background:var(--accent-fill,var(--red));box-shadow:0 10px 30px color-mix(in srgb,var(--accent) 25%,transparent)}
-.btn-primary:hover{background:var(--red-hi);transform:translateY(-1px)}
+.btn-primary{color:#fff;background:var(--accent-fill,var(--red));box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
 .btn-ghost{color:var(--text);background:#ffffff10;border:1px solid var(--line)}
 .btn-ghost:hover{background:#ffffff1c;border-color:var(--line-2)}
 .chip{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 15px;border-radius:999px;font-size:14px;font-weight:500;background:#ffffff0f;border:1px solid var(--line);color:var(--text);transition:background .2s,border-color .2s;white-space:nowrap}
 .chip:hover{background:#ffffff1c;border-color:var(--line-2)}
 .chip svg{width:16px;height:16px}
 .button{min-height:40px;display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;font-size:14px;font-weight:500;padding:0 18px}
-.primary{background:var(--red);color:var(--accent-ink)}.primary:hover{background:var(--red-hi)}
+.primary{background:var(--accent-fill,var(--red));color:#fff}.primary:hover{filter:brightness(1.08)}
 .secondary{border:1px solid var(--line-2);background:var(--surface-2)}.secondary:hover{background:#222225}
 .text-button{color:var(--muted);font-size:13px;text-decoration:underline;text-underline-offset:4px}
 .pull-quote{margin:0;max-width:880px;font-family:var(--serif);font-style:italic;font-weight:400;font-size:clamp(24px,3vw,36px);line-height:1.3;letter-spacing:-.01em;color:var(--text);text-wrap:balance}
@@ -137,7 +137,7 @@ dialog{color:var(--text)}
 /* ============ READER ============ */
 #reader{background:var(--reader-bg);min-height:100vh;color:var(--reader-ink)}
 .reading-progress{position:fixed;top:0;left:0;right:0;height:2px;z-index:31}
-.reading-progress i{display:block;height:100%;width:0;background:var(--red);transition:width .3s}
+.reading-progress i{display:block;height:100%;width:0;background:var(--accent-fill,var(--red));transition:width .3s}
 .reader-header{position:fixed;top:0;left:0;right:0;height:var(--head-h);padding-top:env(safe-area-inset-top);box-sizing:border-box;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:16px;padding-inline:16px;background:color-mix(in srgb,var(--reader-bg) 78%,transparent);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border-bottom:1px solid var(--line);transition:transform .35s cubic-bezier(.2,.8,.2,1)}
 .reader-header .vs-brand img{width:34px}
 .reader-header .vs-brand b{font-size:16px}
@@ -171,7 +171,7 @@ dialog{color:var(--text)}
 .sidebar-progress-row{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--muted)}
 .sidebar-progress-row strong{font-size:15px;color:var(--text)}
 .small-progress{height:4px;border-radius:9px;background:#ffffff14;margin:8px 0 12px;overflow:hidden}
-.small-progress i{display:block;height:100%;width:0;background:var(--red);border-radius:9px}
+.small-progress i{display:block;height:100%;width:0;background:var(--accent-fill,var(--red));border-radius:9px}
 .sidebar-credit{margin:0;font-size:13px;line-height:1.45;color:var(--muted)}
 
 .reading-main{margin-left:var(--side-w);padding:calc(var(--head-h) + 48px) 28px 120px;outline:none}

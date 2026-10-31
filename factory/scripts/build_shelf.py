@@ -173,6 +173,10 @@ footer{{margin:72px 0 0;padding:28px 0 40px;border-top:1px solid var(--line);col
 @media (max-width:640px){{.qcard{{min-height:280px;padding:22px 18px 18px}}.qcard footer{{flex-wrap:wrap}}.qcard cite{{flex-basis:calc(100% - 56px)}}.qcard .go{{width:100%;justify-content:center}}}}
 html,body{{overflow-x:clip}}.manifest p{{margin:0 0 14px}}.manifest p:last-child{{margin:0}}@media (max-width:480px){{.nav{{gap:6px}}.nav .chip{{padding:0 11px;font-size:13px}}.brand span{{display:none}}}}
 @media (prefers-reduced-motion:no-preference){{.qtrack{{scroll-behavior:smooth}}}}
+/* компактный верх: заголовок в одну строку и цифры в ряд */
+.hero{{padding:34px 0 8px}}.hero h1{{font-size:clamp(28px,4.2vw,48px);max-width:none;line-height:1.05;letter-spacing:-.035em}}.hero .eyebrow{{margin-bottom:10px}}
+.hero .stats{{gap:8px 22px;margin:16px 0 0;align-items:baseline}}.hero .stats li{{display:flex;align-items:baseline;gap:6px}}.hero .stats b{{display:inline;font-size:18px}}.hero .stats span{{font-size:14px}}
+#shelf{{margin-top:28px}}
 /* — компактная цитата, канаты между секциями, титры — */
 main>section{{position:relative}}main>section+section{{margin-top:64px;padding-top:44px}}
 .qs{{margin-top:56px}}.qhead{{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px}}.qhead .eyebrow{{margin:0}}
@@ -199,9 +203,7 @@ footer.credits{{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px
 <main>
 <div class="hero"><p class="eyebrow">Библиотека переводов VSplanet.net</p>
 <h1>Рестлинг, рассказанный изнутри</h1>
-<div class="lead manifest"><p>С 2011 года читатели VSplanet переводят автобиографии звёзд рестлинга для таких же фанатов, как они сами. Из любви к рестлингу и желания делиться историями, которые заслуживают быть услышанными.</p>
-<p>Теперь все эти переводы собраны в одном месте — в удобной читалке с закладками и офлайн-режимом. Без регистрации и лишних сложностей.</p>
-<p>Некоторые книги так и остались недопереведёнными. Но мы верим, что вместе сможем довести их до конца.</p></div>
+
 <ul class="stats"><li><b>{len(full)}</b><span>{plural(len(full), 'книга', 'книги', 'книг')} целиком</span></li><li><b>{len(partial)}</b><span>{plural(len(partial), 'неполная', 'неполные', 'неполных')}</span></li><li><b>{sum(b['chapters'] for b in books)}</b><span>глав и разделов</span></li><li><b>≈{hours} ч</b><span>чтения</span></li><li><b>EPUB</b><span>для любой читалки</span></li></ul>
 <div id="resume"></div></div>
 <section id="shelf" aria-labelledby="shelf-h"><h2 id="shelf-h">Полка</h2><p class="sub">Прогресс сохраняется в вашем браузере и подтягивается сюда сам.</p>

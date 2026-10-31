@@ -46,7 +46,7 @@ shutil.rmtree(dst, ignore_errors=True)
 (dst / 'assets' / 'icons').mkdir(parents=True)
 PWA_V = hashlib.sha256((T / 'pwa.js').read_bytes()).hexdigest()[:12]      # общий /books/pwa.js; версия — в адресе
 import shared
-SH_CSS, SH_JS = shared.build(dst.parent)     # общие шрифты, логотип, CSS и JS: /books/shared/
+SH_CSS, SH_JS, SH_NCSS, SH_NJS = shared.build(dst.parent)     # общие шрифты, логотип, CSS и JS: /books/shared/
 _cv0 = Image.open(src / 'assets' / 'cover.jpg').convert('RGB'); _cv0.thumbnail((800, 1200), Image.LANCZOS)
 _cv0.save(dst / 'assets' / 'cover.jpg', quality=80, optimize=True, progressive=True)
 Image.open(src / 'assets' / 'book-render.png').save(dst / 'assets' / 'book-render.webp', quality=88, method=6)
@@ -128,6 +128,7 @@ if INC:
     n0 = len(page)
     page = re.sub(r'<link rel="manifest"[^>]*>|<link rel="apple-touch-icon"[^>]*>|<script src="\.\./pwa\.js[^"]*"[^>]*></script>', '', page)
     page = re.sub(r'<section id="formats".*?</section>\s*', '', page, flags=re.S)
+    page = re.sub(r'<a class="tb-tab" href="#formats"[^>]*>.*?</a>', '', page, flags=re.S)
     page = re.sub(r'<div class="app-settings">.*?</p></div>', '', page, flags=re.S)
     page = re.sub(r'<dialog id="install-dialog".*?</dialog>\s*', '', page, flags=re.S)
     for w in (r'\.epub', 'rel="manifest"', 'pwa.js', 'install-dialog'):
@@ -153,9 +154,9 @@ except Exception as e:
 
 # версии файлов (кэш) + офлайн-список
 page = (dst / 'index.html').read_text()
-page = page.replace('href="style.css"', f'href="../shared/{SH_CSS}"').replace('src="app.js"', f'src="../shared/{SH_JS}"')
+page = page.replace('href="style.css"', f'href="../shared/{SH_CSS}"').replace('src="app.js"', f'src="../shared/{SH_JS}"').replace('href="nav.css"', f'href="../shared/{SH_NCSS}"').replace('src="nav.js"', f'src="../shared/{SH_NJS}"')
 (dst / 'index.html').write_text(page)
-assets = ['./', book_file, f'../shared/{SH_CSS}', f'../shared/{SH_JS}']
+assets = ['./', book_file] + [f'../shared/{n}' for n in (SH_CSS, SH_JS, SH_NCSS, SH_NJS)]
 for d in ('assets/icons', 'assets/images'):
     assets += sorted(f'{d}/{f}' for f in os.listdir(dst / d) if not f.endswith('.txt'))
 assets += ['assets/cover.jpg', 'assets/book-render.webp']

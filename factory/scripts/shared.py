@@ -8,13 +8,13 @@ h12 = lambda b: hashlib.sha256(b).hexdigest()[:12]
 def build(books_dir):
     d = pathlib.Path(books_dir) / 'shared'
     if (d / '.names').exists():
-        css, js = (d / '.names').read_text().split()
-        if (d / css).exists() and (d / js).exists(): return css, js
+        names = (d / '.names').read_text().split()
+        if len(names) == 4 and all((d / n).exists() for n in names): return tuple(names)
     (d / 'fonts').mkdir(parents=True, exist_ok=True)
     for f in (T / 'assets' / 'fonts').iterdir(): shutil.copy(f, d / 'fonts' / f.name)
     shutil.copy(T / 'assets' / 'vsplanet-logo.png', d)
     names = []
-    for f in ('style.css', 'app.js'):
+    for f in ('style.css', 'app.js', 'nav.css', 'nav.js'):
         tmp = d / ('_' + f); shutil.copy(T / f, tmp)
         if ESB.exists(): subprocess.run([str(ESB), str(tmp), '--minify', '--allow-overwrite', f'--outfile={tmp}', '--log-level=error'], check=True)
         stem, suf = f.rsplit('.', 1); name = f'{stem}-{h12(tmp.read_bytes())}.{suf}'; tmp.rename(d / name); names.append(name)

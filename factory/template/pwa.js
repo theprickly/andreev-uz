@@ -57,6 +57,7 @@
  });
  /* ---- установка приложения ---- */
  const dialog=document.querySelector('#install-dialog'),nativeButton=document.querySelector('#native-install');
+ function steps_(){return steps();}
  function steps(){return ios?['Откройте страницу в Safari.','Нажмите «Поделиться».','Выберите «На экран Домой» и «Добавить».']:['Откройте меню браузера (⋮).','Выберите «Установить приложение» или «Добавить на главный экран».'];}
  function instructions(){
   const t=document.querySelector('#install-instructions');if(!t)return;t.replaceChildren();
@@ -66,6 +67,8 @@
  }
  async function install(){
   if(installEvent){const ev=installEvent;installEvent=null;try{await ev.prompt();const c=await ev.userChoice;if(c.outcome==='accepted'&&dialog&&dialog.open)dialog.close();}catch{}if(nativeButton)nativeButton.hidden=true;return;}
+  const ib=document.querySelector('.ibanner');
+  if(!dialog&&ib){const st=ib.querySelector('.ib-steps');if(st)st.hidden=false;ib.scrollIntoView({behavior:'smooth',block:'center'});return;}
   if(dialog){instructions();if(!dialog.open)dialog.showModal();}else toast('Установка: '+steps().join(' '));
  }
  const trig=()=>$$('.install-trigger');
@@ -74,8 +77,30 @@
  if(nativeButton)nativeButton.addEventListener('click',install);
  const ic=document.querySelector('[data-install-close]');if(ic)ic.addEventListener('click',()=>dialog.close());
  window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;triggers();if(dialog&&dialog.open)instructions();});
- window.addEventListener('appinstalled',()=>{installEvent=null;trig().forEach(b=>{b.textContent='Приложение установлено';b.disabled=true;});if(dialog&&dialog.open)dialog.close();});
+ window.addEventListener('appinstalled',()=>{installEvent=null;trig().forEach(b=>{if(b.classList.contains('tb-fab')){b.hidden=true;return;}b.textContent='Приложение установлено';b.disabled=true;});document.querySelectorAll('.ibanner').forEach(n=>n.remove());if(dialog&&dialog.open)dialog.close();});
  triggers();
+ /* ---- баннер «Установите приложение» (мобильные; не в установленном приложении) ---- */
+ (()=>{
+  const slot=document.querySelector('[data-install-banner]');if(!slot||standalone())return;
+  const KEY='vs-install-banner-off';let off=0;try{off=+localStorage.getItem(KEY)||0;}catch{}
+  if(off&&Date.now()-off<7*864e5)return;
+  const ic=d=>`<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+  const share='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4m-4 4 4-4 4 4M6 11H5v9h14v-9h-1"/></svg>';
+  const items=[['<path d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 20h14"/>','Без интернета','Скачайте книгу — и читайте в метро, самолёте и на даче'],
+   ['<rect x="6.5" y="2.5" width="11" height="19" rx="3"/><path d="M10 18.5h4"/>','На весь экран','Без адресной строки — как обычное приложение'],
+   ['<path d="M5 4h4v16H5zM11 4h4v16h-4z"/><path d="m16.5 6 3.5-1 2.5 14.5-3.5 1z"/>','Вся полка под рукой','Значок на экране — одно касание, и вы в библиотеке'],
+   ['<path d="M20 12a8 8 0 1 1-2.5-5.8M20 4v5h-5"/>','Всегда свежее','Новые главы и книги подтягиваются сами']];
+  const steps=ios?`<li>Откройте страницу в Safari.</li><li>Нажмите «Поделиться» ${share}</li><li>Выберите «На экран Домой» и нажмите «Добавить».</li>`:steps_().map(x=>`<li>${x}</li>`).join('');
+  const n=document.createElement('aside');n.className='ibanner';n.setAttribute('role','region');n.setAttribute('aria-label','Установка приложения');
+  n.innerHTML=`<button class="ib-x" type="button" aria-label="Скрыть баннер">×</button>
+   <div class="ib-head"><img class="ib-ico" src="${ROOT}icons/app-192.png" width="58" height="58" alt=""><div><p class="ib-k">VSplanet Книги</p><h2 class="ib-t">Установите приложение — читать так удобнее всего</h2></div></div>
+   <ul class="ib-list">${items.map(i=>`<li>${ic(i[0])}<b>${i[1]}</b><span>${i[2]}</span></li>`).join('')}</ul>
+   <div class="ib-act"><button class="ib-go" type="button">${ios?'Как установить':'Установить'}</button><span class="ib-free">Бесплатно · без App Store и Google Play · 5 секунд</span></div>
+   <ol class="ib-steps" hidden>${steps}</ol>`;
+  slot.replaceWith(n);
+  n.querySelector('.ib-x').addEventListener('click',()=>{try{localStorage.setItem(KEY,String(Date.now()));}catch{}n.remove();});
+  n.querySelector('.ib-go').addEventListener('click',()=>{if(installEvent){install();return;}const st=n.querySelector('.ib-steps');st.hidden=!st.hidden;});
+ })();
  /* ---- запуск ---- */
  if('serviceWorker' in navigator&&window.isSecureContext)navigator.serviceWorker.register(ROOT+'sw.js',{scope:ROOT,updateViaCache:'none'}).catch(()=>{});
  if('caches' in window){const l=slugs();l.forEach(s=>S[s]={st:'idle'});const cur=location.pathname.split('/').filter(Boolean).pop();if(!l.includes(cur)&&location.pathname.split('/').filter(Boolean).length>1)S[cur]={st:'idle'};Object.keys(S).forEach(refresh);}

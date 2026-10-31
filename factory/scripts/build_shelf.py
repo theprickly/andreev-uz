@@ -64,7 +64,7 @@ EAGER = {b['slug'] for b in books if not b['inc']}.intersection({b['slug'] for b
 full = [b for b in books if not b['inc']]; partial = [b for b in books if b['inc']]
 total_words = sum(sum(b['words']) for b in books)
 hours = round(total_words / 180 / 60)
-import shared; shared.build(OUT)     # общие шрифты и логотип — /books/shared/
+import shared; SH = shared.build(OUT)     # общие шрифты и логотип — /books/shared/
 
 def plural(n, a, b, c):
     n = abs(n) % 100; n1 = n % 10
@@ -127,7 +127,7 @@ if _ESB.exists(): subprocess.run([str(_ESB), str(OUT / 'pwa.js'), '--minify', '-
     'lang': 'ru', 'start_url': '/books/', 'scope': '/books/', 'display': 'standalone', 'background_color': '#03060c', 'theme_color': '#03060c',
     'icons': [{'src': 'icons/app-192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'}, {'src': 'icons/app-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
               {'src': 'icons/app-maskable-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'}]}, ensure_ascii=False, indent=1))
-_shell = ['./', f'pwa.js?v={PWA_V}', 'shared/vsplanet-logo.png', 'shared/fonts/geologica-cyr.woff2', 'shared/fonts/geologica-lat.woff2', 'shared/fonts/literata-cyrillic-normal.woff2', 'shared/fonts/literata-cyrillic-italic.woff2', 'shared/fonts/literata-latin-normal.woff2', 'shared/fonts/literata-latin-italic.woff2', 'icons/app-192.png'] + [f'covers/{b["slug"]}.webp' for b in books]
+_shell = ['./', f'pwa.js?v={PWA_V}', 'shared/vsplanet-logo.png', 'shared/fonts/geologica-cyr.woff2', 'shared/fonts/geologica-lat.woff2', 'shared/fonts/literata-cyrillic-normal.woff2', 'shared/fonts/literata-cyrillic-italic.woff2', 'shared/fonts/literata-latin-normal.woff2', 'shared/fonts/literata-latin-italic.woff2', f'shared/{SH[2]}', f'shared/{SH[3]}', 'icons/app-192.png'] + [f'covers/{b["slug"]}.webp' for b in books]
 (OUT / 'sw.js').write_text((T / 'sw-app.js').read_text().replace('%SHELL%', json.dumps(_shell)).replace('%SHELL_V%', hashlib.sha256((PAGE_SEED := json.dumps(_shell) + PWA_V + (T / 'sw-app.js').read_text()).encode()).hexdigest()[:12]))
 
 PAGE = f'''<!doctype html>
@@ -242,11 +242,12 @@ footer.credits{{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px
 .mylib button{{line-height:1.5}}
 @media (max-width:640px){{.actions .ghost{{display:none}}.mylib .ghost{{display:inline-flex}}}}
 @media (prefers-reduced-motion:reduce){{*{{transition:none!important}}}}
-</style></head><body>
+</style><link rel="stylesheet" href="shared/{SH[2]}"><script src="shared/{SH[3]}" defer></script></head><body class="shelf-body">
 <div class="glow"></div>
 <div class="wrap">
 <header class="top"><a class="brand" href="./"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a><span class="nav"><a class="chip" href="#quotes">Цитаты</a><a class="chip" href="#unfinished">Неполные</a><a class="chip" href="#eras">Эпохи</a></span></header>
 <main>
+<div data-install-banner></div>
 <div class="hero"><h1>Рестлинг, рассказанный изнутри</h1>
 
 <ul class="stats"><li><b>{len(full)}</b><span>{plural(len(full), 'книга', 'книги', 'книг')} целиком</span></li><li><b>{len(partial)}</b><span>{plural(len(partial), 'неполная', 'неполные', 'неполных')}</span></li><li><b>{sum(b['chapters'] for b in books)}</b><span>глав и разделов</span></li><li><b>≈{hours} ч</b><span>чтения</span></li><li><b>EPUB</b><span>для любой читалки</span></li></ul>
@@ -274,7 +275,8 @@ footer.credits{{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px
 <div class="axis"><span></span><div>{''.join(f'<span>{y}</span>' for y in range(y0, y1 + 1, 10))}</div></div>
 </div></section>
 </main>
-<footer class="credits">
+<nav class="tabbar" data-tabbar aria-label="Разделы"><div class="tb-pill"><i class="tb-ind"></i><a class="tb-tab" href="#shelf" data-scroll="#shelf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4v16H5zM11 4h4v16h-4z"/><path d="m17 6.5 3.7-1 2 14-3.7 1z" transform="translate(-1.5 0)"/></svg><span>Полка</span></a><a class="tb-tab" href="#quotes" data-scroll="#quotes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h4v5c0 3-1.5 4.7-4 5.5M14 7h4v5c0 3-1.5 4.7-4 5.5"/></svg><span>Цитаты</span></a><a class="tb-tab" href="#unfinished" data-scroll="#unfinished"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg><span>В работе</span></a><a class="tb-tab" href="#about" data-scroll="#about"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 11v5M12 7.8v.01"/></svg><span>О проекте</span></a></div><button class="tb-fab install-trigger" type="button" data-install-auto hidden aria-label="Установить приложение"><svg viewBox="0 0 24 24" aria-hidden="true" style="fill:none"><path d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 20h14"/></svg></button></nav>
+<footer class="credits" id="about">
 <div class="cr-brand"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648" loading="lazy"><div><b>VSplanet Книги</b><p>Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.</p></div></div>
 <div class="cr-grid">
 <div><h4>О проекте</h4><p>С 2011 года читатели VSplanet переводят книги звёзд рестлинга. Здесь они собраны в одной читалке: закладки, поиск по тексту, офлайн-режим и EPUB. Регистрации нет, а прогресс чтения хранится только в вашем браузере.</p></div>

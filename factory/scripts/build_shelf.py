@@ -161,10 +161,10 @@ def tabbar(cur):
 
 TITLES = {'shelf': 'Полка', 'unfinished': 'В работе', 'quotes': 'Цитаты'}
 def navbar(cur, act=''):
-    return (f'<header class="navbar" data-navbar><a class="nb-brand" href="./" aria-label="VSplanet Книги"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648"></a>'
+    return (f'<header class="navbar" data-navbar><a class="nb-brand" href="./" aria-label="VSplanet Книги"><img src="shared/vsplanet-mark.svg" alt="" width="439" height="307"></a>'
             f'<span class="nb-title">{TITLES[cur]}</span><span class="nb-act">{act}</span></header>')
 
-MINI_FOOT = f'<footer class="credits mini"><div class="sign"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648" loading="lazy"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div></footer>'
+MINI_FOOT = f'<footer class="credits mini"><div class="sign"><img src="shared/vsplanet-mark.svg" alt="" width="439" height="307" loading="lazy"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div></footer>'
 
 def page(path, title, desc, main, js, cur, extra='', act='', body_cls='shelf-body', foot=None):
     P = '../' if path else ''
@@ -173,7 +173,7 @@ def page(path, title, desc, main, js, cur, extra='', act='', body_cls='shelf-bod
 <title>{E(title)}</title><meta name="description" content="{E(desc)}">
 <link rel="canonical" href="{BASE}{path}"><meta name="theme-color" content="#03060c"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/app-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Книги"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta property="og:type" content="website"><meta property="og:url" content="{BASE}{path}"><meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}"><meta property="og:image" content="{BASE}og.jpg"><meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="shared/vsplanet-logo.png"><link rel="preload" href="shared/fonts/geologica-cyr.woff2" as="font" type="font/woff2" crossorigin>{extra}
+<link rel="icon" type="image/svg+xml" href="shared/vsplanet-mark.svg"><link rel="preload" href="shared/fonts/geologica-cyr.woff2" as="font" type="font/woff2" crossorigin>{extra}
 <link rel="stylesheet" href="shared/{SHELF_CSS}"><link rel="stylesheet" href="shared/{SH[2]}"><script src="shared/{SH[3]}" defer></script></head><body class="{body_cls}" data-page="{cur}">
 <div class="glow"></div>
 {navbar(cur, act)}
@@ -190,12 +190,12 @@ def wrap(inner, foot):
     return f'<div class="wrap"><main>\n{inner}\n</main>\n{foot}</div>'
 
 ABOUT = f"""<footer class="credits" id="about">
-<div class="cr-brand"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648" loading="lazy"><div><b>VSplanet Книги</b><p>Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.</p></div></div>
+<div class="cr-brand"><img src="shared/vsplanet-mark.svg" alt="" width="439" height="307" loading="lazy"><div><b>VSplanet Книги</b><p>Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.</p></div></div>
 <div class="cr-grid">
 <div><h4>О проекте</h4><p>С 2011 года читатели VSplanet переводят книги звёзд рестлинга. Здесь они собраны в одной читалке: закладки, поиск по тексту, офлайн-режим и EPUB. Регистрации нет, а прогресс чтения хранится только в вашем браузере.</p></div>
 <div><h4>Присоединяйтесь</h4><p>Недопереведённые книги ждут продолжения. Возьмите главу — и ваше имя появится в выходных данных книги.</p><p><a class="cr-link" href="https://vsplanet.net/" rel="noopener">Редакция VSplanet.net →</a></p></div>
 </div>
-<div class="sign"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648" loading="lazy"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div>
+<div class="sign"><img src="shared/vsplanet-mark.svg" alt="" width="439" height="307" loading="lazy"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div>
 </footer>"""
 
 # ---- JS страниц ----
@@ -292,7 +292,7 @@ PAGES = {
 
 for _p, _h in PAGES.items():
     (OUT / _p).mkdir(parents=True, exist_ok=True); (OUT / _p / 'index.html').write_text(_h)
-_shell = ['./', 'unfinished/', 'quotes/', f'shared/{SHELF_CSS}', f'pwa.js?v={PWA_V}', 'shared/vsplanet-logo.png', 'shared/fonts/geologica-cyr.woff2', 'shared/fonts/geologica-lat.woff2', 'shared/fonts/literata-cyrillic-normal.woff2', 'shared/fonts/literata-cyrillic-italic.woff2', 'shared/fonts/literata-latin-normal.woff2', 'shared/fonts/literata-latin-italic.woff2', f'shared/{SH[2]}', f'shared/{SH[3]}', 'icons/app-192.png'] + [f'covers/{b["slug"]}.webp' for b in books]
+_shell = ['./', 'unfinished/', 'quotes/', f'shared/{SHELF_CSS}', f'pwa.js?v={PWA_V}', 'shared/vsplanet-mark.svg', 'shared/vsplanet-wordmark.svg', 'shared/fonts/geologica-cyr.woff2', 'shared/fonts/geologica-lat.woff2', 'shared/fonts/literata-cyrillic-normal.woff2', 'shared/fonts/literata-cyrillic-italic.woff2', 'shared/fonts/literata-latin-normal.woff2', 'shared/fonts/literata-latin-italic.woff2', f'shared/{SH[2]}', f'shared/{SH[3]}', 'icons/app-192.png'] + [f'covers/{b["slug"]}.webp' for b in books]
 (OUT / 'version.json').write_text(json.dumps({'version': shared.version()[0], 'name': shared.version()[1], 'label': shared.version_label()}, ensure_ascii=False))
 _seed = json.dumps(_shell) + PWA_V + (T / 'sw-app.js').read_text() + shared.version_label() + ''.join(hashlib.sha256(h.encode()).hexdigest()[:8] for h in PAGES.values())
 (OUT / 'sw.js').write_text((T / 'sw-app.js').read_text().replace('%SHELL%', json.dumps(_shell)).replace('%SHELL_V%', hashlib.sha256(_seed.encode()).hexdigest()[:12]))
@@ -309,7 +309,7 @@ body{{margin:0;width:1200px;height:630px;background:radial-gradient(60% 80% at 7
 img.c{{}}img{{position:absolute;top:150px;width:220px;border-radius:4px 8px 8px 4px;box-shadow:0 30px 60px -10px #000,0 0 0 1px #ffffff18;transform-origin:50% 120%}}
 .t{{position:absolute;left:64px;top:64px;width:470px}}.l{{display:flex;gap:14px;align-items:center}}.l img{{position:static;width:58px;box-shadow:none}}.l b{{font-size:26px;display:block;line-height:1}}.l small{{font-size:14px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}}
 h1{{font-size:62px;line-height:.98;letter-spacing:-.045em;margin:70px 0 0;font-weight:800}}p{{font-size:24px;color:#9fbcd4;margin:22px 0 0}}</style></head><body>
-<div class="t"><div class="l"><img src="{uri(OUT / 'shared' / 'vsplanet-logo.png').replace('jpeg', 'png')}"><span><b>VSplanet</b><small>Книги</small></span></div><h1>Рестлинг, рассказанный изнутри</h1><p>{n} автобиографий · ≈{hours} часов чтения</p></div>{covers}</body></html>'''
+<div class="t"><div class="l"><img src="{uri(T / 'assets' / 'vsplanet-logo.png').replace('jpeg', 'png')}"><span><b>VSplanet</b><small>Книги</small></span></div><h1>Рестлинг, рассказанный изнутри</h1><p>{n} автобиографий · ≈{hours} часов чтения</p></div>{covers}</body></html>'''
 with sync_playwright() as p:
     br = p.chromium.launch(); pg = br.new_page(viewport={'width': 1200, 'height': 630})
     pg.set_content(OG); pg.wait_for_timeout(500); pg.screenshot(path=str(OUT / 'og.jpg'), type='jpeg', quality=86); br.close()

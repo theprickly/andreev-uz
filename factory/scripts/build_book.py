@@ -168,7 +168,7 @@ json.dump({'v': h12(page.encode() + bj), 'bytes': sum(x[1] for x in sizes), 'fil
 # статические страницы глав и sitemap
 ch = book['chapters']; css = SH_CSS
 mark = lambda i, t: (f'{int(m[1]):02d}' if (m := re.match(r'^Глава\s+(\d+)', t)) else t.strip()[0].upper())
-BRAND = '<a class="vs-brand" href="../../" aria-label="Все книги"><img src="../../shared/vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a>'
+BRAND = '<a class="vs-brand" href="../../" aria-label="Все книги"><img src="../../shared/vsplanet-mark.svg" alt="" width="439" height="307"><span class="wm"><img src="../../shared/vsplanet-wordmark.svg" alt="VSplanet" width="792" height="161"><small>Книги</small></span></a>'
 def spage(title, desc, canon, body, extra=''):
     return f'''<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{E(title)}</title><meta name="description" content="{E(desc)}"><link rel="canonical" href="{canon}"><meta property="og:title" content="{E(title)}"><meta property="og:image" content="{BASE}assets/og.jpg"><link rel="icon" href="../assets/icons/cover-favicon-32.png"><link rel="stylesheet" href="../../shared/{css}">{style_vars}{extra}</head>
 <body class="static theme-night"><header class="top wrap">{BRAND}<nav><a class="chip" href="../">К книге</a><a class="chip" href="./">Все главы</a></nav></header>{body}<footer class="page-foot wrap"><nav class="footer-nav"><a href="../../">Все книги</a><a href="../">О книге</a><a href="../#about">О сайте</a></nav></footer></body></html>'''

@@ -18,6 +18,7 @@
    el.title=TIP[s.st];el.setAttribute('aria-label',TIP[s.st]);const t=el.querySelector('.off-t');if(t)t.textContent=s.st==='busy'?'Скачивание '+Math.round((s.p||0)*100)+'%':LBL[s.st];});
   const ready=Object.entries(S).filter(([,v])=>v.st==='ready'||v.st==='update');
   $$('[data-offline-sum]').forEach(el=>{el.textContent=ready.length?'На устройстве: '+ready.length+' '+(ready.length%10===1&&ready.length!==11?'книга':ready.length%10>1&&ready.length%10<5&&(ready.length<10||ready.length>20)?'книги':'книг')+' · '+mb(ready.reduce((a,[,v])=>a+(v.bytes||0),0)):el.dataset.empty||'';});
+  $$('.book[data-slug]').forEach(b=>{if((S[b.dataset.slug]||{}).st==='ready')b.setAttribute('data-off','');else b.removeAttribute('data-off');});
   $$('[data-offline-clear]').forEach(el=>el.hidden=!ready.length);$$('.mylib').forEach(m=>m.hidden=ready.length>0);
   $$('[data-offline-all]').forEach(el=>{const n=$$('[data-offline]').filter(b=>(S[b.dataset.offline]||{st:'idle'}).st!=='ready').length;el.hidden=!n;});
   $$('.offline-status').forEach(n=>{const s=S[location.pathname.split('/').filter(Boolean).pop()];const ok=s&&(s.st==='ready'||s.st==='update');n.textContent=ok?'Книга сохранена на устройстве. Можно читать без сети.':'Книга не сохранена для чтения без сети: нажмите «Скачать» на её главной странице или на полке.';n.classList.toggle('ready',!!ok);});

@@ -175,7 +175,7 @@ def tabbar(cur):
 
 TITLES = {'shelf': 'Полка', 'unfinished': 'В работе', 'quotes': 'Цитаты'}
 def navbar(cur, act=''):
-    return (f'<header class="navbar" data-navbar><a class="nb-brand" href="./" aria-label="VSplanet Книги"><img src="shared/vsplanet-lockup.svg" alt="VSplanet" width="1686" height="430"></a>'
+    return (f'<header class="navbar" data-navbar><a class="nb-brand" href="./" aria-label="VSplanet Книги"><img class="nb-lock" src="shared/vsplanet-lockup.svg" alt="VSplanet" width="1686" height="430"><img class="nb-mark" src="shared/vsplanet-mark.svg" alt="" width="512" height="366"></a>'
             f'<span class="nb-title">{TITLES[cur]}</span><span class="nb-act">{act}</span></header>')
 
 MINI_FOOT = f'<footer class="credits mini"><div class="dl-row"><span data-offline-sum data-empty=""></span><button class="ghost" data-offline-clear hidden>Удалить скачанное</button></div><div class="sign"><span>© VSplanet · <b>Никита Андреев</b> · 2026</span><em class="ver">v {shared.version_label()}</em></div></footer>'
@@ -264,6 +264,7 @@ if(fl&&Object.keys(st).length){{fl.hidden=false;
 """
 JS_RESUME = f"""const reading=BOOKS.filter(b=>st[b.slug]&&st[b.slug].pct<98).sort((a,b)=>st[b.slug].t-st[a.slug].t||st[b.slug].pct-st[a.slug].pct);
 if(reading.length){{const b=reading[0],x=st[b.slug];
+  try{{if((matchMedia('(display-mode:standalone)').matches||navigator.standalone)&&!location.hash&&!sessionStorage.getItem('vs-auto')){{sessionStorage.setItem('vs-auto','1');location.replace(b.slug+'/#read/'+x.chapter);}}}}catch(e){{}}
   document.getElementById('resume').innerHTML=`<a class="resume" href="${{b.slug}}/#read/${{x.chapter}}"><img src="covers/${{b.slug}}.webp" alt=""><div><small>Продолжить чтение</small><strong>${{esc(b.title)}}</strong><p>${{esc(b.author)}} · прочитано ${{x.pct}}%</p></div><span class="btn">Продолжить</span></a>`;}}
 """
 

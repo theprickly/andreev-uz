@@ -1,7 +1,7 @@
 /* Интерфейс в духе iOS 27 («жидкое стекло»). Общий файл для полки и всех книг. */
 /* ===== Дизайн-система VSplanet Книги: токены (см. DESIGN.md) ===== */
-:root{--navy:#052464;--sky:#68a0d9;--sky-hi:#9cc2ea;--a1:#f19454;--a2:#e43764;--a3:#311466;
- --grad:linear-gradient(100deg,#f19454 0%,#e43764 50%,#311466 100%);--grad-soft:linear-gradient(100deg,#f1945433,#e4376433 50%,#31146655);
+:root{--navy:#052464;--sky:#68a0d9;--sky-hi:#9cc2ea;--a1:#a2dcff;--a2:#4699d5;--a3:#266aa6;
+ --grad:linear-gradient(135deg,#8cc4f2 0%,#4699d5 52%,#2a6aae 100%);--grad-soft:linear-gradient(100deg,#a2dcff33,#68a0d933 50%,#05246455);
  --ink:#fff}
 :root{--glass-a:.62;--glass:rgba(34,40,54,var(--glass-a));--glass-hi:rgba(255,255,255,.2);--glass-lo:rgba(0,0,0,.38);--glass-line:rgba(255,255,255,.1);
  --tint:var(--sky);--tint-ink:#fff;--spring:cubic-bezier(.3,1.35,.5,1);--ease:cubic-bezier(.32,.72,0,1)}
@@ -23,7 +23,7 @@
 .tb-tab span{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-height:14px;transition:max-height .3s var(--ease),opacity .25s}
 .tb-tab svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 .tb-tab:active{transform:scale(.92)}
-.tb-tab[aria-current=true],.tb-tab[data-cur]{color:#fff;background:var(--grad);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.tb-tab[aria-current=true],.tb-tab[data-cur]{color:var(--navy);background:#fff;box-shadow:0 2px 10px -3px rgba(0,0,0,.45)}
 .tb-ind{display:none}
 .tb-fab{flex:none;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;padding:0;color:#fff;background:var(--grad);border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .25s var(--spring),width .4s var(--ease),height .4s var(--ease)}
 .tb-fab:active{transform:scale(.9)}
@@ -52,10 +52,11 @@
 /* --- верхняя панель полки: стекло проявляется при прокрутке, заголовок «съезжает» из большого в малый --- */
 .navbar{position:fixed;top:0;left:0;right:0;z-index:35;display:flex;align-items:center;justify-content:space-between;gap:12px;height:calc(74px + env(safe-area-inset-top));padding:env(safe-area-inset-top) max(16px,calc((100% - 1180px)/2 + 0px)) 0;transition:transform .45s var(--ease)}
 .navbar::before{content:"";position:absolute;inset:0;z-index:-1;opacity:0;transition:opacity .3s;border-radius:0;box-shadow:0 1px 0 var(--glass-line);-webkit-mask-image:none}
-.navbar.on::before{opacity:1}
+.navbar.on::before{opacity:0}
+.nb-brand{position:relative;display:block}.nb-mark{position:absolute;left:0;top:50%;height:36px!important;width:auto;opacity:0;transform:translateY(-50%) scale(.7);transform-origin:left center;transition:opacity .3s,transform .45s var(--spring);filter:drop-shadow(0 2px 8px #0009)}.nb-lock{transition:opacity .25s,transform .45s var(--ease);transform-origin:left center}.navbar.on .nb-lock{opacity:0;transform:scale(.6);pointer-events:none}.navbar.on .nb-mark{opacity:1;transform:translateY(-50%) scale(1)}
 .nb-brand img{height:52px;width:auto;display:block}
 .nb-title{position:absolute;left:50%;transform:translate(-50%,6px);font-weight:650;font-size:16px;letter-spacing:-.01em;opacity:0;transition:opacity .25s,transform .35s var(--ease);pointer-events:none}
-.navbar.on .nb-title,.q-body .nb-title{opacity:1;transform:translate(-50%,0)}
+.nb-title{display:none}
 .nb-act{display:flex;align-items:center;gap:8px;min-width:36px;justify-content:flex-end}
 .navbar.is-away{transform:translateY(-100%)}
 .icon{flex:none;display:inline-grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;color:var(--text,#f2f4f8);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .2s var(--spring)}
@@ -122,7 +123,7 @@
 @media (display-mode:standalone){html,body{overscroll-behavior-y:none}}
 .sign{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;margin:36px 0 0;padding:18px 0 4px;border-top:1px solid rgba(255,255,255,.08);font-size:13px;color:#8d95a3;text-align:center}
 .sign img{width:34px;height:auto}.sign b{color:#d6dde9;font-weight:600}
-.sign .ver{font-style:normal;font-weight:700;font-size:12px;letter-spacing:.03em;color:#fff;padding:3px 10px;border-radius:999px;background:var(--grad);box-shadow:inset 0 1px 0 rgba(255,255,255,.35)}
+.sign .ver{font-style:normal;font-weight:700;font-size:12px;letter-spacing:.03em;color:var(--navy);padding:3px 10px;border-radius:999px;background:#fff}
 /* плавный переход между страницами (Chrome, Safari 18.2+) */
 @view-transition{navigation:auto}
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.2s}

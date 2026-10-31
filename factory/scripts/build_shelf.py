@@ -55,7 +55,7 @@ for slug in SLUGS:
         im.save(OUT / 'covers' / f'{slug}.jpg', quality=82, optimize=True, progressive=True)
         im.save(OUT / 'covers' / f'{slug}.webp', quality=78, method=6)
     books.append({'q': qs, 'slug': slug, 'key': cfg['storageKey'], 'title': cfg['title'], 'subtitle': cfg.get('subtitle', ''),
-                  'author': cfg['author'], 'credit': cfg['credit'], 'accent': accent, 'words': words,
+                  'author': cfg['author'], 'credit': cfg['credit'], 'translator': cfg.get('translator'), 'accent': accent, 'words': words,
                   'chapters': len(words), 'epub': f'{slug}/{epub}' if epub else None, 'orig': cfg.get('original') or {}, 'inc': cfg.get('incomplete'), 'era': ERAS.get(slug), 'tag': TAGLINE.get(slug, '')})
 
 books.sort(key=lambda b: ((b['orig'] or {}).get('year', 9999), b['slug']))
@@ -98,6 +98,12 @@ ld = {'@context': 'https://schema.org', '@type': 'CollectionPage', 'name': 'VSpl
                     'url': f'https://andreev.uz/books/{b["slug"]}/', 'image': f'{BASE}covers/{b["slug"]}.jpg'}}
           for i, b in enumerate(books)]}}
 QUOTES = [dict(s=b['slug'], **x) for b in books for x in b['q']]
+_tr = {}
+for _b in books:
+    if _b.get('translator'): _tr.setdefault(_b['translator'], []).append(_b['title'])
+credits_html = ''.join(f'<dt>{n}</dt><dd>{" · ".join(t)}</dd>' for n, t in _tr.items())
+_rest = [b['title'] for b in books if not b.get('translator')]
+if _rest: credits_html += '<dt>Читатели VSplanet.net</dt><dd>' + ' · '.join(_rest) + '</dd>'
 js_books = [{k: b[k] for k in ('slug', 'key', 'title', 'author', 'accent', 'words')} for b in books]
 
 PAGE = f'''<!doctype html>
@@ -173,6 +179,26 @@ footer{{margin:72px 0 0;padding:28px 0 40px;border-top:1px solid var(--line);col
 @media (max-width:640px){{.qcard{{min-height:280px;padding:22px 18px 18px}}.qcard footer{{flex-wrap:wrap}}.qcard cite{{flex-basis:calc(100% - 56px)}}.qcard .go{{width:100%;justify-content:center}}}}
 html,body{{overflow-x:clip}}.manifest p{{margin:0 0 14px}}.manifest p:last-child{{margin:0}}@media (max-width:480px){{.nav{{gap:6px}}.nav .chip{{padding:0 11px;font-size:13px}}.brand span{{display:none}}}}
 @media (prefers-reduced-motion:no-preference){{.qtrack{{scroll-behavior:smooth}}}}
+/* — компактная цитата, канаты между секциями, титры — */
+main>section{{position:relative}}main>section+section{{margin-top:64px;padding-top:44px}}
+main>section+section::before{{content:"";position:absolute;left:0;right:0;top:0;height:10px;border-top:1px solid #ffffff1c;border-bottom:1px solid #ffffff1c;background:linear-gradient(#ffffff1c,#ffffff1c) 0 50%/100% 1px no-repeat}}
+main>section+section::after{{content:"";position:absolute;left:-3px;right:-3px;top:-2px;height:14px;background:radial-gradient(circle,#7fa6d4 0 2.5px,transparent 3px) 0 50%/14px 14px no-repeat,radial-gradient(circle,#7fa6d4 0 2.5px,transparent 3px) 100% 50%/14px 14px no-repeat;opacity:.55}}
+.qs{{margin-top:56px}}.qhead{{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 14px}}.qhead .eyebrow{{margin:0}}
+.qctl{{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--mute)}}#qcount{{min-width:46px;text-align:center;font-variant-numeric:tabular-nums}}
+.qband{{margin:0;display:grid;grid-template-columns:1fr auto;gap:18px 36px;align-items:end;padding:22px 26px;border-radius:18px;background:var(--s1);border:1px solid var(--line);position:relative;overflow:hidden;transition:opacity .18s}}
+.qband.out{{opacity:0}}.qband::before{{content:"«";position:absolute;left:14px;top:-26px;font-size:120px;font-weight:800;line-height:1;color:#7fa6d414;pointer-events:none}}
+.qband blockquote{{margin:0;position:relative;font-size:clamp(17px,2vw,22px);line-height:1.45;font-weight:500;letter-spacing:-.01em;text-wrap:pretty;padding-left:8px}}
+.qband figcaption{{display:flex;align-items:center;gap:12px}}.qband img{{width:42px;height:63px;object-fit:cover;border-radius:3px 6px 6px 3px;box-shadow:0 8px 18px -6px #000,0 0 0 1px #fff1}}
+.qband cite{{font-style:normal;font-size:13.5px;line-height:1.35;color:#c3cad5;max-width:200px}}.qband cite b{{display:block;color:#fff;font-weight:600}}
+.qband .go{{flex:none;display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;background:#7fa6d4;color:#06101f;font-size:13.5px;font-weight:600;white-space:nowrap}}.qband .go:hover{{background:#a5c3e6}}
+footer.credits{{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px solid var(--line);color:var(--mute);font-size:14px}}
+.cr-brand{{display:flex;align-items:center;gap:14px;margin-bottom:34px}}.cr-brand img{{width:46px;height:auto}}.cr-brand b{{display:block;color:var(--text);font-size:18px;letter-spacing:-.01em}}.cr-brand p{{margin:2px 0 0;max-width:44ch}}
+.cr-grid{{display:grid;grid-template-columns:1.1fr 1.2fr 1fr;gap:34px 48px}}.cr-grid h4{{margin:0 0 12px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#7fa6d4;font-weight:600}}.cr-grid p{{margin:0 0 10px;line-height:1.6}}
+.cr-list{{margin:0;display:grid;gap:10px}}.cr-list dt{{color:var(--text);font-weight:600;line-height:1.3}}.cr-list dd{{margin:2px 0 0;font-size:13px;line-height:1.5}}
+.cr-link{{color:var(--text);border-bottom:1px solid #7fa6d480;padding-bottom:1px}}.cr-link:hover{{border-color:#a5c3e6}}
+.cr-end{{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-between;margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:13px}}.cr-fin{{color:#7fa6d4;font-style:italic}}
+@media (max-width:860px){{.cr-grid{{grid-template-columns:1fr;gap:28px}}}}
+@media (max-width:640px){{.qband{{grid-template-columns:1fr;padding:20px 18px}}.qband figcaption{{flex-wrap:wrap}}.qband cite{{max-width:none;flex:1}}.qband .go{{width:100%;justify-content:center}}.qshuf{{display:none}}}}
 @media (prefers-reduced-motion:reduce){{*{{transition:none!important}}}}
 </style></head><body>
 <div class="glow"></div>
@@ -186,14 +212,13 @@ html,body{{overflow-x:clip}}.manifest p{{margin:0 0 14px}}.manifest p:last-child
 <p>Некоторые книги так и остались недопереведёнными. Но мы верим, что вместе сможем довести их до конца.</p></div>
 <ul class="stats"><li><b>{len(full)}</b><span>{plural(len(full), 'книга', 'книги', 'книг')} целиком</span></li><li><b>{len(partial)}</b><span>{plural(len(partial), 'неполная', 'неполные', 'неполных')}</span></li><li><b>{sum(b['chapters'] for b in books)}</b><span>глав и разделов</span></li><li><b>≈{hours} ч</b><span>чтения</span></li><li><b>EPUB</b><span>для любой читалки</span></li></ul>
 <div id="resume"></div></div>
-<section id="quotes" aria-labelledby="q-h"><h2 id="q-h">Цитаты</h2><p class="sub">Случайные строки из книг. Листайте — или проваливайтесь в книгу, прямо к нужному абзацу.</p>
-<div class="qwrap"><div class="qtrack" id="qtrack" tabindex="0" aria-label="Цитаты из книг"></div>
-<div class="qctl"><button id="qprev" aria-label="Назад">←</button><button id="qnext" aria-label="Дальше">→</button><button id="qshuf" class="qshuf">Перемешать</button></div></div></section>
 <section id="shelf" aria-labelledby="shelf-h"><h2 id="shelf-h">Полка</h2><p class="sub">Прогресс сохраняется в вашем браузере и подтягивается сюда сам.</p>
 <div class="filters" id="filters" hidden><button aria-pressed="true" data-f="all">Все</button><button aria-pressed="false" data-f="reading">Читаю</button><button aria-pressed="false" data-f="new">Не начато</button><button aria-pressed="false" data-f="done">Прочитано</button></div>
 <div class="grid">
 {chr(10).join(card(b) for b in full)}
 </div></section>
+<section id="quotes" class="qs" aria-label="Цитата из книги"><div class="qhead"><span class="eyebrow">Строка из книги</span><span class="qctl"><button id="qprev" aria-label="Предыдущая">←</button><span id="qcount" aria-hidden="true"></span><button id="qnext" aria-label="Следующая">→</button><button id="qshuf" class="qshuf">Другая</button></span></div>
+<figure class="qband" id="qband" aria-live="polite"></figure></section>
 <section id="unfinished" aria-labelledby="unf-h"><h2 id="unf-h">Неполные переводы</h2>
 <p class="sub">Эти книги начали переводить, но не довели до конца, или переводят прямо сейчас. Читать можно уже то, что есть.</p>
 <div class="help"><div><h3>Помогите дописать</h3>
@@ -209,7 +234,15 @@ html,body{{overflow-x:clip}}.manifest p{{margin:0 0 14px}}.manifest p:last-child
 <div class="axis"><span></span><div>{''.join(f'<span>{y}</span>' for y in range(y0, y1 + 1, 10))}</div></div>
 </div></section>
 </main>
-<footer><span>Переводы — читатели и авторы VSplanet.net, 2011–2016</span><span>Сайт собрал Никита Андреев, 2026</span></footer>
+<footer class="credits">
+<div class="cr-brand"><img src="vsplanet-logo.png" alt="" width="911" height="648" loading="lazy"><div><b>VSplanet Книги</b><p>Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.</p></div></div>
+<div class="cr-grid">
+<div><h4>О проекте</h4><p>С 2011 года читатели VSplanet переводят книги звёзд рестлинга. Здесь они собраны в одной читалке: закладки, поиск по тексту, офлайн-режим и EPUB. Регистрации нет, а прогресс чтения хранится только в вашем браузере.</p></div>
+<div><h4>В титрах</h4><dl class="cr-list">{credits_html}</dl></div>
+<div><h4>Присоединяйтесь</h4><p>Недопереведённые книги ждут продолжения. Возьмите главу — и ваше имя появится в выходных данных книги.</p><p><a class="cr-link" href="https://vsplanet.net/" rel="noopener">Редакция VSplanet.net →</a></p></div>
+</div>
+<div class="cr-end"><span>Сайт собрал Никита Андреев, 2026</span><span>Некоммерческий проект читателей. Права на оригинальные тексты принадлежат авторам и издателям.</span><span class="cr-fin">Занавес. Кейфейб сохранён.</span></div>
+</footer>
 </div>
 <script>
 const BOOKS={json.dumps(js_books, ensure_ascii=False)};
@@ -223,14 +256,21 @@ for(const b of BOOKS){{
 }}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}})[c]);
 const QUOTES={json.dumps(QUOTES, ensure_ascii=False)};
-(()=>{{const by=Object.fromEntries(BOOKS.map(b=>[b.slug,b])),tr=document.getElementById('qtrack');
-const lum=h=>{{const n=parseInt(h.slice(1),16);return(.299*(n>>16)+.587*(n>>8&255)+.114*(n&255))/255}};const shuf=a=>{{a=a.slice();for(let i=a.length-1;i>0;i--){{const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}}return a}};
-function pick(){{const g={{}};shuf(QUOTES).forEach(q=>(g[q.s]=g[q.s]||[]).push(q));const keys=shuf(Object.keys(g)),out=[];
- for(let r=0;out.length<12&&r<3;r++)for(const k of keys){{if(g[k][r]&&out.length<12)out.push(g[k][r]);}}return shuf(out)}}
-function render(){{tr.innerHTML=pick().map(q=>{{const b=by[q.s];return `<article class="qcard" style="--a:${{b.accent}};--ink:${{lum(b.accent)>.55?'#111':'#fff'}}"><blockquote>${{esc(q.t)}}</blockquote><footer><img src="covers/${{q.s}}.webp" alt="" loading="lazy"><cite><b>${{esc(b.author)}}</b>«${{esc(b.title)}}»</cite><a class="go" href="${{q.s}}/#read/${{q.c}}/${{q.p}}">Открыть в книге →</a></footer></article>`}}).join('');tr.scrollTo({{left:0,behavior:'instant'}})}}
-const step=()=>tr.firstElementChild?tr.firstElementChild.getBoundingClientRect().width+16:300;
-document.getElementById('qnext').onclick=()=>tr.scrollBy({{left:step()}});document.getElementById('qprev').onclick=()=>tr.scrollBy({{left:-step()}});
-document.getElementById('qshuf').onclick=render;tr.addEventListener('keydown',e=>{{if(e.key==='ArrowRight')tr.scrollBy({{left:step()}});if(e.key==='ArrowLeft')tr.scrollBy({{left:-step()}})}});render()}})();
+(()=>{{const by=Object.fromEntries(BOOKS.map(b=>[b.slug,b])),el=document.getElementById('qband'),cnt=document.getElementById('qcount');
+const shuf=a=>{{a=a.slice();for(let i=a.length-1;i>0;i--){{const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}}return a}};
+let list=[],i=0,timer=null,paused=false;
+function mix(){{const g={{}};shuf(QUOTES).forEach(q=>(g[q.s]=g[q.s]||[]).push(q));const keys=shuf(Object.keys(g)),out=[];
+ for(let r=0;out.length<12&&r<3;r++)for(const k of keys){{if(g[k][r]&&out.length<12)out.push(g[k][r]);}}list=shuf(out);i=0}}
+function show(n,anim=true){{i=(n+list.length)%list.length;const q=list[i],b=by[q.s];
+ const html=`<blockquote>${{esc(q.t)}}</blockquote><figcaption><img src="covers/${{q.s}}.webp" alt="" loading="lazy" width="42" height="63"><cite><b>${{esc(b.author)}}</b>«${{esc(b.title)}}»</cite><a class="go" href="${{q.s}}/#read/${{q.c}}/${{q.p}}">Открыть в книге →</a></figcaption>`;
+ cnt.textContent=(i+1)+' / '+list.length;if(!anim||matchMedia('(prefers-reduced-motion:reduce)').matches){{el.innerHTML=html;return}}
+ el.classList.add('out');setTimeout(()=>{{el.innerHTML=html;el.classList.remove('out')}},180)}}
+function auto(){{clearInterval(timer);if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;timer=setInterval(()=>{{if(!paused&&!document.hidden)show(i+1)}},14000)}}
+const go=d=>{{show(i+d);auto()}};
+document.getElementById('qnext').onclick=()=>go(1);document.getElementById('qprev').onclick=()=>go(-1);
+document.getElementById('qshuf').onclick=()=>{{mix();show(0);auto()}};
+const sec=document.getElementById('quotes');sec.addEventListener('mouseenter',()=>paused=true);sec.addEventListener('mouseleave',()=>paused=false);sec.addEventListener('focusin',()=>paused=true);sec.addEventListener('focusout',()=>paused=false);
+mix();show(0,false);auto()}})();
 document.querySelectorAll('.book').forEach(el=>{{
   const x=st[el.dataset.slug];el.dataset.state=!x?'new':x.pct>=98?'done':'reading';if(!x)return;
   const pr=el.querySelector('.progress');pr.hidden=false;pr.querySelector('i').style.width=x.pct+'%';pr.querySelector('b').textContent=x.pct>=98?'Прочитано':x.pct+'%';

@@ -80,17 +80,10 @@
 (()=>{
  const sa=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;if(!sa)return;
  try{if(sessionStorage.getItem('vs-splash'))return;sessionStorage.setItem('vs-splash','1')}catch(e){}
- const SH='M-28 74L68 -22L351 -22L447 74L209.5 311.5Z',LT=['M77.5 0L134.069 0L60.5685 73.5L164.5 177.431L164.5 0L204.5 0L204.5 274L4 73.5Z','M214.5 0L343.8 0L416.5 72.7L388.216 100.984L327.231 40L270.82 40L359.66 128.84L214.5 274L214.5 103.27L254.5 103.27L254.5 177.431L303.091 128.84L214.5 40.2485Z'];
- const reduce=matchMedia('(prefers-reduced-motion:reduce)').matches,d=document.createElement('div');d.setAttribute('aria-hidden','true');
- d.style.cssText='position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:radial-gradient(60% 40% at 50% 45%,#05246acc,#03060c 70%) #03060c;transition:opacity .45s ease;pointer-events:none';
- const N='http://www.w3.org/2000/svg';d.innerHTML='<svg xmlns="'+N+'" viewBox="-46 -35 512 366" style="width:min(62vw,340px);height:auto;overflow:visible"><defs><linearGradient id="sp-g" gradientUnits="userSpaceOnUse" x1="-40" y1="-30" x2="460" y2="330"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#a2dcff"/><stop offset="1" stop-color="#4699d5"/></linearGradient><linearGradient id="sp-l" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="130" y2="274"><stop offset="0" stop-color="#A2DCFF"/><stop offset=".45" stop-color="#4699D5"/><stop offset="1" stop-color="#266AA6"/></linearGradient></defs><path id="sp-s" d="'+SH+'" fill="#052464" fill-opacity="0" stroke="url(#sp-g)" stroke-width="9" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>'+LT.map(p=>'<path class="sp-t" d="'+p+'" fill="url(#sp-l)" opacity="0"/>').join('')+'</svg>';
- document.documentElement.append(d);
- const sh=d.querySelector('#sp-s'),ls=[...d.querySelectorAll('.sp-t')],E='cubic-bezier(.3,.7,.2,1)';
- if(reduce){sh.style.strokeDashoffset=0;sh.style.fillOpacity=1;ls.forEach(l=>l.style.opacity=1);}
- else if(sh.animate){sh.animate([{strokeDashoffset:1},{strokeDashoffset:0}],{duration:800,easing:E,fill:'forwards'});
-  sh.animate([{fillOpacity:0},{fillOpacity:1}],{duration:350,delay:650,fill:'forwards'});
-  sh.animate([{stroke:'url(#sp-g)'},{stroke:'#68a0d9'}],{duration:350,delay:1000,fill:'forwards'});
-  ls.forEach((l,i)=>l.animate([{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:450,delay:900+i*120,easing:E,fill:'forwards'}));}
- else{sh.style.strokeDashoffset=0;sh.style.fillOpacity=1;ls.forEach(l=>l.style.opacity=1);}
- setTimeout(()=>{d.style.opacity='0';setTimeout(()=>d.remove(),500)},reduce?350:1750);
+ const me=document.querySelector('script[src*="/nav-"],script[src^="nav-"]');if(!me)return;
+ const d=document.createElement('div');d.setAttribute('aria-hidden','true');
+ d.style.cssText='position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:radial-gradient(60% 40% at 50% 45%,#05246acc,#03060c 70%) #03060c;transition:opacity .3s ease;pointer-events:none';
+ const im=new Image();im.src=new URL('vsplanet-mark.svg',me.src).href;im.style.cssText='width:min(56vw,320px);height:auto';
+ d.append(im);document.documentElement.append(d);
+ setTimeout(()=>{d.style.opacity='0';setTimeout(()=>d.remove(),350)},450);
 })();

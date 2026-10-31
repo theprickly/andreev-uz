@@ -1,8 +1,8 @@
 /* VSplanet Книги — единый service worker. Оболочка (полка) кэшируется сразу,
    книги — по кнопке «Скачать» (страница сама кладёт файлы в offline-book-<slug>@<версия>). */
 'use strict';
-const SHELL_CACHE='offline-shell-1435b20e3316';
-const SHELL=["./", "pwa.js?v=4403b29edb81", "shared/vsplanet-logo.png", "shared/fonts/geologica-cyr.woff2", "shared/fonts/geologica-lat.woff2", "shared/fonts/literata-cyrillic-normal.woff2", "shared/fonts/literata-cyrillic-italic.woff2", "shared/fonts/literata-latin-normal.woff2", "shared/fonts/literata-latin-italic.woff2", "shared/nav-2ed345e1d419.css", "shared/nav-e6eaf8db5689.js", "icons/app-192.png", "covers/heenan.webp", "covers/piper.webp", "covers/copeland.webp", "covers/flair.webp", "covers/wcw.webp", "covers/eddie.webp", "covers/hart.webp", "covers/goldust.webp", "covers/jericho.webp", "covers/lesnar.webp", "covers/booker.webp", "covers/holly.webp", "covers/booker-royalty.webp"];
+const SHELL_CACHE='offline-shell-bffde8e56163';
+const SHELL=["./", "pwa.js?v=4403b29edb81", "shared/vsplanet-logo.png", "shared/fonts/geologica-cyr.woff2", "shared/fonts/geologica-lat.woff2", "shared/fonts/literata-cyrillic-normal.woff2", "shared/fonts/literata-cyrillic-italic.woff2", "shared/fonts/literata-latin-normal.woff2", "shared/fonts/literata-latin-italic.woff2", "shared/nav-f70878d03e23.css", "shared/nav-cfdffac9f939.js", "icons/app-192.png", "covers/heenan.webp", "covers/piper.webp", "covers/copeland.webp", "covers/flair.webp", "covers/wcw.webp", "covers/eddie.webp", "covers/hart.webp", "covers/goldust.webp", "covers/jericho.webp", "covers/lesnar.webp", "covers/booker.webp", "covers/holly.webp", "covers/booker-royalty.webp"];
 const BOOKS='offline-book-';
 const base=new URL('./',self.registration.scope);
 self.addEventListener('install',e=>e.waitUntil((async()=>{

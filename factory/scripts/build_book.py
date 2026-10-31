@@ -78,7 +78,7 @@ def _first(bl):
     return t
 import shutil as _sh; _sh.rmtree(dst / 'text', ignore_errors=True); (dst / 'text').mkdir(); meta_ch, album, letter_start, text_files = [], [], -1, []
 for i, c in enumerate(book['chapters']):
-    bl = _blocks(c['html']); hb = c['html'].encode(); fn = f'text/{i:02d}-{h12(hb)[:8]}.html'
+    bl = _blocks(c['html']); hb = c['html'].encode(); fn = f'text/{i:02d}-{h12(hb)[:8]}.txt'
     (dst / fn).write_bytes(hb); text_files.append(fn)
     for j, b in enumerate(bl):
         im = b if b.name == 'img' else b.find('img')

@@ -5,15 +5,15 @@
  --ink:#fff}
 :root{--glass-a:.62;--glass:rgba(34,40,54,var(--glass-a));--glass-hi:rgba(255,255,255,.2);--glass-lo:rgba(0,0,0,.38);--glass-line:rgba(255,255,255,.1);
  --tint:var(--sky);--tint-ink:#fff;--spring:cubic-bezier(.3,1.35,.5,1);--ease:cubic-bezier(.32,.72,0,1)}
-/* стекло: размытие фона, тёмная кромка, яркий блик по верхнему краю */
-.tb-pill,.tb-fab,.navbar::before,.glass{background:var(--glass);-webkit-backdrop-filter:blur(26px) saturate(1.9) brightness(.95);backdrop-filter:blur(26px) saturate(1.9) brightness(.95);
+/* стекло: размытие фона,тёмная кромка,яркий блик по верхнему краю */
+.tb-pill,.tb-fab,.navbar::before{background:var(--glass);-webkit-backdrop-filter:blur(26px) saturate(1.9) brightness(.95);backdrop-filter:blur(26px) saturate(1.9) brightness(.95);
  box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 -1px 0 rgba(255,255,255,.05),inset 0 0 0 1px var(--glass-line),0 8px 24px -14px rgba(0,0,0,.6)}
-@media (prefers-reduced-transparency:reduce){:root{--glass:rgb(28,33,45)}.tb-pill,.tb-fab,.navbar::before,.glass{-webkit-backdrop-filter:none;backdrop-filter:none}}
+@media (prefers-reduced-transparency:reduce){:root{--glass:rgb(28,33,45)}.tb-pill,.tb-fab,.navbar::before{-webkit-backdrop-filter:none;backdrop-filter:none}}
 @media (prefers-contrast:more){:root{--glass:rgb(24,28,38);--glass-line:rgba(255,255,255,.5);--glass-hi:rgba(255,255,255,.4)}.tb-tab{color:#e6ebf3}}
 .tabbar,.ibanner{--tb-accent:var(--tint);--tb-ink:var(--tint-ink)}
 .tabbar,.reader-back{display:none}
 .ibanner{display:none}
-/* --- нижняя панель: свободно парит, при прокрутке вниз сжимается в иконки, при прокрутке вверх возвращается --- */
+/* --- нижняя панель: свободно парит,при прокрутке вниз сжимается в иконки,при прокрутке вверх возвращается --- */
 .tabbar{position:fixed;left:0;right:0;bottom:calc(10px + env(safe-area-inset-bottom));z-index:40;display:none;align-items:center;justify-content:center;gap:10px;padding:0 12px;pointer-events:none;font-family:inherit;transition:transform .45s var(--ease)}
 .shelf-body .tabbar{display:flex}
 #reader:not([hidden])~.tabbar{display:none}
@@ -24,7 +24,6 @@
 .tb-tab svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
 .tb-tab:active{transform:scale(.92)}
 .tb-tab[aria-current=true],.tb-tab[data-cur]{color:var(--navy);background:#fff;box-shadow:0 2px 10px -3px rgba(0,0,0,.45)}
-.tb-ind{display:none}
 .tb-fab{flex:none;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;padding:0;color:#fff;background:var(--grad);border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .25s var(--spring),width .4s var(--ease),height .4s var(--ease)}
 .tb-fab:active{transform:scale(.9)}
 .tb-fab svg{width:25px;height:25px;fill:currentColor;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
@@ -35,7 +34,7 @@
 .tabbar.is-min{transform:translateY(4px)}
 @media (min-width:721px){.shelf-body .tb-pill{width:min(100%,420px)}.shelf-body .tb-tab{flex-direction:row;justify-content:center;gap:8px;font-size:13.5px}.shelf-body .tb-tab svg{width:21px;height:21px}.shelf-body .tabbar.is-min .tb-tab span{display:none}}
 @media (max-width:720px),(hover:none) and (pointer:coarse){
- #landing,#page,.shelf-body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+ #landing,#page{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
  .tabbar{display:flex}
  #reader:not([hidden])~.tabbar{display:none}
  /* --- «Назад» в читалке --- */
@@ -48,8 +47,8 @@
  #page>.top .chip svg{width:26px;height:26px;stroke-width:2.4}
 }
 @media (max-width:360px){.tb-tab{font-size:9.5px}.tb-fab{width:52px;height:52px}}
-@media (prefers-reduced-motion:reduce){.tb-ind,.tb-tab,.tb-fab,.tabbar,.tb-pill{transition:none}}
-/* --- верхняя панель полки: стекло проявляется при прокрутке, заголовок «съезжает» из большого в малый --- */
+@media (prefers-reduced-motion:reduce){.tb-tab,.tb-fab,.tabbar,.tb-pill{transition:none}}
+/* --- верхняя панель полки: стекло проявляется при прокрутке,заголовок «съезжает» из большого в малый --- */
 .navbar{position:fixed;top:0;left:0;right:0;z-index:35;display:flex;align-items:center;justify-content:space-between;gap:12px;height:calc(74px + env(safe-area-inset-top));padding:env(safe-area-inset-top) max(16px,calc((100% - 1180px)/2 + 0px)) 0;transition:transform .45s var(--ease)}
 .navbar::before{content:"";position:absolute;inset:0;z-index:-1;opacity:0;transition:opacity .3s;border-radius:0;box-shadow:0 1px 0 var(--glass-line);-webkit-mask-image:none}
 .navbar::before,.navbar.on::before{display:none}
@@ -58,7 +57,6 @@
 .nb-title{position:absolute;left:50%;transform:translate(-50%,6px);font-weight:650;font-size:16px;letter-spacing:-.01em;opacity:0;transition:opacity .25s,transform .35s var(--ease);pointer-events:none}
 .nb-title{display:none}
 .nb-act{display:flex;align-items:center;gap:8px;min-width:36px;justify-content:flex-end}
-.navbar.is-away{transform:translateY(-100%)}
 .icon{flex:none;display:inline-grid;place-items:center;width:40px;height:40px;padding:0;border:0;border-radius:50%;color:var(--text,#f2f4f8);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .2s var(--spring)}
 .icon:active{transform:scale(.88)}.icon svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .navbar .icon{background:var(--glass);box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 0 0 1px var(--glass-line)}
@@ -88,7 +86,7 @@
 @media (display-mode:standalone){.ibanner{display:none!important}}
 @media (prefers-reduced-motion:reduce){.ibanner{animation:none}}
 
-/* ===== мобильное приложение: шторки, отступы, тач-цели ===== */
+/* ===== мобильное приложение: шторки,отступы,тач-цели ===== */
 @media (max-width:720px){
  html{-webkit-text-size-adjust:100%}
  .top,#landing>.top,#page>.top{margin-top:env(safe-area-inset-top)}
@@ -124,7 +122,7 @@
 .sign{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 12px;margin:36px 0 0;padding:18px 0 4px;border-top:1px solid rgba(255,255,255,.08);font-size:13px;color:#8d95a3;text-align:center}
 .sign img{width:34px;height:auto}.sign b{color:#d6dde9;font-weight:600}
 .sign .ver{font-style:normal;font-weight:700;font-size:12px;letter-spacing:.03em;color:var(--navy);padding:3px 10px;border-radius:999px;background:#fff}
-/* плавный переход между страницами (Chrome, Safari 18.2+) */
+/* плавный переход между страницами (Chrome,Safari 18.2+) */
 @view-transition{navigation:auto}
 ::view-transition-old(root),::view-transition-new(root){animation-duration:.2s}
 /* ===== отклик на касание ===== */
@@ -152,7 +150,6 @@ html.navigating::before{content:"";position:fixed;z-index:9999;top:0;left:0;righ
  .tb-tab{font-size:11.5px}
  .tb-tab svg{width:25px;height:25px}
  .tb-fab{width:62px;height:62px}
- #landing,#page,.shelf-body{padding-bottom:calc(112px + env(safe-area-inset-bottom))}
 }
 @media (min-width:721px){
  .ibanner{max-width:900px;margin-inline:auto}.ib-list{grid-template-columns:repeat(4,1fr)}.ib-t{font-size:24px}

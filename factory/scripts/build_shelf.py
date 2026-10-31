@@ -45,6 +45,8 @@ for slug in SLUGS:
     cfg = json.loads(re.search(r'window\.BOOK_CONFIG=(\{.*?\});?</script>', page, re.S)[1])
     data = json.loads((d / cfg.get('bookFile', 'book.json').split('?')[0]).read_text()) if (d / cfg.get('bookFile', '')).is_file() else \
         json.loads(sorted(d.glob('book-*.json'))[0].read_text())
+    for _c in data['chapters']:
+        if 'html' not in _c: _c['html'] = (d / _c['f']).read_text()
     _fj = d / 'files.json'; offline_bytes = json.loads(_fj.read_text())['bytes'] if _fj.exists() else 0
     qs = _q.extract(slug, data)
     words = [c.get('words') or len(re.sub(r'<[^>]+>', ' ', c['html']).split()) for c in data['chapters']]
@@ -94,17 +96,7 @@ def card(b):
  <div class="actions"><a class="btn" href="{b['slug']}/">Читать</a>{offline_btn(b)}{f'<a class="ghost" href="{b["epub"]}" download>EPUB</a>' if b['epub'] else ''}</div></div>
 </article>'''
 
-y0, y1 = 1940, 2010
-def era_row(b):
-    s, e = b['era']; left = (s - y0) / (y1 - y0) * 100; width = (e - s) / (y1 - y0) * 100
-    flip = ' in' if width >= 36 else (' flip' if left > 100 - left - width else '')
-    return (f'<a class="era" href="{b["slug"]}/"><span class="era-name">{E(ERA_LABEL.get(b["slug"]) or ("Смерть WCW" if b["slug"] == "wcw" else b["author"]))}</span>'
-            f'<span class="era-bar{flip}" style="--l:{left:.2f}%;--w:{width:.2f}%"><i></i><b>{s}–{e}</b></span></a>')
-
-def eras(group, sub):
-    rows = ''.join(era_row(b) for b in sorted(group, key=lambda b: b['era']) if b['era'])
-    return (f'<section class="eras-sec" aria-labelledby="eras-h"><h2 class="sh" id="eras-h">Эпохи</h2><p class="sub">{sub}</p>'
-            f'<div class="eras">{rows}<div class="axis"><span></span><div>{"".join(f'<span style="--l:{(y - y0) / (y1 - y0) * 100:.2f}%">{y}</span>' for y in range(y0, y1 + 1, 10))}</div></div></div></section>')
+# Эпохи скрыты (1.12): данные ERAS/ERA_LABEL оставлены для будущего блока.
 
 ld = {'@context': 'https://schema.org', '@type': 'CollectionPage', 'name': 'VSplanet Книги', 'url': BASE, 'inLanguage': 'ru',
       'description': 'Автобиографии звёзд рестлинга в переводах VSplanet.net: читать онлайн бесплатно или скачать EPUB.',
@@ -170,7 +162,7 @@ I_TG = '<path d="M20.6 4.4 3.8 10.9c-.9.4-.9 1.1-.2 1.3l4.3 1.3 1.6 5c.2.6.4.8.8
 FAB = '<button class="tb-fab install-trigger" type="button" data-install-auto hidden aria-label="Установить приложение"><svg viewBox="0 0 24 24" aria-hidden="true" style="fill:none"><path d="M12 4v11m-4.5-4.5L12 15l4.5-4.5M5 20h14"/></svg></button>'
 TABS = [('shelf', './', 'Полка', I_BOOKS), ('unfinished', 'unfinished/', 'В работе', I_WORK), ('quotes', 'quotes/', 'Цитаты', I_QUOTE)]
 def tabbar(cur):
-    return ('<nav class="tabbar" data-tabbar data-home="./" aria-label="Разделы"><div class="tb-pill"><i class="tb-ind"></i>' + ''.join(
+    return ('<nav class="tabbar" data-tabbar data-home="./" aria-label="Разделы"><div class="tb-pill">' + ''.join(
         f'<a class="tb-tab" href="{h}"{" data-cur" if k == cur else ""}><svg viewBox="0 0 24 24" aria-hidden="true">{ic}</svg><span>{t}</span></a>' for k, h, t, ic in TABS) + '</div>' + FAB + '</nav>')
 
 TITLES = {'shelf': 'Полка', 'unfinished': 'В работе', 'quotes': 'Цитаты'}

@@ -63,7 +63,30 @@ for size, frac, name in [(192, 1, 'cover-icon-192.png'), (32, 1, 'cover-favicon-
 
 # книга и EPUB
 h12 = lambda b: hashlib.sha256(b).hexdigest()[:12]
-bj = json.dumps(book, ensure_ascii=False, separators=(',', ':')).encode()
+# лёгкий индекс книги + текст каждой главы отдельным файлом (грузится по мере чтения)
+from bs4 import BeautifulSoup
+BLOCK = ('p', 'h2', 'h3', 'blockquote', 'figure')
+def _blocks(html):
+    top = [t for t in BeautifulSoup(html, 'html.parser').contents if getattr(t, 'name', None)]
+    bl = [t for t in top if t.name in BLOCK]; return bl or top
+def _first(bl):
+    txt = [b.get_text().strip() for b in bl]
+    t = next((x for x in txt if len(x) > 12 and not re.match(r'^…?в память', x, re.I)), txt[0] if txt else '')
+    if not t: return ''
+    m = re.match(r'^.{12,}?[.!?…](?=\s|$)', t); t = (m.group(0) if m else t).strip()
+    if len(t) > 90: t = re.sub(r'\s+\S*$', '', t[:88]) + '…'
+    return t
+import shutil as _sh; _sh.rmtree(dst / 'text', ignore_errors=True); (dst / 'text').mkdir(); meta_ch, album, letter_start, text_files = [], [], -1, []
+for i, c in enumerate(book['chapters']):
+    bl = _blocks(c['html']); hb = c['html'].encode(); fn = f'text/{i:02d}-{h12(hb)[:8]}.html'
+    (dst / fn).write_bytes(hb); text_files.append(fn)
+    for j, b in enumerate(bl):
+        im = b if b.name == 'img' else b.find('img')
+        if im: album.append({'chapter': i, 'paragraph': j, 'src': im.get('src'), 'alt': im.get('alt') or '', 'w': int(im.get('width') or 3), 'h': int(im.get('height') or 4)})
+    if cfg.get('letter') and cfg['letter']['chapter'] == i:
+        letter_start = next((j for j, b in enumerate(bl) if b.get_text().replace('\xa0', ' ').strip().startswith(cfg['letter']['marker'].replace('\xa0', ' '))), -1)
+    meta_ch.append({'id': c.get('id'), 'title': c['title'], 'words': c['words'], 'source': c.get('source'), 'snip': _first(bl), 'f': fn})
+bj = json.dumps({'title': book['title'], 'language': book.get('language'), 'credits': book.get('credits'), 'chapters': meta_ch, 'album': album, 'letterStart': letter_start}, ensure_ascii=False, separators=(',', ':')).encode()
 book_file = f'book-{h12(bj)}.json'; (dst / book_file).write_bytes(bj)
 tmp_epub = dst / 'tmp.epub'
 INC = bool(cfg.get('incomplete'))      # у неполных книг нет EPUB и PWA
@@ -156,7 +179,7 @@ except Exception as e:
 page = (dst / 'index.html').read_text()
 page = page.replace('href="style.css"', f'href="../shared/{SH_CSS}"').replace('src="app.js"', f'src="../shared/{SH_JS}"').replace('href="nav.css"', f'href="../shared/{SH_NCSS}"').replace('src="nav.js"', f'src="../shared/{SH_NJS}"')
 (dst / 'index.html').write_text(page)
-assets = ['./', book_file] + [f'../shared/{n}' for n in (SH_CSS, SH_JS, SH_NCSS, SH_NJS)]
+assets = ['./', book_file] + text_files + [f'../shared/{n}' for n in (SH_CSS, SH_JS, SH_NCSS, SH_NJS)]
 for d in ('assets/icons', 'assets/images'):
     assets += sorted(f'{d}/{f}' for f in os.listdir(dst / d) if not f.endswith('.txt'))
 assets += ['assets/cover.jpg', 'assets/book-render.webp']

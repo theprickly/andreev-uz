@@ -23,9 +23,9 @@
    if(dy>110){x.close();x.style.transform='';}else{x.classList.add('settling');x.style.transform='';setTimeout(()=>x.classList.remove('settling'),320);}},{passive:true});
  })();
  const bar=document.querySelector('[data-tabbar]');if(!bar)return;
- const $=(s,r=document)=>r.querySelector(s),pill=$('.tb-pill',bar),ind=$('.tb-ind',bar),tabs=[...bar.querySelectorAll('.tb-tab')];
+ const $=(s,r=document)=>r.querySelector(s),pill=$('.tb-pill',bar),tabs=[...bar.querySelectorAll('.tb-tab')];
  const target=t=>t.dataset.scroll?$(t.dataset.scroll):null;
- function mark(a){tabs.forEach(t=>t.setAttribute('aria-current',t===a?'true':'false'));if(!a||!pill.offsetWidth){ind.classList.remove('on');return;}ind.style.width=a.offsetWidth+'px';ind.style.transform='translateX('+a.offsetLeft+'px)';ind.classList.add('on');}
+ function mark(a){tabs.forEach(t=>t.setAttribute('aria-current',t===a?'true':'false'));}
  const sc=tabs.filter(t=>t.dataset.scroll);let cur=null;
  function update(){
   if(!pill.offsetWidth)return;
@@ -36,7 +36,7 @@
   for(const t of sc){const e=target(t);if(e&&e.getBoundingClientRect().top<=line)a=t;}
   if(scrollY<60)a=sc[0]||a;
   if(innerHeight+scrollY>=document.documentElement.scrollHeight-4)a=sc[sc.length-1]||a;
-  if(a!==cur||!ind.classList.contains('on')){cur=a;mark(a);}
+  if(a!==cur){cur=a;mark(a);}
  }
  let raf=0;const tick=()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(update);};
  addEventListener('scroll',tick,{passive:true});addEventListener('resize',()=>{cur=null;tick();});addEventListener('hashchange',()=>{cur=null;setTimeout(update,60);});
@@ -67,14 +67,13 @@
  else if(nb)nb.classList.add('on');
  if(!bar)return;
  let y=scrollY,min=document.body.classList.contains('q-body'),acc=0;
- const set=m=>{if(m===min&&bar.classList.contains('is-min')===m)return;min=m;bar.classList.toggle('is-min',m);clearTimeout(set.t);set.t=setTimeout(()=>dispatchEvent(new Event('resize')),480);};
+ const set=m=>{if(m===min&&bar.classList.contains('is-min')===m)return;min=m;bar.classList.toggle('is-min',m);};
  if(min)set(true);
  addEventListener('scroll',()=>{const n=scrollY,d=n-y;y=n;if(document.body.classList.contains('q-body'))return;
   if(n<40){set(false);acc=0;return;}
   acc=Math.sign(d)===Math.sign(acc)?acc+d:d;
   if(acc>28)set(true);else if(acc<-18)set(false);},{passive:true});
  bar.addEventListener('pointerdown',()=>{if(bar.classList.contains('is-min')&&!document.body.classList.contains('q-body'))set(false);},{passive:true});
- if(document.body.classList.contains('q-body'))bar.addEventListener('click',e=>{if(bar.classList.contains('is-min')&&!e.target.closest('.tb-tab,.tb-fab')){}},{passive:true});
 })();
 /* заставка при запуске установленного приложения: знак на тёмном фоне, один раз за сеанс */
 (()=>{

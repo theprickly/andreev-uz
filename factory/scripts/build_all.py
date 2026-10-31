@@ -12,3 +12,5 @@ for cfgp in sorted((F / 'books').glob('*/book.config.json')):
     out = root / 'books' / slug
     subprocess.run([sys.executable, str(F / 'scripts' / 'build_book.py'), str(cfgp.parent), str(out)], check=True)
 subprocess.run([sys.executable, str(F / 'scripts' / 'build_shelf.py'), str(root)], check=True)
+
+shutil.copy(F / 'deploy' / '_headers', root / '_headers')     # кэш: хэшированные файлы — навсегда

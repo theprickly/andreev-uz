@@ -28,6 +28,8 @@ function notify(text){const t=$('#toast');t.textContent=text;t.classList.add('vi
 function escapeText(s){const n=document.createElement('span');n.textContent=s;return n.innerHTML;}
 function normalized(s){return s.toLocaleLowerCase('ru').replace(/ё/g,'е').replace(/[\u00a0\u202f]/g,' ');}
 function mins(c){return Math.max(1,Math.ceil(c.words/200));}
+const textP={};function loadText(i){const c=chapters[i];if(c.html!=null)return Promise.resolve(c.html);return textP[i]||(textP[i]=fetch(c.f).then(r=>{if(!r.ok)throw Error('text');return r.text()}).then(t=>c.html=t).catch(e=>{delete textP[i];throw e}));}
+function loadAll(){return Promise.all(chapters.map((_,i)=>loadText(i)));}
 function parseChapter(c){const template=document.createElement('template');template.innerHTML=c.html;return template.content;}
 function applySettings(){
  const s=state.settings,r=document.documentElement;
@@ -45,7 +47,7 @@ function tocHTML(c,i){return '<span>'+chapterMark(i)+'</span><b>'+escapeText(c.t
 function buildLanding(){
  const words=chapters.reduce((s,c)=>s+c.words,0),hours=$('#stat-hours'),photos=$('#stat-photos');
  if(hours)hours.textContent='≈\u202f'+Math.round(words/200/60);
- if(photos)photos.textContent=chapters.reduce((s,c)=>s+(c.html.match(/<img/g)||[]).length,0);
+ if(photos)photos.textContent=(book.album||[]).length;
  const card=$('#match-card');if(!card)return updateResume();
  card.replaceChildren();
  chapters.forEach((c,i)=>{
@@ -90,6 +92,8 @@ function goChapter(i,paragraph=null){
 }
 let pendingPosition=null;
 function showChapter(i){
+ if(chapters[i].html==null){active=i;restoring=true;$('#landing').hidden=true;$('#page').hidden=true;$('#reader').hidden=false;$('#chapter-title').textContent=chapters[i].title;$('#header-chapter').textContent=chapters[i].title;$('#article').replaceChildren();
+  loadText(i).then(()=>{if(active===i)showChapter(i)}).catch(()=>{if(active===i)$('#article').innerHTML='<p>Не удалось загрузить главу. Проверьте подключение и обновите страницу.</p>'});return;}
  active=i;restoring=true;
  $('#landing').hidden=true;$('#page').hidden=true;$('#reader').hidden=false;
  const c=chapters[i];document.title=c.title+' — '+TITLE+' · VSplanet Книги';
@@ -110,6 +114,7 @@ function showChapter(i){
  const imgs=$$('#article img').filter(im=>!im.complete);
  if(imgs.length){const beforeScroll=window.scrollY;Promise.all(imgs.map(im=>new Promise(resolve=>{im.onload=resolve;im.onerror=resolve;}))).then(()=>{if(active===i&&Math.abs(window.scrollY-beforeScroll)<120)restorePosition(state.current||position);});}
  $('#reading-main').focus({preventScroll:true});
+ if(i+1<chapters.length)setTimeout(()=>loadText(i+1).catch(()=>{}),1500);
 }
 function capturePosition(){
  const threshold=focused?35:145;let index=0;
@@ -169,7 +174,7 @@ function renderLibrary(tab){
  }else{
   const input=document.createElement('input');input.type='search';input.placeholder='Слово, имя или фраза…';input.className='search-input';input.setAttribute('aria-label','Поиск по всему тексту книги');input.id='book-search';
   const results=document.createElement('div');results.id='search-results';results.innerHTML='<p class="search-caption">Поиск по всем '+N+' разделам — введите хотя бы две буквы</p>';results.setAttribute('aria-live','polite');target.append(input,results);
-  input.addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>searchBook(input.value,results),180);});input.focus();
+  input.addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(async()=>{if(!searchIndex.length){results.innerHTML='<p class="search-caption">Загружаю текст книги…</p>';try{await buildIndex()}catch{results.innerHTML='<p class="search-caption">Не удалось загрузить текст. Проверьте подключение.</p>';return}}searchBook(input.value,results)},180);});input.focus();
  }
 }
 function searchBook(query,target){
@@ -240,12 +245,11 @@ function bindTilt(){
  stage.addEventListener('pointerleave',()=>{book.classList.remove('is-tilting');set(0,0);});
  window.addEventListener('deviceorientation',e=>{if(e.gamma==null||$('#landing').hidden)return;book.classList.add('is-tilting');set(clamp(e.gamma/40,-.5,.5),clamp((e.beta-45)/50,-.5,.5));},{passive:true});
 }
-function firstLine(section){const p=section.paragraphs.find(x=>x.text.length>12&&!/^…?в память/i.test(x.text))||section.paragraphs[0];if(!p)return '';const m=p.text.match(/^.{12,}?[.!?…](?=\s|$)/);let t=(m?m[0]:p.text).trim();if(t.length>90)t=t.slice(0,88).replace(/\s+\S*$/,'')+'…';return t;}
+let indexP;function buildIndex(){return indexP||(indexP=loadAll().then(()=>{searchIndex=chapters.map(c=>{const f=parseChapter(c);let els=[...f.children].filter(n=>['P','H2','H3','BLOCKQUOTE','FIGURE'].includes(n.tagName));if(!els.length)els=[...f.children];return {paragraphs:els.map((n,i)=>({paragraph:i,text:n.textContent.trim(),normalized:normalized(n.textContent.trim())}))};});}).catch(e=>{indexP=null;throw e}));}
 async function init(){
  try{
   const response=await fetch(CFG.bookFile);if(!response.ok)throw Error('book fetch');book=await response.json();chapters=book.chapters;if(!chapters.length)throw Error('chapter count');N=chapters.length;NUMBERED=chapters.filter((_,k)=>chapterNum(k)).length;
-  searchIndex=chapters.map(c=>{const f=parseChapter(c);let els=[...f.children].filter(n=>['P','H2','H3','BLOCKQUOTE','FIGURE'].includes(n.tagName));if(!els.length)els=[...f.children];return {paragraphs:els.map((n,i)=>({paragraph:i,text:n.textContent.trim(),normalized:normalized(n.textContent.trim())}))};});
-  snippets=searchIndex.map(firstLine);buildExtras();
+  snippets=chapters.map(c=>c.snip||'');buildExtras();
   applySettings();buildLanding();bindEvents();route();persist();
  }catch(e){console.error(e);$('#load-error').hidden=false;$('#load-error').textContent='Не удалось загрузить книгу. Проверьте подключение и обновите страницу.';}
 }
@@ -257,9 +261,9 @@ const plural=(k,a,b,c)=>k%10===1&&k%100!==11?a:k%10>=2&&k%10<=4&&(k%100<10||k%10
 const BLOCK_TAGS=['P','H2','H3','BLOCKQUOTE','FIGURE'];
 function blocksOf(c){const f=parseChapter(c);let bl=[...f.children].filter(n=>BLOCK_TAGS.includes(n.tagName));if(!bl.length)bl=[...f.children];return bl;}
 function buildExtras(){
- const L=CFG.letter;if(L){const last=blocksOf(chapters[L.chapter]);letterStart=last.findIndex(n=>n.textContent.trim().startsWith(L.marker));}
+ letterStart=CFG.letter?(book.letterStart??-1):-1;
  if(letterStart<0)$$('[href="#letter"],.letter-teaser').forEach(n=>n.hidden=true);
- album=[];chapters.forEach((c,i)=>blocksOf(c).forEach((n,j)=>{const img=n.querySelector('img');if(img)album.push({chapter:i,paragraph:j,src:img.getAttribute('src'),alt:img.getAttribute('alt')||'',w:+img.getAttribute('width')||3,h:+img.getAttribute('height')||4});}));
+ album=book.album||[];
  if(isMemorial()){document.body.classList.add('memorial');$$('.memorial-line').forEach(n=>n.hidden=false);}
  const photos=$('#stat-photos');if(photos)photos.textContent=album.length;
 }
@@ -268,6 +272,8 @@ function showPage(name){
  $('#landing').hidden=true;$('#reader').hidden=true;const page=$('#page');page.hidden=false;document.body.classList.remove('focus-mode','bars-hidden');focused=false;
  const main=$('#page-main');main.replaceChildren();main.className='page-main wrap page-'+name;
  if(name==='letter'){
+  if(letterStart<0){location.hash='';return;}
+  if(chapters[CFG.letter.chapter].html==null){loadText(CFG.letter.chapter).then(()=>showPage('letter')).catch(()=>{});return;}
   document.title='Письмо переводчика — '+TITLE+' · VSplanet Книги';
   const head=document.createElement('header');head.className='page-head';head.innerHTML='<p class="eyebrow">От переводчика · '+CFG.letter.year+'</p><h1>'+escapeText(CFG.letter.heading)+'</h1>';main.append(head);
   const art=document.createElement('article');art.className='letter book-prose';

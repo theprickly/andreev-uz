@@ -64,9 +64,7 @@ EAGER = {b['slug'] for b in books if not b['inc']}.intersection({b['slug'] for b
 full = [b for b in books if not b['inc']]; partial = [b for b in books if b['inc']]
 total_words = sum(sum(b['words']) for b in books)
 hours = round(total_words / 180 / 60)
-shutil.copy(T / 'assets' / 'vsplanet-logo.png', OUT / 'vsplanet-logo.png')
-for f in ('geologica-cyr.woff2', 'geologica-lat.woff2'):
-    shutil.copy(T / 'assets' / 'fonts' / f, OUT / f)
+import shared; shared.build(OUT)     # общие шрифты и логотип — /books/shared/
 
 def plural(n, a, b, c):
     n = abs(n) % 100; n1 = n % 10
@@ -107,7 +105,7 @@ ld = {'@context': 'https://schema.org', '@type': 'CollectionPage', 'name': 'VSpl
       'mainEntity': {'@type': 'ItemList', 'itemListElement': [
           {'@type': 'ListItem', 'position': i + 1, 'url': f'https://andreev.uz/books/{b["slug"]}/',
            'item': {'@type': 'Book', 'name': b['title'], 'author': {'@type': 'Person', 'name': b['author']}, 'inLanguage': 'ru',
-                    'url': f'https://andreev.uz/books/{b["slug"]}/', 'image': f'{BASE}covers/{b["slug"]}.jpg'}}
+                    'url': f'https://andreev.uz/books/{b["slug"]}/', 'image': f'{BASE}covers/{b["slug"]}.webp'}}
           for i, b in enumerate(books)]}}
 QUOTES = [dict(s=b['slug'], **x) for b in books for x in b['q']]
 js_books = [{k: b[k] for k in ('slug', 'key', 'title', 'author', 'accent', 'words')} for b in books]
@@ -129,7 +127,7 @@ if _ESB.exists(): subprocess.run([str(_ESB), str(OUT / 'pwa.js'), '--minify', '-
     'lang': 'ru', 'start_url': '/books/', 'scope': '/books/', 'display': 'standalone', 'background_color': '#03060c', 'theme_color': '#03060c',
     'icons': [{'src': 'icons/app-192.png', 'sizes': '192x192', 'type': 'image/png', 'purpose': 'any'}, {'src': 'icons/app-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'any'},
               {'src': 'icons/app-maskable-512.png', 'sizes': '512x512', 'type': 'image/png', 'purpose': 'maskable'}]}, ensure_ascii=False, indent=1))
-_shell = ['./', f'pwa.js?v={PWA_V}', 'vsplanet-logo.png', 'geologica-cyr.woff2', 'geologica-lat.woff2', 'icons/app-192.png'] + [f'covers/{b["slug"]}.webp' for b in books]
+_shell = ['./', f'pwa.js?v={PWA_V}', 'shared/vsplanet-logo.png', 'shared/fonts/geologica-cyr.woff2', 'shared/fonts/geologica-lat.woff2', 'shared/fonts/literata-cyrillic-normal.woff2', 'shared/fonts/literata-cyrillic-italic.woff2', 'shared/fonts/literata-latin-normal.woff2', 'shared/fonts/literata-latin-italic.woff2', 'icons/app-192.png'] + [f'covers/{b["slug"]}.webp' for b in books]
 (OUT / 'sw.js').write_text((T / 'sw-app.js').read_text().replace('%SHELL%', json.dumps(_shell)).replace('%SHELL_V%', hashlib.sha256((PAGE_SEED := json.dumps(_shell) + PWA_V + (T / 'sw-app.js').read_text()).encode()).hexdigest()[:12]))
 
 PAGE = f'''<!doctype html>
@@ -139,11 +137,11 @@ PAGE = f'''<!doctype html>
 <link rel="canonical" href="{BASE}"><meta name="theme-color" content="#03060c"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/app-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Книги">
 <meta property="og:type" content="website"><meta property="og:url" content="{BASE}"><meta property="og:title" content="VSplanet Книги — автобиографии рестлеров на русском">
 <meta property="og:description" content="{len(books)} книг, ≈{hours} часов чтения. Онлайн и в EPUB."><meta property="og:image" content="{BASE}og.jpg"><meta name="twitter:card" content="summary_large_image">
-<link rel="icon" href="vsplanet-logo.png"><link rel="preload" href="geologica-cyr.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="shared/vsplanet-logo.png"><link rel="preload" href="shared/fonts/geologica-cyr.woff2" as="font" type="font/woff2" crossorigin>
 <script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>
 <style>
-@font-face{{font-family:G;src:url(geologica-cyr.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0400-045F,U+2116}}
-@font-face{{font-family:G;src:url(geologica-lat.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+2000-206F,U+20AC}}
+@font-face{{font-family:G;src:url(shared/fonts/geologica-cyr.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0400-045F,U+2116}}
+@font-face{{font-family:G;src:url(shared/fonts/geologica-lat.woff2) format("woff2");font-weight:100 900;font-display:swap;unicode-range:U+0000-00FF,U+2000-206F,U+20AC}}
 :root{{--bg:#03060c;--s1:#0b111d;--s2:#121a2a;--line:#ffffff14;--text:#f2f4f8;--mute:#8e98a8;--steel:#7fa6d4;--fill:linear-gradient(180deg,#c3d8ef 0%,#8fb2db 45%,#5f87b9 100%);color-scheme:dark}}
 *{{box-sizing:border-box}}[hidden]{{display:none!important}}html{{-webkit-text-size-adjust:100%}}
 body{{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.5 G,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}}
@@ -162,7 +160,7 @@ h1{{font-size:clamp(36px,6vw,72px);line-height:.98;letter-spacing:-.045em;font-w
 .resume img{{width:64px;border-radius:6px;box-shadow:0 10px 30px #0008}}.resume small{{color:var(--mute);font-size:13px}}.resume strong{{display:block;font-size:19px;letter-spacing:-.02em;line-height:1.2;margin:2px 0}}.resume p{{margin:0;color:#c9d0db;font-size:14px}}
 .btn{{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 18px;border-radius:999px;font-weight:600;font-size:14px;color:#06101f;background:var(--fill);white-space:nowrap}}
 .book .btn{{background:var(--a);color:#fff;text-shadow:0 1px 1px #0004}}.ghost{{display:inline-flex;align-items:center;height:40px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--mute);border:1px solid var(--line)}}.ghost:hover{{color:var(--text)}}
-section{{padding:48px 0 0}}h2{{font-size:clamp(24px,3vw,32px);letter-spacing:-.03em;margin:0 0 6px}}.sub{{color:var(--mute);margin:0 0 24px;font-size:15px}}
+section{{padding:48px 0 0}}h2{{font-size:clamp(24px,3vw,32px);line-height:1.15;letter-spacing:-.03em;margin:0 0 6px}}.sub{{color:var(--mute);margin:0 0 24px;font-size:15px}}
 .filters{{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 24px}}.filters button{{font:inherit;font-size:14px;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--mute);cursor:pointer}}.filters button[aria-pressed=true]{{background:#ffffff14;color:var(--text);border-color:#ffffff30}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:40px 28px}}
 .book{{display:flex;flex-direction:column;gap:16px}}.book[hidden]{{display:none}}
@@ -171,11 +169,11 @@ section{{padding:48px 0 0}}h2{{font-size:clamp(24px,3vw,32px);letter-spacing:-.0
 .book:hover .cover img{{transform:rotateY(-10deg) translateY(-6px);box-shadow:20px 34px 60px -20px #000,0 0 0 1px #ffffff18}}.book:hover .cover::after{{opacity:1}}
 .ring{{position:absolute;top:10px;right:10px;padding:4px 9px;border-radius:999px;font-size:12px;font-weight:700;background:#000b;backdrop-filter:blur(6px);color:#fff;border:1px solid color-mix(in srgb,var(--a) 60%,transparent)}}
 .meta{{display:flex;flex-direction:column;gap:6px;flex:1}}.author{{margin:0;color:var(--a);font-size:13px;font-weight:600;filter:brightness(1.25)}}
-h3{{margin:0;font-size:22px;line-height:1.1;letter-spacing:-.03em}}.tag{{margin:0;color:#c3cad5;font-size:14.5px;line-height:1.45}}.nav{{display:flex;gap:8px}}
-.inc{{margin:0;display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.35;color:#d7c9a3}}.inc i{{flex:none;width:8px;height:8px;margin-top:5px;border-radius:50%;background:#e8b84a}}.inc.ongoing{{color:#a9d8b8}}.inc.ongoing i{{background:#4fcf86;box-shadow:0 0 0 3px #4fcf8633}}
+h3{{margin:0;font-size:22px;line-height:1.15;letter-spacing:-.03em}}.tag{{margin:0;color:#c3cad5;font-size:14.5px;line-height:1.5}}.nav{{display:flex;gap:8px}}
+.inc{{margin:0;display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.5;color:#d7c9a3}}.inc i{{flex:none;width:8px;height:8px;margin-top:6px;border-radius:50%;background:#e8b84a}}.inc.ongoing{{color:#a9d8b8}}.inc.ongoing i{{background:#4fcf86;box-shadow:0 0 0 3px #4fcf8633}}
 .help{{display:grid;grid-template-columns:1fr auto;gap:20px 32px;align-items:center;margin:0 0 36px;padding:24px;border-radius:22px;background:linear-gradient(115deg,#2f5b8f33,var(--s1) 70%);border:1px solid #7fa6d433}}.help h3{{font-size:24px;margin:0 0 8px}}.help p{{margin:0 0 12px;color:#c9d0db;max-width:62ch}}.help ol{{margin:0;padding-left:20px;color:#c9d0db;font-size:15px}}.help li+li{{margin-top:4px}}
 @media (max-width:640px){{.help{{grid-template-columns:1fr}}}}
-.orig{{margin:0;color:#aab3c0;font-size:13px;line-height:1.4}}.orig i{{font-style:italic}}.facts{{margin:0;color:var(--mute);font-size:13px}}
+.orig{{margin:0;color:#aab3c0;font-size:13px;line-height:1.5}}.orig i{{font-style:italic}}.facts{{margin:0;color:var(--mute);font-size:13px}}
 .progress{{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--mute)}}.progress span{{flex:1;height:4px;border-radius:9px;background:#ffffff14;overflow:hidden}}.progress i{{display:block;height:100%;background:var(--a);border-radius:inherit}}
 .actions{{display:flex;gap:8px;margin-top:auto;padding-top:8px}}
 .eras{{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:22px;background:var(--s1);border:1px solid var(--line)}}
@@ -189,9 +187,9 @@ footer{{margin:72px 0 0;padding:28px 0 40px;border-top:1px solid var(--line);col
 .qwrap{{position:relative}}.qtrack{{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 18px;scrollbar-width:none;outline:none}}.qtrack::-webkit-scrollbar{{display:none}}
 .qcard{{flex:0 0 min(420px,86%);scroll-snap-align:start;display:flex;flex-direction:column;justify-content:space-between;gap:22px;min-height:250px;padding:26px 24px 22px;border-radius:22px;background:linear-gradient(160deg,color-mix(in srgb,var(--a) 22%,#0a0e16),#0a0e16 70%);border:1px solid color-mix(in srgb,var(--a) 35%,transparent);position:relative;overflow:hidden}}
 .qcard::before{{content:"«";position:absolute;right:14px;bottom:-34px;font-size:140px;font-weight:800;line-height:1;color:color-mix(in srgb,var(--a) 16%,transparent);pointer-events:none;z-index:0}}
-.qcard blockquote{{margin:0;position:relative;font-size:clamp(18px,2.1vw,21px);line-height:1.42;letter-spacing:-.01em;font-weight:500;text-wrap:pretty}}
+.qcard blockquote{{margin:0;position:relative;font-size:clamp(18px,2.1vw,21px);line-height:1.45;letter-spacing:-.01em;font-weight:500;text-wrap:pretty}}
 .qcard footer{{position:relative;z-index:1;display:flex;align-items:center;gap:12px}}.qcard img{{width:42px;height:63px;object-fit:cover;border-radius:3px 6px 6px 3px;box-shadow:0 8px 18px -6px #000,0 0 0 1px #fff1}}
-.qcard cite{{display:block;font-style:normal;font-size:13.5px;line-height:1.35;color:#c3cad5;flex:1}}.qcard cite b{{display:block;color:#fff;font-weight:600}}
+.qcard cite{{display:block;font-style:normal;font-size:13.5px;line-height:1.5;color:#c3cad5;flex:1}}.qcard cite b{{display:block;color:#fff;font-weight:600}}
 .qcard .go{{flex:none;display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;background:var(--a);color:var(--ink,#fff);font-size:13.5px;font-weight:600}}
 /* спокойная палитра: интерфейс полки — один фирменный акцент; цвет книги — только точка у автора и обложка */
 .book .btn,.qcard .go{{background:#7fa6d4;color:#06101f;text-shadow:none}}.book .btn:hover,.qcard .go:hover{{background:#a5c3e6}}
@@ -223,12 +221,12 @@ main>section{{position:relative}}main>section+section{{margin-top:64px;padding-t
 .qband.out{{opacity:0}}.qband::before{{content:"«";position:absolute;left:14px;top:-26px;font-size:120px;font-weight:800;line-height:1;color:#7fa6d414;pointer-events:none}}
 .qband blockquote{{margin:0;position:relative;font-size:clamp(17px,2vw,22px);line-height:1.45;font-weight:500;letter-spacing:-.01em;text-wrap:pretty;padding-left:8px}}
 .qband figcaption{{display:flex;align-items:center;gap:12px}}.qband img{{width:42px;height:63px;object-fit:cover;border-radius:3px 6px 6px 3px;box-shadow:0 8px 18px -6px #000,0 0 0 1px #fff1}}
-.qband cite{{font-style:normal;font-size:13.5px;line-height:1.35;color:#c3cad5;max-width:200px}}.qband cite b{{display:block;color:#fff;font-weight:600}}
+.qband cite{{font-style:normal;font-size:13.5px;line-height:1.5;color:#c3cad5;max-width:200px}}.qband cite b{{display:block;color:#fff;font-weight:600}}
 .qband .go{{flex:none;display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;background:#7fa6d4;color:#06101f;font-size:13.5px;font-weight:600;white-space:nowrap}}.qband .go:hover{{background:#a5c3e6}}
 footer.credits{{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px solid var(--line);color:var(--mute);font-size:14px}}
 .cr-brand{{display:flex;align-items:center;gap:14px;margin-bottom:34px}}.cr-brand img{{width:46px;height:auto}}.cr-brand b{{display:block;color:var(--text);font-size:18px;letter-spacing:-.01em}}.cr-brand p{{margin:2px 0 0;max-width:44ch}}
-.cr-grid{{display:grid;grid-template-columns:1.4fr 1fr;gap:34px 48px}}.cr-grid h4{{margin:0 0 12px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#7fa6d4;font-weight:600}}.cr-grid p{{margin:0 0 10px;line-height:1.6}}
-.cr-list{{margin:0;display:grid;gap:10px}}.cr-list dt{{color:var(--text);font-weight:600;line-height:1.3}}.cr-list dd{{margin:2px 0 0;font-size:13px;line-height:1.5}}
+.cr-grid{{display:grid;grid-template-columns:1.4fr 1fr;gap:34px 48px}}.cr-grid h4{{margin:0 0 12px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#7fa6d4;font-weight:600}}.cr-grid p{{margin:0 0 10px;line-height:1.5}}
+.cr-list{{margin:0;display:grid;gap:10px}}.cr-list dt{{color:var(--text);font-weight:600;line-height:1.5}}.cr-list dd{{margin:2px 0 0;font-size:13px;line-height:1.5}}
 .cr-link{{color:var(--text);border-bottom:1px solid #7fa6d480;padding-bottom:1px}}.cr-link:hover{{border-color:#a5c3e6}}
 .cr-end{{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-between;margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:13px}}.cr-fin{{color:#7fa6d4;font-style:italic}}
 @media (max-width:860px){{.cr-grid{{grid-template-columns:1fr;gap:28px}}}}
@@ -241,12 +239,13 @@ footer.credits{{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px
 .off[data-st=ready]{{color:#7dd39a;border-color:#7dd39a66}}.off[data-st=ready] .dl{{display:none}}.off[data-st=ready] .ok{{display:block}}.off[data-st=update]{{color:#a5c3e6;border-color:#7fa6d4}}.off[data-st=error]{{color:#ff8a80;border-color:#ff8a8066}}
 .mylib{{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;margin:0 0 22px;padding:12px 16px;border-radius:14px;background:var(--s1);border:1px solid var(--line);font-size:14px;color:var(--mute)}}.mylib-b{{display:flex;flex-wrap:wrap;gap:8px}}.mylib .ghost{{cursor:pointer;background:none;font-family:inherit}}.mylib [hidden]{{display:none}}
 #toast{{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);max-width:min(92vw,460px);padding:12px 18px;border-radius:14px;background:#1b2436;color:#f2f4f8;font-size:14px;line-height:1.45;opacity:0;pointer-events:none;transition:.25s;z-index:50}}#toast.show{{opacity:1;transform:translateX(-50%)}}
+.mylib button{{line-height:1.5}}
 @media (max-width:640px){{.actions .ghost{{display:none}}.mylib .ghost{{display:inline-flex}}}}
 @media (prefers-reduced-motion:reduce){{*{{transition:none!important}}}}
 </style></head><body>
 <div class="glow"></div>
 <div class="wrap">
-<header class="top"><a class="brand" href="./"><img src="vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a><span class="nav"><a class="chip" href="#quotes">Цитаты</a><a class="chip" href="#unfinished">Неполные</a><a class="chip" href="#eras">Эпохи</a></span></header>
+<header class="top"><a class="brand" href="./"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a><span class="nav"><a class="chip" href="#quotes">Цитаты</a><a class="chip" href="#unfinished">Неполные</a><a class="chip" href="#eras">Эпохи</a></span></header>
 <main>
 <div class="hero"><h1>Рестлинг, рассказанный изнутри</h1>
 
@@ -276,7 +275,7 @@ footer.credits{{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px
 </div></section>
 </main>
 <footer class="credits">
-<div class="cr-brand"><img src="vsplanet-logo.png" alt="" width="911" height="648" loading="lazy"><div><b>VSplanet Книги</b><p>Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.</p></div></div>
+<div class="cr-brand"><img src="shared/vsplanet-logo.png" alt="" width="911" height="648" loading="lazy"><div><b>VSplanet Книги</b><p>Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.</p></div></div>
 <div class="cr-grid">
 <div><h4>О проекте</h4><p>С 2011 года читатели VSplanet переводят книги звёзд рестлинга. Здесь они собраны в одной читалке: закладки, поиск по тексту, офлайн-режим и EPUB. Регистрации нет, а прогресс чтения хранится только в вашем браузере.</p></div>
 <div><h4>Присоединяйтесь</h4><p>Недопереведённые книги ждут продолжения. Возьмите главу — и ваше имя появится в выходных данных книги.</p><p><a class="cr-link" href="https://vsplanet.net/" rel="noopener">Редакция VSplanet.net →</a></p></div>
@@ -335,13 +334,15 @@ uri = lambda p: 'data:image/jpeg;base64,' + base64.b64encode(p.read_bytes()).dec
 font = lambda f: 'url(data:font/woff2;base64,' + base64.b64encode((OUT / f).read_bytes()).decode() + ')'
 n = len(full)
 covers = ''.join(f'<img src="{uri(OUT / "covers" / (b["slug"] + ".jpg"))}" style="left:{560 + i * 82}px;transform:rotate({(i - (n - 1) / 2) * 3.2:.1f}deg);z-index:{i}">' for i, b in enumerate(full))
-OG = f'''<html><head><style>@font-face{{font-family:G;src:{font("geologica-cyr.woff2")};unicode-range:U+0400-045F}}@font-face{{font-family:G;src:{font("geologica-lat.woff2")};unicode-range:U+0000-00FF,U+2000-206F}}
+OG = f'''<html><head><style>@font-face{{font-family:G;src:{font("shared/fonts/geologica-cyr.woff2")};unicode-range:U+0400-045F}}@font-face{{font-family:G;src:{font("shared/fonts/geologica-lat.woff2")};unicode-range:U+0000-00FF,U+2000-206F}}
 body{{margin:0;width:1200px;height:630px;background:radial-gradient(60% 80% at 75% 50%,#2f5b8f55,transparent),#03060c;color:#fff;font-family:G;position:relative;overflow:hidden}}
 img.c{{}}img{{position:absolute;top:150px;width:220px;border-radius:4px 8px 8px 4px;box-shadow:0 30px 60px -10px #000,0 0 0 1px #ffffff18;transform-origin:50% 120%}}
 .t{{position:absolute;left:64px;top:64px;width:470px}}.l{{display:flex;gap:14px;align-items:center}}.l img{{position:static;width:58px;box-shadow:none}}.l b{{font-size:26px;display:block;line-height:1}}.l small{{font-size:14px;letter-spacing:.14em;text-transform:uppercase;font-weight:600}}
 h1{{font-size:62px;line-height:.98;letter-spacing:-.045em;margin:70px 0 0;font-weight:800}}p{{font-size:24px;color:#9fbcd4;margin:22px 0 0}}</style></head><body>
-<div class="t"><div class="l"><img src="{uri(OUT / 'vsplanet-logo.png').replace('jpeg', 'png')}"><span><b>VSplanet</b><small>Книги</small></span></div><h1>Рестлинг, рассказанный изнутри</h1><p>{n} автобиографий · ≈{hours} часов чтения</p></div>{covers}</body></html>'''
+<div class="t"><div class="l"><img src="{uri(OUT / 'shared' / 'vsplanet-logo.png').replace('jpeg', 'png')}"><span><b>VSplanet</b><small>Книги</small></span></div><h1>Рестлинг, рассказанный изнутри</h1><p>{n} автобиографий · ≈{hours} часов чтения</p></div>{covers}</body></html>'''
 with sync_playwright() as p:
     br = p.chromium.launch(); pg = br.new_page(viewport={'width': 1200, 'height': 630})
     pg.set_content(OG); pg.wait_for_timeout(500); pg.screenshot(path=str(OUT / 'og.jpg'), type='jpeg', quality=86); br.close()
 print(f'shelf: {n} books, {total_words} words → {OUT}')
+(OUT / 'shared' / '.names').unlink(missing_ok=True)
+for _j in (OUT / 'covers').glob('*.jpg'): _j.unlink()     # jpg нужны только для og.jpg при сборке, на сайт не выкладываются

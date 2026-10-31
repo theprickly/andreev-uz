@@ -44,16 +44,9 @@ E = lambda s: html.escape(str(s), quote=True)
 
 shutil.rmtree(dst, ignore_errors=True)
 (dst / 'assets' / 'icons').mkdir(parents=True)
-for f in ('app.js', 'style.css'): shutil.copy(T / f, dst / f)
 PWA_V = hashlib.sha256((T / 'pwa.js').read_bytes()).hexdigest()[:12]      # общий /books/pwa.js; версия — в адресе
-import subprocess
-_ESB = pathlib.Path('/home/claude/tools/node_modules/.bin/esbuild')
-if _ESB.exists():     # минификация (без неё сайт работает так же, только тяжелее)
-    for f in ('app.js', 'style.css'):
-        subprocess.run([str(_ESB), str(dst / f), '--minify', '--allow-overwrite', f'--outfile={dst / f}', '--log-level=error'], check=True)
-shutil.copytree(T / 'assets' / 'fonts', dst / 'assets' / 'fonts')
-shutil.copy(T / 'assets' / 'vsplanet-logo.png', dst / 'assets')
-for _f in TH.get('fonts', []): shutil.copy(T / 'extra' / _f, dst / 'assets' / 'fonts' / _f)
+import shared
+SH_CSS, SH_JS = shared.build(dst.parent)     # общие шрифты, логотип, CSS и JS: /books/shared/
 _cv0 = Image.open(src / 'assets' / 'cover.jpg').convert('RGB'); _cv0.thumbnail((800, 1200), Image.LANCZOS)
 _cv0.save(dst / 'assets' / 'cover.jpg', quality=80, optimize=True, progressive=True)
 Image.open(src / 'assets' / 'book-render.png').save(dst / 'assets' / 'book-render.webp', quality=88, method=6)
@@ -119,7 +112,7 @@ ld = {'@context': 'https://schema.org', '@type': 'Book', 'name': cfg['title'], '
       'image': BASE + 'assets/og.jpg', 'url': BASE}
 if cfg.get('translator'): ld['translator'] = {'@type': 'Person', 'name': cfg['translator']}
 if cfg.get('original'): ld['isBasedOn'] = {'@type': 'Book', 'name': cfg['original']['title'], 'datePublished': str(cfg['original']['year'])}
-style_vars = theme_css + f'<style>:root{{--archive-label:"Из архива VSplanet{(" · " + str(cfg["archive_year"])) if cfg.get("archive_year") else ""}"}}</style>'
+style_vars = theme_css + f'<style>html .glare{{-webkit-mask-image:url(assets/book-render.webp);mask-image:url(assets/book-render.webp)}}:root{{--archive-label:"Из архива VSplanet{(" · " + str(cfg["archive_year"])) if cfg.get("archive_year") else ""}"}}</style>'
 R = {'JSONLD': '<script type="application/ld+json">' + json.dumps(ld, ensure_ascii=False) + '</script>',
      'CONFIG': '<script>window.BOOK_CONFIG=' + json.dumps(reader_cfg, ensure_ascii=False) + '</script>' + style_vars,
      'OGMETA': og, 'PAGE_TITLE': E(cfg['page_title']), 'DESCRIPTION': E(cfg['description']), 'SHORT_NAME': E(cfg['short_name']),
@@ -160,27 +153,23 @@ except Exception as e:
 
 # версии файлов (кэш) + офлайн-список
 page = (dst / 'index.html').read_text()
-rel = []
-for name in ('style.css', 'app.js'):
-    data = (dst / name).read_bytes(); stem, suf = name.rsplit('.', 1); target = f'{stem}-{h12(data)}.{suf}'
-    (dst / target).write_bytes(data); page = page.replace(f'"{name}"', f'"{target}"'); rel.append(target)
+page = page.replace('href="style.css"', f'href="../shared/{SH_CSS}"').replace('src="app.js"', f'src="../shared/{SH_JS}"')
 (dst / 'index.html').write_text(page)
-assets = ['./', book_file] + rel
-for d in ('assets/fonts', 'assets/icons', 'assets/images'):
+assets = ['./', book_file, f'../shared/{SH_CSS}', f'../shared/{SH_JS}']
+for d in ('assets/icons', 'assets/images'):
     assets += sorted(f'{d}/{f}' for f in os.listdir(dst / d) if not f.endswith('.txt'))
-assets += ['assets/cover.jpg', 'assets/book-render.webp', 'assets/vsplanet-logo.png']
+assets += ['assets/cover.jpg', 'assets/book-render.webp']
 sizes = [(a, os.path.getsize(dst / ('index.html' if a == './' else a))) for a in assets]
 json.dump({'v': h12(page.encode() + bj), 'bytes': sum(x[1] for x in sizes), 'files': [[a, n] for a, n in sizes]}, open(dst / 'files.json', 'w'), ensure_ascii=False, separators=(',', ':'))
 # сервис-воркер-«уборщик»: снимает кэши и регистрации прежних PWA отдельных книг (теперь одно приложение на /books/)
 (dst / 'sw.js').write_text("self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil((async()=>{for(const k of await caches.keys())if(k.startsWith('book-')||k.startsWith('eddie-book-'))await caches.delete(k);await self.registration.unregister();for(const c of await self.clients.matchAll())c.navigate(c.url)})()));\n")
-for f in ('style.css', 'app.js'): (dst / f).unlink(missing_ok=True)
 
 # статические страницы глав и sitemap
-ch = book['chapters']; css = [r for r in rel if r.startswith('style-')][0]
+ch = book['chapters']; css = SH_CSS
 mark = lambda i, t: (f'{int(m[1]):02d}' if (m := re.match(r'^Глава\s+(\d+)', t)) else t.strip()[0].upper())
-BRAND = '<a class="vs-brand" href="../../" aria-label="Все книги"><img src="../assets/vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a>'
+BRAND = '<a class="vs-brand" href="../../" aria-label="Все книги"><img src="../../shared/vsplanet-logo.png" alt="" width="911" height="648"><span><b>VSplanet</b><small>Книги</small></span></a>'
 def spage(title, desc, canon, body, extra=''):
-    return f'''<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{E(title)}</title><meta name="description" content="{E(desc)}"><link rel="canonical" href="{canon}"><meta property="og:title" content="{E(title)}"><meta property="og:image" content="{BASE}assets/og.jpg"><link rel="icon" href="../assets/icons/cover-favicon-32.png"><link rel="stylesheet" href="../{css}">{style_vars}{extra}</head>
+    return f'''<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{E(title)}</title><meta name="description" content="{E(desc)}"><link rel="canonical" href="{canon}"><meta property="og:title" content="{E(title)}"><meta property="og:image" content="{BASE}assets/og.jpg"><link rel="icon" href="../assets/icons/cover-favicon-32.png"><link rel="stylesheet" href="../../shared/{css}">{style_vars}{extra}</head>
 <body class="static theme-night"><header class="top wrap">{BRAND}<nav><a class="chip" href="../">К книге</a><a class="chip" href="./">Все главы</a></nav></header>{body}<footer class="page-foot wrap"><nav class="footer-nav"><a href="../../">Все книги</a><a href="../">О книге</a><a href="../#about">О сайте</a></nav></footer></body></html>'''
 (dst / 'chapters').mkdir()
 urls, items = [BASE, BASE + 'chapters/'], []

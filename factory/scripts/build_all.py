@@ -5,6 +5,7 @@
 import json, pathlib, shutil, subprocess, sys
 F = pathlib.Path(__file__).resolve().parents[1]
 root = pathlib.Path(sys.argv[1]).resolve(); only = set(sys.argv[2:])
+shutil.rmtree(root / 'books' / 'shared', ignore_errors=True)     # общие файлы пересобираются начисто
 for cfgp in sorted((F / 'books').glob('*/book.config.json')):
     slug = json.loads(cfgp.read_text())['slug']
     if only and slug not in only: continue

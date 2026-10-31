@@ -189,11 +189,12 @@ def build(cfg, b, images_dir, cover_path, target):
     open(f'{OUT}/META-INF/container.xml', 'w').write('<?xml version="1.0" encoding="utf-8"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>')
 
     with zipfile.ZipFile(target, 'w') as z:
-        z.writestr(zipfile.ZipInfo('mimetype'), 'application/epub+zip', compress_type=zipfile.ZIP_STORED)
-        for root, _, fs in os.walk(OUT):
-            for f in sorted(fs):
-                p = os.path.join(root, f); arc = os.path.relpath(p, OUT)
-                z.write(p, arc, compress_type=zipfile.ZIP_STORED if f.endswith(('.jpg', '.png')) else zipfile.ZIP_DEFLATED)
+        z.writestr(zipfile.ZipInfo('mimetype', (2026, 1, 1, 0, 0, 0)), 'application/epub+zip', compress_type=zipfile.ZIP_STORED)
+        names = sorted(os.path.relpath(os.path.join(r, f), OUT) for r, _, fs in os.walk(OUT) for f in fs)
+        for arc in names:      # детерминированный архив: фиксированная дата и порядок, чтобы хэш EPUB не менялся от сборки к сборке
+            zi = zipfile.ZipInfo(arc, (2026, 1, 1, 0, 0, 0)); zi.external_attr = 0o644 << 16
+            zi.compress_type = zipfile.ZIP_STORED if arc.endswith(('.jpg', '.png')) else zipfile.ZIP_DEFLATED
+            z.writestr(zi, open(os.path.join(OUT, arc), 'rb').read())
     print('ok', os.path.getsize(target), len(all_imgs), 'images')
     shutil.rmtree(OUT, ignore_errors=True)
     return target

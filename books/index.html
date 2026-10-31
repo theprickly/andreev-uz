@@ -2,7 +2,7 @@
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>VSplanet Книги — автобиографии рестлеров на русском</title>
 <meta name="description" content="13 автобиографий звёзд рестлинга в переводах VSplanet.net: Эдди Герреро, Брет Харт, Крис Джерико, Брок Леснар и другие. Читайте онлайн без регистрации или скачайте EPUB.">
-<link rel="canonical" href="https://andreev.uz/books/"><meta name="theme-color" content="#03060c">
+<link rel="canonical" href="https://andreev.uz/books/"><meta name="theme-color" content="#03060c"><link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/app-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Книги">
 <meta property="og:type" content="website"><meta property="og:url" content="https://andreev.uz/books/"><meta property="og:title" content="VSplanet Книги — автобиографии рестлеров на русском">
 <meta property="og:description" content="13 книг, ≈85 часов чтения. Онлайн и в EPUB."><meta property="og:image" content="https://andreev.uz/books/og.jpg"><meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="vsplanet-logo.png"><link rel="preload" href="geologica-cyr.woff2" as="font" type="font/woff2" crossorigin>
@@ -99,6 +99,15 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
 .cr-end{display:flex;flex-wrap:wrap;gap:8px 28px;justify-content:space-between;margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:13px}.cr-fin{color:#7fa6d4;font-style:italic}
 @media (max-width:860px){.cr-grid{grid-template-columns:1fr;gap:28px}}
 @media (max-width:640px){.qband{grid-template-columns:1fr;padding:20px 18px}.qband figcaption{flex-wrap:wrap}.qband cite{max-width:none;flex:1}.qband .go{width:100%;justify-content:center}.qshuf{display:none}}
+/* офлайн: кнопка ↓ на обложке и строка «На устройстве» */
+.actions{align-items:center}
+.off{position:relative;flex:none;display:inline-grid;place-items:center;width:40px;height:40px;padding:0;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--mute);cursor:pointer}
+.off svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}.off .ok{display:none}.off:hover{color:var(--text);border-color:#ffffff40}
+.off[data-st=busy]{color:#7fa6d4;border-color:transparent;background:conic-gradient(#7fa6d4 var(--p,0%),#ffffff1c 0);pointer-events:none}.off[data-st=busy]::before{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--bg)}.off[data-st=busy] svg{position:relative}
+.off[data-st=ready]{color:#7dd39a;border-color:#7dd39a66}.off[data-st=ready] .dl{display:none}.off[data-st=ready] .ok{display:block}.off[data-st=update]{color:#a5c3e6;border-color:#7fa6d4}.off[data-st=error]{color:#ff8a80;border-color:#ff8a8066}
+.mylib{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 18px;margin:0 0 22px;padding:12px 16px;border-radius:14px;background:var(--s1);border:1px solid var(--line);font-size:14px;color:var(--mute)}.mylib-b{display:flex;flex-wrap:wrap;gap:8px}.mylib .ghost{cursor:pointer;background:none;font-family:inherit}.mylib [hidden]{display:none}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);max-width:min(92vw,460px);padding:12px 18px;border-radius:14px;background:#1b2436;color:#f2f4f8;font-size:14px;line-height:1.45;opacity:0;pointer-events:none;transition:.25s;z-index:50}#toast.show{opacity:1;transform:translateX(-50%)}
+@media (max-width:640px){.actions .ghost{display:none}.mylib .ghost{display:inline-flex}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style></head><body>
 <div class="glow"></div>
@@ -110,6 +119,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
 <ul class="stats"><li><b>7</b><span>книг целиком</span></li><li><b>6</b><span>неполных</span></li><li><b>328</b><span>глав и разделов</span></li><li><b>≈85 ч</b><span>чтения</span></li><li><b>EPUB</b><span>для любой читалки</span></li></ul>
 <div id="resume"></div></div>
 <section id="shelf" aria-labelledby="shelf-h"><h2 id="shelf-h">Полка</h2><p class="sub">Прогресс сохраняется в вашем браузере и подтягивается сюда сам.</p>
+<div class="mylib" id="mylib"><span class="mylib-t" data-offline-sum data-empty="Нажмите ↓ на обложке — книга сохранится на устройстве и откроется без сети.">Нажмите ↓ на обложке — книга сохранится на устройстве и откроется без сети.</span><span class="mylib-b"><button class="ghost" data-offline-all>Скачать все полные · ≈14 МБ</button><button class="ghost" data-offline-clear hidden>Удалить скачанное</button><button class="ghost install-trigger" data-install-auto hidden>Установить приложение</button></span></div>
 <div class="filters" id="filters" hidden><button aria-pressed="true" data-f="all">Все</button><button aria-pressed="false" data-f="reading">Читаю</button><button aria-pressed="false" data-f="new">Не начато</button><button aria-pressed="false" data-f="done">Прочитано</button></div>
 <div class="grid">
 <article class="book" data-slug="heenan" style="--a:#f5d30f">
@@ -120,7 +130,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
  
  <p class="facts">15 разделов · ≈5 ч чтения</p>
  <div class="progress" hidden><span><i></i></span><b></b></div>
- <div class="actions"><a class="btn" href="heenan/">Читать</a><a class="ghost" href="heenan/assets/book-2bbb58ab9716.epub" download>EPUB</a></div></div>
+ <div class="actions"><a class="btn" href="heenan/">Читать</a><button class="off" data-offline="heenan" aria-label="Скачать книгу для чтения без сети" title="Скачать для офлайн"><svg class="dl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-4-4 4 4 4-4M5 20h14"/></svg><svg class="ok" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button><a class="ghost" href="heenan/assets/book-2d7af31a1c17.epub" download>EPUB</a></div></div>
 </article>
 <article class="book" data-slug="wcw" style="--a:#e9e6df">
  <a class="cover" href="wcw/" aria-label="Р. Д. Рейнольдс и Брайан Альварес — Смерть WCW"><img src="covers/wcw.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span></a>
@@ -130,7 +140,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
  
  <p class="facts">10 разделов · ≈8 ч чтения</p>
  <div class="progress" hidden><span><i></i></span><b></b></div>
- <div class="actions"><a class="btn" href="wcw/">Читать</a><a class="ghost" href="wcw/assets/book-39694cf10f4a.epub" download>EPUB</a></div></div>
+ <div class="actions"><a class="btn" href="wcw/">Читать</a><button class="off" data-offline="wcw" aria-label="Скачать книгу для чтения без сети" title="Скачать для офлайн"><svg class="dl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-4-4 4 4 4-4M5 20h14"/></svg><svg class="ok" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button><a class="ghost" href="wcw/assets/book-785e5904ede2.epub" download>EPUB</a></div></div>
 </article>
 <article class="book" data-slug="eddie" style="--a:#ee2a24">
  <a class="cover" href="eddie/" aria-label="Эдди Герреро — Обмани смерть. Укради жизнь"><img src="covers/eddie.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span></a>
@@ -140,7 +150,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
  
  <p class="facts">46 разделов · ≈8 ч чтения</p>
  <div class="progress" hidden><span><i></i></span><b></b></div>
- <div class="actions"><a class="btn" href="eddie/">Читать</a><a class="ghost" href="eddie/assets/book-e852f062f050.epub" download>EPUB</a></div></div>
+ <div class="actions"><a class="btn" href="eddie/">Читать</a><button class="off" data-offline="eddie" aria-label="Скачать книгу для чтения без сети" title="Скачать для офлайн"><svg class="dl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-4-4 4 4 4-4M5 20h14"/></svg><svg class="ok" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button><a class="ghost" href="eddie/assets/book-c2a1a9a2e71d.epub" download>EPUB</a></div></div>
 </article>
 <article class="book" data-slug="hart" style="--a:#ef2a95">
  <a class="cover" href="hart/" aria-label="Брет Харт — Хитман"><img src="covers/hart.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span></a>
@@ -150,7 +160,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
  
  <p class="facts">48 разделов · ≈18 ч чтения</p>
  <div class="progress" hidden><span><i></i></span><b></b></div>
- <div class="actions"><a class="btn" href="hart/">Читать</a><a class="ghost" href="hart/assets/book-32193687585c.epub" download>EPUB</a></div></div>
+ <div class="actions"><a class="btn" href="hart/">Читать</a><button class="off" data-offline="hart" aria-label="Скачать книгу для чтения без сети" title="Скачать для офлайн"><svg class="dl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-4-4 4 4 4-4M5 20h14"/></svg><svg class="ok" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button><a class="ghost" href="hart/assets/book-4f1fa6dcf5b8.epub" download>EPUB</a></div></div>
 </article>
 <article class="book" data-slug="jericho" style="--a:#ffe11a">
  <a class="cover" href="jericho/" aria-label="Крис Джерико — Неоспоримый"><img src="covers/jericho.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span></a>
@@ -160,7 +170,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
  
  <p class="facts">51 раздел · ≈11 ч чтения</p>
  <div class="progress" hidden><span><i></i></span><b></b></div>
- <div class="actions"><a class="btn" href="jericho/">Читать</a><a class="ghost" href="jericho/assets/book-fcd29b203b6a.epub" download>EPUB</a></div></div>
+ <div class="actions"><a class="btn" href="jericho/">Читать</a><button class="off" data-offline="jericho" aria-label="Скачать книгу для чтения без сети" title="Скачать для офлайн"><svg class="dl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-4-4 4 4 4-4M5 20h14"/></svg><svg class="ok" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button><a class="ghost" href="jericho/assets/book-a0a2bbfc892f.epub" download>EPUB</a></div></div>
 </article>
 <article class="book" data-slug="lesnar" style="--a:#e5212b">
  <a class="cover" href="lesnar/" aria-label="Брок Леснар — Тиски смерти"><img src="covers/lesnar.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span></a>
@@ -170,7 +180,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
  
  <p class="facts">24 раздела · ≈4 ч чтения</p>
  <div class="progress" hidden><span><i></i></span><b></b></div>
- <div class="actions"><a class="btn" href="lesnar/">Читать</a><a class="ghost" href="lesnar/assets/book-a13dc4eba5dc.epub" download>EPUB</a></div></div>
+ <div class="actions"><a class="btn" href="lesnar/">Читать</a><button class="off" data-offline="lesnar" aria-label="Скачать книгу для чтения без сети" title="Скачать для офлайн"><svg class="dl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-4-4 4 4 4-4M5 20h14"/></svg><svg class="ok" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button><a class="ghost" href="lesnar/assets/book-765a5a6c94ee.epub" download>EPUB</a></div></div>
 </article>
 <article class="book" data-slug="booker" style="--a:#f2994a">
  <a class="cover" href="booker/" aria-label="Букер Т — От тюрьмы к успеху"><img src="covers/booker.webp" alt="" width="480" height="720" decoding="async" loading="lazy"><span class="ring" hidden></span></a>
@@ -180,7 +190,7 @@ footer.credits{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px 
  
  <p class="facts">15 разделов · ≈4 ч чтения</p>
  <div class="progress" hidden><span><i></i></span><b></b></div>
- <div class="actions"><a class="btn" href="booker/">Читать</a><a class="ghost" href="booker/assets/book-a9c6e6806d39.epub" download>EPUB</a></div></div>
+ <div class="actions"><a class="btn" href="booker/">Читать</a><button class="off" data-offline="booker" aria-label="Скачать книгу для чтения без сети" title="Скачать для офлайн"><svg class="dl" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m-4-4 4 4 4-4M5 20h14"/></svg><svg class="ok" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></button><a class="ghost" href="booker/assets/book-c0b1c3f02169.epub" download>EPUB</a></div></div>
 </article>
 </div></section>
 <section id="quotes" class="qs" aria-label="Цитата из книги"><div class="qhead"><span class="eyebrow">Строка из книги</span><span class="qctl"><button id="qprev" aria-label="Предыдущая">←</button><span id="qcount" aria-hidden="true"></span><button id="qnext" aria-label="Следующая">→</button><button id="qshuf" class="qshuf">Другая</button></span></div>
@@ -320,4 +330,5 @@ if(Object.keys(st).length){const f=document.getElementById('filters');f.hidden=f
   f.addEventListener('click',e=>{const k=e.target.dataset.f;if(!k)return;f.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===e.target)));
     document.querySelectorAll('.book').forEach(el=>el.hidden=k!=='all'&&el.dataset.state!==k);});}
 </script>
+<script src="pwa.js?v=4db39b996d01" defer></script>
 </body></html>

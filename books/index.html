@@ -59,6 +59,14 @@ footer{margin:72px 0 0;padding:28px 0 40px;border-top:1px solid var(--line);colo
 .qcard footer{position:relative;z-index:1;display:flex;align-items:center;gap:12px}.qcard img{width:42px;height:63px;object-fit:cover;border-radius:3px 6px 6px 3px;box-shadow:0 8px 18px -6px #000,0 0 0 1px #fff1}
 .qcard cite{display:block;font-style:normal;font-size:13.5px;line-height:1.35;color:#c3cad5;flex:1}.qcard cite b{display:block;color:#fff;font-weight:600}
 .qcard .go{flex:none;display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;background:var(--a);color:var(--ink,#fff);font-size:13.5px;font-weight:600}
+/* спокойная палитра: интерфейс полки — один фирменный акцент; цвет книги — только точка у автора и обложка */
+.book .btn,.qcard .go{background:#7fa6d4;color:#06101f;text-shadow:none}.book .btn:hover,.qcard .go:hover{background:#a5c3e6}
+.author{color:var(--mute);filter:none;display:flex;align-items:center;gap:7px}.author::before{content:"";flex:none;width:7px;height:7px;border-radius:50%;background:var(--a)}
+.cover::after{background:radial-gradient(closest-side,#7fa6d455,transparent)}
+.ring{border-color:#ffffff26}.progress i{background:#7fa6d4}
+.resume{background:var(--s1);border-color:var(--line)}
+.qcard{background:linear-gradient(160deg,#121a2a,#0a0e16 70%);border-color:var(--line)}.qcard::before{color:#7fa6d414}
+.era-bar span{background:#2f4d78;color:#e6eefa;text-shadow:none}.era:hover .era-bar span{background:#7fa6d4;color:#06101f;filter:none}.era:hover .era-name{color:#fff}
 .qctl{display:flex;gap:8px;align-items:center}.qctl button{font:inherit;font-size:16px;height:38px;min-width:38px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--text,#fff);cursor:pointer}.qctl button:hover{border-color:#fff6}.qctl .qshuf{font-size:14px;color:var(--mute);margin-left:auto}
 @media (max-width:640px){.qcard{min-height:280px;padding:22px 18px 18px}.qcard footer{flex-wrap:wrap}.qcard cite{flex-basis:calc(100% - 56px)}.qcard .go{width:100%;justify-content:center}}
 html,body{overflow-x:clip}.manifest p{margin:0 0 14px}.manifest p:last-child{margin:0}@media (max-width:480px){.nav{gap:6px}.nav .chip{padding:0 11px;font-size:13px}.brand span{display:none}}

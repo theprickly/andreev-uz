@@ -1,8 +1,8 @@
 /* VSplanet Книги — единый service worker. Оболочка (полка) кэшируется сразу,
    книги — по кнопке «Скачать» (страница сама кладёт файлы в offline-book-<slug>@<версия>). */
 'use strict';
-const SHELL_CACHE='offline-shell-9c046852cf12';
-const SHELL=["./", "unfinished/", "quotes/", "shared/shelf-87b3dffb10e8.css", "pwa.js?v=33817714a48c", "shared/vsplanet-mark.svg", "shared/vsplanet-lockup.svg", "shared/fonts/geologica-cyr.woff2", "shared/fonts/geologica-lat.woff2", "shared/fonts/literata-cyrillic-normal.woff2", "shared/fonts/literata-cyrillic-italic.woff2", "shared/fonts/literata-latin-normal.woff2", "shared/fonts/literata-latin-italic.woff2", "shared/nav-5f19738f680f.css", "shared/nav-a8d72c06dedb.js", "icons/app-192.png", "shared/favicon.svg", "covers/heenan.webp", "covers/piper.webp", "covers/copeland.webp", "covers/flair.webp", "covers/wcw.webp", "covers/eddie.webp", "covers/hart.webp", "covers/goldust.webp", "covers/jericho.webp", "covers/lesnar.webp", "covers/booker.webp", "covers/holly.webp", "covers/booker-royalty.webp"];
+const SHELL_CACHE='offline-shell-77c06ffc00e3';
+const SHELL=["./", "unfinished/", "quotes/", "shared/shelf-a736b7b0b7fa.css", "pwa.js?v=2b54bc7ad76b", "shared/vsplanet-mark.svg", "shared/vsplanet-lockup.svg", "shared/fonts/geologica-cyr.woff2", "shared/fonts/geologica-lat.woff2", "shared/fonts/literata-cyrillic-normal.woff2", "shared/fonts/literata-cyrillic-italic.woff2", "shared/fonts/literata-latin-normal.woff2", "shared/fonts/literata-latin-italic.woff2", "shared/nav-485660579062.css", "shared/nav-249b8085e8ee.js", "icons/app-192.png", "shared/favicon.svg", "covers/heenan.webp", "covers/piper.webp", "covers/copeland.webp", "covers/flair.webp", "covers/wcw.webp", "covers/eddie.webp", "covers/hart.webp", "covers/goldust.webp", "covers/jericho.webp", "covers/lesnar.webp", "covers/booker.webp", "covers/holly.webp", "covers/booker-royalty.webp"];
 const BOOKS='offline-book-';
 const base=new URL('./',self.registration.scope);
 self.addEventListener('install',e=>e.waitUntil((async()=>{

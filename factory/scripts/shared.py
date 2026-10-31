@@ -20,3 +20,9 @@ def build(books_dir):
         stem, suf = f.rsplit('.', 1); name = f'{stem}-{h12(tmp.read_bytes())}.{suf}'; tmp.rename(d / name); names.append(name)
     (d / '.names').write_text(' '.join(names))
     return tuple(names)
+
+
+def version():
+    import json
+    v = json.loads((T.parent / 'VERSION.json').read_text())
+    return v['version'], v['name']

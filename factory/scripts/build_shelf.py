@@ -64,7 +64,7 @@ EAGER = {b['slug'] for b in books if not b['inc']}.intersection({b['slug'] for b
 full = [b for b in books if not b['inc']]; partial = [b for b in books if b['inc']]
 total_words = sum(sum(b['words']) for b in books)
 hours = round(total_words / 180 / 60)
-import shared; SH = shared.build(OUT)     # общие шрифты и логотип — /books/shared/
+import shared; SH = shared.build(OUT); VER = shared.version()     # общие шрифты и логотип — /books/shared/
 
 def plural(n, a, b, c):
     n = abs(n) % 100; n1 = n % 10
@@ -282,7 +282,7 @@ footer.credits{{display:block;margin:88px 0 0;padding:44px 0 36px;border-top:1px
 <div><h4>О проекте</h4><p>С 2011 года читатели VSplanet переводят книги звёзд рестлинга. Здесь они собраны в одной читалке: закладки, поиск по тексту, офлайн-режим и EPUB. Регистрации нет, а прогресс чтения хранится только в вашем браузере.</p></div>
 <div><h4>Присоединяйтесь</h4><p>Недопереведённые книги ждут продолжения. Возьмите главу — и ваше имя появится в выходных данных книги.</p><p><a class="cr-link" href="https://vsplanet.net/" rel="noopener">Редакция VSplanet.net →</a></p></div>
 </div>
-<div class="cr-end"><span>Сайт собрал Никита Андреев, 2026</span></div>
+<div class="cr-end"><span>Сайт собрал Никита Андреев, 2026</span><span class="app-ver">Версия {VER[0]} «{VER[1]}»</span></div>
 </footer>
 </div>
 <script>

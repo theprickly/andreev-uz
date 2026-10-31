@@ -119,7 +119,7 @@ R = {'JSONLD': '<script type="application/ld+json">' + json.dumps(ld, ensure_asc
      'MEMORIAL': memorial, 'H1': E(cfg['title'] + ' — ' + cfg.get('subtitle', cfg['author'])), 'EYEBROW': E(cfg['eyebrow']), 'LEAD': E(cfg['lead']),
      'CREDIT_HTML': credit_html, 'ORIGINAL_HTML': original_html, 'INCOMPLETE_HTML': incomplete_html, 'RENDER_ALT': 'Книга «' + E(cfg['title']) + '»', 'TITLE': E(cfg['title']), 'QUOTE_SECTION': quote_section,
      'LETTER_SECTION': letter_section, 'IMPRINT': imprint, 'EPUB': epub_file, 'EPUB_NAME': E(f'{cfg["author"]} — {cfg["title"]}.epub'),
-     'EPUB_META': f'{epub_mb} МБ' + (' · с иллюстрациями' if photos else ''), 'ABOUT': about, 'SLUG': cfg['slug'], 'PWA_V': PWA_V,
+     'EPUB_META': f'{epub_mb} МБ' + (' · с иллюстрациями' if photos else ''), 'ABOUT': about, 'SLUG': cfg['slug'], 'PWA_V': PWA_V, 'VERSION': '{} «{}»'.format(*shared.version()),
      'OFFLINE_MB': f"{sum(f.stat().st_size for f in dst.rglob('*') if f.is_file() and f.suffix not in ('.epub', '.txt')) / 1048576:.1f}".replace('.', ',')}
 page = (T / 'index.tpl.html').read_text()
 for k, v in R.items(): page = page.replace('{{' + k + '}}', v)

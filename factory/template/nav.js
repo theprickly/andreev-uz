@@ -1,6 +1,20 @@
 'use strict';
 /* Нижняя панель навигации (мобильная): активная вкладка, «стеклянный» индикатор, скролл к разделам, жест «назад» в установленном приложении. */
 (()=>{
+ /* ---- отклик на касание: iOS включает :active только если на документе есть touchstart ---- */
+ document.addEventListener('touchstart',()=>{},{passive:true});
+ /* лёгкая вибрация (Android) и тактильный отклик «переключателя» (iOS 18+) */
+ let hsw;const vib='vibrate' in navigator;
+ function haptic(){try{if(vib){navigator.vibrate(9);return;}
+  if(!hsw){hsw=document.createElement('label');hsw.setAttribute('aria-hidden','true');hsw.style.cssText='position:fixed;left:-99px;top:0;width:1px;height:1px;opacity:0;pointer-events:none';hsw.innerHTML='<input type="checkbox" switch tabindex="-1">';document.body.append(hsw);}hsw.click();}catch{}}
+ document.addEventListener('click',e=>{if(e.pointerType!=='touch')return;const t=e.target.closest('a[href],button,summary,[role=button],.tb-tab,.tb-fab');
+  if(!t||t.disabled||t.closest('.book-prose')||t.closest('[data-no-haptic]'))return;haptic();
+  /* переход на другую страницу: сразу показать, что тап принят */
+  const a=t.closest('a[href]');
+  if(a&&!e.defaultPrevented&&a.target!=='_blank'&&!a.hasAttribute('download')){try{const u=new URL(a.href,location.href);
+   if(u.origin===location.origin&&(u.pathname!==location.pathname||u.search!==location.search)){document.documentElement.classList.add('navigating');a.classList.add('is-pending');}}catch{}}
+ },true);
+ addEventListener('pageshow',()=>{document.documentElement.classList.remove('navigating');document.querySelectorAll('.is-pending').forEach(n=>n.classList.remove('is-pending'));});
  /* шторки: потянуть за заголовок вниз — закрыть (как в iOS) */
  (()=>{let d=null,y0=0,dy=0;
   document.addEventListener('touchstart',e=>{const h=e.target.closest('dialog[open] .dialog-heading');if(!h)return;if(innerWidth>720)return;d=h.closest('dialog');y0=e.touches[0].clientY;dy=0;d.classList.remove('settling');d.classList.add('is-dragging');},{passive:true});

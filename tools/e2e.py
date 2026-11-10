@@ -89,7 +89,8 @@ async def main():
                 watch(pg, "офлайн", probs)
                 await pg.goto(BASE + "/", wait_until="networkidle")
                 await pg.evaluate("navigator.serviceWorker.ready")
-                await pg.reload(wait_until="networkidle")
+                # скачивание книги теперь живёт на её странице («Без сети → Скачать»), а не на карточке полки
+                await pg.goto(BASE + "/lesnar/", wait_until="networkidle")
                 await pg.locator('[data-offline="lesnar"]').click()
                 st = ""
                 for _ in range(60):            # опрос атрибута: wait_for_function упирается в CSP сайта (нет unsafe-eval)

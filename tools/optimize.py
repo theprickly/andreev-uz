@@ -127,7 +127,7 @@ BANNER_ITEMS = [
     ('<path d="M20 12a8 8 0 1 1-2.5-5.8M20 4v5h-5"/>', "Всегда свежее", "Новые главы и книги подтягиваются сами"),
 ]
 BANNER_T = "Установите приложение — читать так удобнее всего"
-BANNER_FREE = "Бесплатно \xb7 без App Store и Google Play \xb7 5 секунд"
+BANNER_FREE = "Бесплатно \xb7 без App Store и Google Play"
 HEAD_JS = ('<script>!function(d){try{var a=0,s=matchMedia("(display-mode: standalone)").matches||navigator.standalone===!0;'
            'try{a=+localStorage.getItem("' + BANNER_KEY + '")||0}catch(e){}'
            'if(!s&&!(a&&Date.now()-a<6048e5)){d.classList.add("ib-on");'
@@ -757,6 +757,54 @@ GOALS_JS = (
     "})();\n" % METRIKA_ID)
 
 
+# ───────────────────────── 5g. Упрощение: без повторов ─────────────────────────
+CSS_SIMPLE_NAV = (
+    # установка предлагается одной тонкой строкой вместо большого баннера
+    ".ibanner{padding:12px 14px!important;border-radius:20px!important;margin:4px 0 16px!important}"
+    ".ibanner .ib-list,.ibanner .ib-k,.ibanner .ib-ico{display:none!important}"
+    ".ibanner .ib-head{padding-right:34px}.ibanner .ib-t{font-size:15px!important;font-weight:700;line-height:1.3}"
+    ".ibanner .ib-act{margin-top:10px!important;gap:12px!important;flex-wrap:nowrap!important}"
+    ".ibanner .ib-go{height:38px!important;padding:0 18px!important;font-size:14px!important}"
+    ".ibanner .ib-free{font-size:12px!important;line-height:1.35;min-width:0}"
+    ".ibanner .ib-x{top:8px!important;right:8px!important}"
+    "@media (min-width:721px){.ibanner .ib-t{font-size:17px!important}.ibanner .ib-free{font-size:13px!important}}")
+CSS_SIMPLE_SHELF = (
+    # карточка: обложка, автор, название, одна строка фактов; остальное — на странице книги
+    ".book .tag,.book .orig,.book .actions{display:none!important}"
+    ".book .meta{gap:2px}.book h3{font-size:17px}.book .facts{font-size:13px}"
+    ".mylib{display:none!important}.dl-row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}"
+    "@media (max-width:720px){.lsub{display:none}.grid{gap:22px 14px!important}.stand{margin-bottom:22px!important}}")
+
+
+def simplify(c):
+    n = 0
+    for f in c.out.rglob("*.html"):
+        rel = f.relative_to(c.out).as_posix()
+        if rel in ("404.html", "legal/index.html"):
+            continue
+        t = s = rd(f)
+        t = t.replace(f'© <a href="{MAIN}">VSplanet</a> ·', "© VSplanet ·")                    # ссылка на VSplanet уже есть в чипе
+        t = t.replace(f'<a href="{MAIN}">VSplanet.net</a>', "")                                 # …и в подвале книг и глав
+        if re.fullmatch(r"[a-z0-9-]+/index\.html", rel) and rel.split("/")[0] in books(c):
+            t = t.replace('<a href="../">Все книги</a>', "")                                      # «Все книги» уже в шапке и панели
+            t = re.sub(r'<div class="format">(?:(?!<div class="format">).)*?<b>Приложение</b>.*?</button>\s*</div>', "", t, flags=re.S)
+        if rel in ("index.html", "unfinished/index.html"):
+            t = sub1(t, '<div class="dl-row"><span data-offline-sum data-empty=""></span>',
+                     '<div class="dl-row"><button class="ghost" data-offline-all>Скачать все</button><span data-offline-sum data-empty=""></span>', f"dl-row {rel}")
+        if t != s:
+            wr(f, t)
+            n += 1
+    pw = c.out / "pwa.js"      # баннер собирается и скриптом: убираем «· 5 секунд» и там
+    wr(pw, sub1(rd(pw), " \\xB7 5 \\u0441\\u0435\\u043A\\u0443\\u043D\\u0434", "", "«5 секунд» в pwa.js"))
+    for g, css_txt in (("nav-*.css", CSS_SIMPLE_NAV), ("shelf-*.css", CSS_SIMPLE_SHELF)):
+        css = next((c.out / "shared").glob(g))
+        wr(css, rd(css) + css_txt)
+    left = [str(f.relative_to(c.out)) for f in c.out.rglob("*.html") if "<b>Приложение</b>" in rd(f)]
+    if left:
+        raise SystemExit(f"optimize: карточка установки осталась на {left[:3]}")
+    c.note(f"упрощение: полка с чистыми карточками, установка одной строкой, без повторов ссылок ({n} страниц)")
+
+
 def plural(n, one, few, many):
     if n % 10 == 1 and n % 100 != 11:
         return one
@@ -907,6 +955,7 @@ def run(out, base, state, src):
     legal(c)
     logo_and_pwa(c)
     ui(c)
+    simplify(c)
     metrika(c)
     fonts(c)
     sw(c)

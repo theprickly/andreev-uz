@@ -407,15 +407,16 @@ def vsplanet_links(c):
 
 
 # ───────────────────────── 5c. Единый логотип «[знак] КНИГИ» и PWA без внешних ссылок ─────────────────────────
-LOGO_TXT = '<span class="bk-t">Книги</span>'
+LOGO_TXT = '<i class="bk-sep" aria-hidden="true"></i><span class="bk-t">Книги</span>'
 CSS_LOGO = (
     # знак растёт вместе с размером шрифта надписи: так пропорция одинакова во всех шапках
-    ".bk-t{font-family:var(--ui,inherit);font-weight:800;font-size:1em;line-height:1;letter-spacing:.02em;"
-    "text-transform:uppercase;color:#fff;white-space:nowrap}"
-    ".vs-brand{font-size:31px;gap:.32em}.vs-brand>img.lock.mk{height:1.8em;width:auto}"
+    ".bk-t{font-family:var(--ui,inherit);font-weight:500;font-size:.62em;line-height:1;letter-spacing:.46em;margin-right:-.46em;"
+    "text-transform:uppercase;color:#e8f1fb;white-space:nowrap}"
+    ".bk-sep{flex:none;width:1px;height:1.5em;background:linear-gradient(180deg,#9cc2ea00,#9cc2eaaa 50%,#9cc2ea00)}"
+    ".vs-brand{font-size:31px;gap:.55em}.vs-brand>img.lock.mk{height:1.8em;width:auto}"
     ".reader-header .vs-brand{font-size:21px}.reader-header .vs-brand .bk-t{display:inline}"
     "@media (max-width:600px){.vs-brand{font-size:26px}.reader-header .vs-brand{font-size:21px}}"
-    ".nb-lock{display:flex;align-items:center;gap:.32em;font-size:29px}.nb-brand .nb-lock img{height:1.8em;width:auto}"
+    ".nb-lock{display:flex;align-items:center;gap:.55em;font-size:29px}.nb-brand .nb-lock img{height:1.8em;width:auto}"
     "@media (max-width:640px){.nb-lock{font-size:24px}}@media (max-width:380px){.nb-lock{font-size:22px}}"
     # на компьютере у шапки есть подложка — логотип не нужно сворачивать до знака при прокрутке
     "@media (min-width:721px) and (hover:hover) and (pointer:fine){.navbar.on .nb-lock{opacity:1;transform:none;pointer-events:auto}"
@@ -687,8 +688,8 @@ def legal(c):
     n_links = 0
     for f in c.out.rglob("*.html"):
         rel = f.relative_to(c.out).as_posix()
-        if rel in ("404.html", "legal/index.html", "quotes/index.html"):
-            continue
+        if rel not in ("index.html", "unfinished/index.html"):
+            continue            # на страницах книг и глав юридических ссылок нет
         href = "../" * rel.count("/") + "legal/"
         t = s = rd(f)
         if 'class="footer-nav"' in t:
@@ -704,7 +705,7 @@ def legal(c):
     # тексты: фактически верные формулировки (счётчик Метрики теперь есть) и единый деловой тон
     pairs = [
         ("Без регистрации, рекламы и счётчиков. Место чтения, закладки и настройки хранятся только в вашем браузере.",
-         "Без регистрации и рекламы. Место чтения, закладки и настройки хранятся только в вашем браузере. Для статистики посещаемости используется Яндекс Метрика — подробности в разделе «<a href=\"{L}#stat\">Правовая информация</a>»."),
+         "Без регистрации и рекламы. Место чтения, закладки и настройки хранятся только в вашем браузере. Для статистики посещаемости используется Яндекс Метрика."),
         ("Текст собран из публикаций на VSplanet автоматически и сверен: части глав склеены, исправлена типографика и разнобой в именах, служебные пометки публикации сохранены как архивные заметки. Порядок и смысл текста не менялись.",
          "Текст подготовлен по публикациям на VSplanet.net: части глав объединены, типографика и написание имён приведены к единому виду, служебные пометки публикации сохранены как архивные примечания. Содержание и порядок текста не изменены."),
         ("Интерфейс и заголовки — Geologica, текст книги — Literata; обе по лицензии SIL Open Font License и лежат на сайте, без сторонних серверов.",
@@ -721,6 +722,7 @@ def legal(c):
          "С 2011 года читатели VSplanet.net переводят автобиографии звёзд рестлинга. Здесь они собраны в одной читалке: закладки, поиск по тексту, офлайн-режим и EPUB. Регистрация не нужна, прогресс чтения хранится только в вашем браузере."),
         ("Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.",
          "Автобиографии рестлеров — в любительских переводах читателей VSplanet.net."),
+        ("<li><span>2026</span>Сайт собрал Никита Андреев</li>", ""),
         ("Недопереведённые книги ждут продолжения. Возьмите главу — и ваше имя появится в выходных данных книги.",
          "Часть книг переведена не полностью. Возьмите главу — и ваше имя появится в выходных данных книги."),
     ]

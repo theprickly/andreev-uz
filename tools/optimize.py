@@ -477,6 +477,34 @@ CSS_SHELF_3D = (
     "@media (min-width:1600px){.shelf-body .wrap{width:min(1480px,100% - 64px)}.shelf-body .navbar{padding-left:max(16px,calc((100% - 1480px)/2));padding-right:max(16px,calc((100% - 1480px)/2))}}"
     # пустой результат фильтра
     ".grid:not(:has(.book:not([hidden])))::after{content:\"Здесь пока пусто — откройте любую книгу, и она появится в этом списке.\";grid-column:1/-1;padding:28px 0;color:#8d95a3;font-size:15px}")
+
+CSS_POLISH = (
+    # ── шапка: без transform-центровки (дробные пиксели размывают вектор) и без масштаба в анимации ──
+    ".nb-brand{left:0;right:0;top:env(safe-area-inset-top);height:74px;margin:0 auto;width:max-content;transform:none;display:flex;align-items:center;justify-content:center}"
+    ".nb-mark{inset:0;margin:auto;height:38px!important;width:auto;transform:none;transition:opacity .3s ease}"
+    ".navbar.on .nb-mark{transform:none}.navbar.on .nb-lock{transform:none}.nb-lock{transition:opacity .3s ease}"
+    ".nb-brand img,.vs-brand>img{image-rendering:auto;backface-visibility:hidden}"
+    ".vs-brand>img.lock.mk{height:56px;width:auto}.reader-header .vs-brand>img.lock.mk{height:38px}"
+    ".nb-lock img{height:52px!important}"
+    "@media (max-width:640px){.nb-lock img{height:44px!important}.vs-brand>img.lock.mk{height:46px}.nb-mark{height:36px!important}}"
+    # ── полка: низ обложек лежит на одной горизонтали (точка схода на уровне кромки), слабее перспектива ──
+    ".stand{perspective:2400px;perspective-origin:50% 100%}"
+    ".stand .cover{transition:transform .5s cubic-bezier(.22,1,.36,1)}"
+    "@media (hover:hover){.book:hover .stand .cover,.stand .cover:focus-visible{transform:rotateY(var(--ryh)) translateY(-10px)}"
+    ".book:hover .stand::before{transform:scale(.9);opacity:.7}}"
+    ".stand::before{transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .5s ease}"
+    "@media (max-width:720px){.stand{perspective:1600px}}"
+    # ── анимации: без вспышки яркости и «пружины» ──
+    "@media (hover:none),(pointer:coarse){:is(a,button,summary,label,[role=button],[data-tab],.search-result,.chapter-chip):not(.book-prose a):not(.tb-tab):not(.tb-fab):active{"
+    "transform:scale(.975);filter:none;opacity:.82;transition:transform .12s ease-out,opacity .12s ease-out}"
+    ":is(a,button,summary,label,[role=button]):not(.book-prose a):not(.tb-tab):not(.tb-fab){transition:transform .28s cubic-bezier(.22,1,.36,1),opacity .2s ease,background-color .2s ease}"
+    ".tb-tab:active{transform:scale(.96)}.tb-fab:active{filter:none;transform:scale(.94)}}"
+    ".tb-tab,.tb-fab,.icon{--spring:cubic-bezier(.22,1,.36,1)}"
+    "@keyframes ib-in{0%{opacity:0;transform:translateY(-6px)}}"
+    ".ibanner{animation:ib-in .45s cubic-bezier(.22,1,.36,1) both}"
+    "::view-transition-old(root),::view-transition-new(root){animation-duration:.18s;animation-timing-function:ease}"
+    "html.navigating:before{height:2px;box-shadow:none}")
+
 CSS_UI_COMMON = (
     "@view-transition{navigation:auto}"
     "@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}"
@@ -486,11 +514,11 @@ CSS_UI_COMMON = (
     "@media (pointer:coarse) and (max-width:600px){.navbar .vs-back,header.top .vs-back{width:44px}}")
 CSS_BOOK_PAGE = (
     # шапка как на полке: чип слева, логотип по центру, действия справа
-    "header.top>.vs-brand{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}"
+    "header.top>.vs-brand{position:absolute;left:0;right:0;width:max-content;margin:0 auto;top:50%;transform:translateY(-50%)}"
     "header.top>nav{flex:1;justify-content:flex-end;min-height:36px}header.top>nav>.vs-back{margin-right:auto}"
     "@media (max-width:600px){body.static header.top>.vs-brand{top:34px}body.static header.top>nav{justify-content:center;row-gap:10px}"
     "body.static header.top>nav>.vs-back{margin-right:calc(100% - 44px)}}"
-    "@media (display-mode:standalone) and (max-width:600px){body.static header.top>.vs-brand{position:static;transform:none;flex-basis:100%;justify-content:center}}"
+    "@media (display-mode:standalone) and (max-width:600px){body.static header.top>.vs-brand{position:static;transform:none;flex-basis:100%;justify-content:center;margin:0}}"
     # книга стоит на той же стеклянной полке, что и в каталоге
     ".hero-book .book-tilt{z-index:1}"
     ".hero-book::after{content:\"\";position:absolute;z-index:0;left:calc(var(--bl,24%) - 9%);right:calc(100% - var(--br,75%) - 9%);top:calc(var(--bb,90%) - 1px);height:9px;border-radius:2px;pointer-events:none;"
@@ -511,10 +539,10 @@ def ui(c):
             raise SystemExit(f"optimize: обложки для полки на {page}: {k}")
         wr(f, s)
     sh = next((c.out / "shared").glob("shelf-*.css"))
-    wr(sh, rd(sh) + CSS_SHELF_3D)
+    wr(sh, rd(sh) + CSS_SHELF_3D + CSS_POLISH)
     for g in ("nav-*.css", "style-*.css"):
         css = next((c.out / "shared").glob(g))
-        wr(css, rd(css) + CSS_UI_COMMON)
+        wr(css, rd(css) + CSS_UI_COMMON + CSS_POLISH)
     st = next((c.out / "shared").glob("style-*.css"))
     wr(st, rd(st) + CSS_BOOK_PAGE)
     for b in books(c):
@@ -541,13 +569,190 @@ METRIKA = ('<!-- Yandex.Metrika counter --><script>(function(m,e,t,r,i,k,a){m[i]
 
 def metrika(c):
     n = 0
+    wr(c.out / "shared/goals-000000000000.js", GOALS_JS)
     for f in c.out.rglob("*.html"):
         s = rd(f)
         if "mc.yandex.ru" in s or "</body>" not in s or 'http-equiv="refresh"' in s:
             continue
-        wr(f, s.replace("</body>", METRIKA + "</body>", 1))
+        rel = f.relative_to(c.out).as_posix()
+        goals = f'<script src="{"../" * rel.count("/")}shared/goals-000000000000.js" defer></script>'
+        # Вебвизор не должен записывать то, что человек вводит в поля (поиск по книге, фильтры)
+        s = re.sub(r"<body(?: class=\"([^\"]*)\")?", lambda m: '<body class="' + ((m.group(1) + " ") if m.group(1) else "") + 'ym-disable-keys ym-disable-submit"', s, count=1)
+        wr(f, s.replace("</body>", goals + METRIKA + "</body>", 1))
         n += 1
-    c.note(f"Яндекс Метрика {METRIKA_ID}: счётчик на {n} страницах")
+    c.note(f"Яндекс Метрика {METRIKA_ID}: счётчик и цели на {n} страницах, запись полей ввода отключена")
+
+
+# ───────────────────────── 5f. Правовая информация, тексты и цели Метрики ─────────────────────────
+LEGAL_DATE = "11 ноября 2026 года"      # меняется вручную вместе с текстом страницы (иначе lastmod в sitemap «плывёт»)
+YA_PRIVACY = "https://yandex.ru/legal/confidential/"
+YA_TERMS = "https://yandex.ru/legal/metrica_termsofuse/"
+YA_OPTOUT = "https://yandex.ru/support/metrica/ru/general/user-opt-out"
+LEGAL_DESC = "Условия использования, авторские права на переводы и обработка данных на сайте VSplanet Книги: что хранится на устройстве и как работает Яндекс Метрика."
+
+LEGAL_BODY = f"""<main class="wrap legal" id="top">
+<h1 class="ltitle" data-ltitle>Правовая информация</h1>
+<p class="lsub">Условия использования, сведения об авторских правах и о том, какие данные собирает сайт. Редакция от {LEGAL_DATE}.</p>
+<nav class="legal-toc" aria-label="Содержание"><a href="#about">О проекте</a><a href="#rights">Авторские права</a><a href="#terms">Условия использования</a><a href="#stat">Конфиденциальность</a><a href="#contacts">Контакты</a></nav>
+
+<section id="about"><h2>О проекте</h2>
+<p>VSplanet Книги — бесплатная онлайн-читалка автобиографий рестлеров. В ней собраны любительские переводы, которые с 2011 года публикуют читатели VSplanet.net. Сайт не содержит рекламы, не требует регистрации и не предлагает платных функций.</p></section>
+
+<section id="rights"><h2>Авторские права и переводы</h2>
+<ul>
+<li>Права на оригинальные книги, их тексты и обложки принадлежат авторам и издателям. Сведения об оригинале — автор, название, издательство и год — указаны на странице каждой книги в разделе «О сайте».</li>
+<li>Русские тексты — любительские переводы читателей VSplanet.net. Они не являются официальными изданиями и не связаны с авторами и издателями оригиналов. Переводчики названы в выходных данных каждой книги.</li>
+<li>Обложки и иллюстрации приводятся для идентификации издания и в информационных целях.</li>
+<li>Материалы предназначены для личного ознакомительного чтения. Коммерческое использование, перепродажа и публикация на других ресурсах без согласия переводчиков и правообладателей не допускаются.</li>
+</ul>
+<h3>Правообладателям</h3>
+<p>Если вы автор, издатель или иной правообладатель и считаете, что материал размещён без достаточных оснований, свяжитесь с редакцией: контакты указаны на <a href="{MAIN}" rel="noopener">VSplanet.net</a>. Укажите название книги, адрес страницы и сведения, подтверждающие ваши права. Обращение будет рассмотрено, а при обоснованном требовании материал будет удалён.</p></section>
+
+<section id="terms"><h2>Условия использования</h2>
+<ul>
+<li>Сайт и материалы предоставляются «как есть», без гарантий безошибочности текста и бесперебойной работы.</li>
+<li>Читать книги онлайн и офлайн, скачивать EPUB и сохранять копии можно для личного использования.</li>
+<li>Редакция вправе изменять, дополнять и удалять материалы, а также обновлять этот документ. Актуальная редакция всегда опубликована на этой странице.</li>
+</ul></section>
+
+<section id="stat"><h2>Конфиденциальность и статистика</h2>
+<p>Регистрации и личных кабинетов на сайте нет. Мы не запрашиваем и не собираем имя, адрес электронной почты, телефон и другие сведения, по которым можно установить вашу личность.</p>
+<h3>Что хранится на вашем устройстве</h3>
+<p>Место чтения, закладки, настройки отображения и книги, скачанные для чтения без сети, хранятся только в памяти вашего браузера (localStorage и кэш). На сервер они не передаются. Удалить их можно очисткой данных сайта в настройках браузера, а перенести на другое устройство — через экспорт в настройках чтения.</p>
+<h3>Статистика посещаемости</h3>
+<p>Сайт использует сервис «Яндекс Метрика» (счётчик № {METRIKA_ID}), чтобы понимать, какие разделы и книги читают и где посетителям неудобно. Метрика получает обезличенные сведения: просмотренные страницы, источник перехода, тип устройства, браузер и размер экрана, примерное местоположение (по IP-адресу) и время на странице. Работают карта кликов и «Вебвизор» — он записывает действия на странице: движения указателя, клики и прокрутку. Значения, которые вы вводите в поля (например, поисковый запрос), не записываются.</p>
+<p>Метрика использует файлы cookie и аналогичные технологии; собственных cookie сайт не устанавливает. Данные обрабатывает Яндекс на условиях <a href="{YA_PRIVACY}" rel="noopener">Политики конфиденциальности</a> и <a href="{YA_TERMS}" rel="noopener">Условий использования сервиса «Яндекс Метрика»</a>. Мы не продаём данные и не передаём их третьим лицам, кроме Яндекса как оператора сервиса. Шрифты, скрипты и изображения сайта загружаются с него самого.</p>
+<h3>Как отказаться</h3>
+<p>Отключить сбор данных можно блокировщиком отслеживания или способом из <a href="{YA_OPTOUT}" rel="noopener">справки Яндекса</a>. Читалка продолжит работать без ограничений.</p></section>
+
+<section id="contacts"><h2>Связь с редакцией</h2>
+<p>По вопросам авторских прав, ошибок в тексте и работы сайта пишите редакции <a href="{MAIN}" rel="noopener">VSplanet.net</a>. Ошибку в тексте книги проще всего отправить из читалки: выделите фрагмент и нажмите «Нашли опечатку?».</p></section>
+</main>"""
+
+CSS_LEGAL = (
+    ".shelf-body .wrap.legal{width:min(760px,100% - 32px)}"
+    ".legal section{scroll-margin-top:92px}.legal main>section+section,.legal>section+section{margin-top:40px}"
+    ".legal h2{margin:0 0 12px;font-size:clamp(22px,3.4vw,28px);line-height:1.15;letter-spacing:-.025em;font-weight:800}"
+    ".legal h3{margin:24px 0 6px;font-size:15px;letter-spacing:.01em;font-weight:700;color:#d6dde9}"
+    ".legal p,.legal li{color:#c3cad6;font-size:15.5px;line-height:1.7}.legal p{margin:0 0 12px}"
+    ".legal ul{margin:0 0 12px;padding-left:20px}.legal li{margin:0 0 8px}"
+    ".legal p a,.legal li a{color:#9cc2ea;text-decoration:underline;text-decoration-color:#9cc2ea66;text-underline-offset:3px}"
+    ".legal-toc{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 34px}"
+    ".legal-toc a{display:inline-flex;align-items:center;height:36px;padding:0 14px;border-radius:999px;font-size:14px;font-weight:500;color:#dbe3ef;background:var(--s2,#ffffff17);transition:background .2s}"
+    ".legal-toc a:hover{background:#ffffff26}")
+CSS_SIGN_NOTE = (
+    ".sign-n{flex-basis:100%;margin:2px 0 0;font-size:12.5px;line-height:1.5;color:#7f8898;text-align:center}"
+    ".sign-n a{color:#a9b4c6;text-decoration:underline;text-decoration-color:#a9b4c655;text-underline-offset:3px}"
+    ".footer-nav+.sign-n{margin-top:14px;text-align:left}")
+
+
+def legal(c):
+    """Страница «Правовая информация», ссылки на неё в подвалах, пометка о статистике и переписанные тексты."""
+    shelf = next((c.out / "shared").glob("shelf-*.css")).name
+    nav_css = next((c.out / "shared").glob("nav-*.css")).name
+    nav_js = next((c.out / "shared").glob("nav-*.js")).name
+    url = c.base + "legal/"
+    tabbar = re.search(r'<nav class="tabbar".*?</nav>', rd(c.out / "unfinished/index.html"), re.S).group(0).replace(" data-cur", "")
+    tabs = "".join(f'<a href="../{h or "./"}">{t}</a>' for h, t in SHELF_TABS)
+    graph = {"@context": "https://schema.org", "@graph": [
+        {"@type": "WebPage", "@id": url, "url": url, "name": "Правовая информация — VSplanet Книги", "inLanguage": "ru",
+         "description": LEGAL_DESC, "isPartOf": {"@type": "WebSite", "url": c.base}},
+        crumbs([("Книги", c.base), ("Правовая информация", url)])]}
+    page = (
+        '<!doctype html>\n<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n'
+        f'<title>Правовая информация — VSplanet Книги</title><meta name="description" content="{LEGAL_DESC}">\n'
+        f'<link rel="canonical" href="{url}"><meta name="theme-color" content="#03060c"><link rel="manifest" href="../manifest.webmanifest">'
+        '<link rel="apple-touch-icon" href="../icons/app-180.png"><meta name="apple-mobile-web-app-capable" content="yes">'
+        '<meta name="apple-mobile-web-app-title" content="Книги"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n'
+        f'<meta property="og:type" content="website"><meta property="og:url" content="{url}"><meta property="og:title" content="Правовая информация — VSplanet Книги">'
+        f'<meta property="og:description" content="{LEGAL_DESC}"><meta property="og:image" content="{c.base}og.jpg"><meta name="twitter:card" content="summary_large_image">\n'
+        '<link rel="icon" type="image/svg+xml" href="../shared/favicon.svg"><link rel="icon" href="../icons/favicon-32.png" sizes="32x32" type="image/png">'
+        '<link rel="preload" href="../shared/fonts/geologica-cyr.woff2" as="font" type="font/woff2" crossorigin>\n'
+        f'<link rel="stylesheet" href="../shared/{shelf}"><link rel="stylesheet" href="../shared/{nav_css}"><script src="../shared/{nav_js}" defer></script>{ld(graph)}</head>'
+        '<body class="shelf-body" data-page="legal">\n<div class="glow"></div>\n'
+        f'<header class="navbar" data-navbar>{VS_BACK}<a class="nb-brand" href="../" aria-label="VSplanet Книги">'
+        '<img class="nb-lock" src="../shared/vsplanet-lockup.svg" alt="VSplanet" width="1686" height="430">'
+        '<img class="nb-mark" src="../shared/vsplanet-mark.svg" alt="" width="512" height="366"></a>'
+        f'<span class="nb-title">Правовая информация</span><nav class="nb-nav" aria-label="Разделы">{tabs}</nav><span class="nb-act"></span></header>\n'
+        + LEGAL_BODY +
+        "\n" + tabbar + '\n</body></html>\n')
+    (c.out / "legal").mkdir(exist_ok=True)
+    wr(c.out / "legal/index.html", page)
+    wr(shelf_p := next((c.out / "shared").glob("shelf-*.css")), rd(shelf_p) + CSS_LEGAL)
+    for g in ("nav-*.css", "style-*.css"):
+        css = next((c.out / "shared").glob(g))
+        wr(css, rd(css) + CSS_SIGN_NOTE)
+
+    note_txt = "Сайт использует Яндекс Метрику для статистики посещаемости."
+    n_links = 0
+    for f in c.out.rglob("*.html"):
+        rel = f.relative_to(c.out).as_posix()
+        if rel in ("404.html", "legal/index.html", "quotes/index.html"):
+            continue
+        href = "../" * rel.count("/") + "legal/"
+        t = s = rd(f)
+        if 'class="footer-nav"' in t:
+            t = re.sub(r'(<nav class="footer-nav"[^>]*>.*?)(</nav>)', lambda m: m.group(1) + f'<a href="{href}">Правовая информация</a>' + m.group(2), t, count=1, flags=re.S)
+        if '<div class="sign">' in t:
+            t = re.sub(r'(<div class="sign">.*?)(</div>)', lambda m: m.group(1) + f'<p class="sign-n">{note_txt} <a href="{href}#stat">Подробнее</a></p>' + m.group(2), t, count=1, flags=re.S)
+        elif 'class="footer-nav"' in t:
+            t = re.sub(r'(<nav class="footer-nav"[^>]*>.*?</nav>)', lambda m: m.group(1) + f'<p class="sign-n">{note_txt} <a href="{href}#stat">Подробнее</a></p>', t, count=1, flags=re.S)
+        if t != s:
+            wr(f, t)
+            n_links += 1
+
+    # тексты: фактически верные формулировки (счётчик Метрики теперь есть) и единый деловой тон
+    pairs = [
+        ("Без регистрации, рекламы и счётчиков. Место чтения, закладки и настройки хранятся только в вашем браузере.",
+         "Без регистрации и рекламы. Место чтения, закладки и настройки хранятся только в вашем браузере. Для статистики посещаемости используется Яндекс Метрика — подробности в разделе «<a href=\"{L}#stat\">Правовая информация</a>»."),
+        ("Текст собран из публикаций на VSplanet автоматически и сверен: части глав склеены, исправлена типографика и разнобой в именах, служебные пометки публикации сохранены как архивные заметки. Порядок и смысл текста не менялись.",
+         "Текст подготовлен по публикациям на VSplanet.net: части глав объединены, типографика и написание имён приведены к единому виду, служебные пометки публикации сохранены как архивные примечания. Содержание и порядок текста не изменены."),
+        ("Интерфейс и заголовки — Geologica, текст книги — Literata; обе по лицензии SIL Open Font License и лежат на сайте, без сторонних серверов.",
+         "Интерфейс и заголовки — Geologica, текст книги — Literata (лицензия SIL Open Font License). Шрифты загружаются с этого же сайта."),
+        ("Выделите фрагмент и нажмите «Нашли опечатку?» — сайт скопирует его с номером главы и абзаца.",
+         "Выделите фрагмент и нажмите «Нашли опечатку?» — сайт скопирует его вместе с номером главы и абзаца, чтобы вам было удобно сообщить об ошибке."),
+        ("«VSplanet Книги» получит значок на главном экране и откроется как отдельное приложение. Прогресс и закладки сохранятся; скачанные книги читаются без сети.",
+         "VSplanet Книги появится на главном экране и будет открываться как обычное приложение — без адресной строки. Прогресс и закладки сохраняются, а скачанные книги доступны без интернета."),
+        ("Без аккаунта. Прогресс хранится только в этом браузере; очистка данных браузера удалит его. Экспорт поможет сохранить копию.",
+         "Аккаунт не нужен. Прогресс хранится только в этом браузере и пропадёт при очистке его данных — сохраните копию через экспорт."),
+        ("Перенесите место чтения, закладки и настройки в другой браузер через файл.",
+         "Перенесите место чтения, закладки и настройки на другое устройство с помощью файла."),
+        ("С 2011 года читатели VSplanet переводят книги звёзд рестлинга. Здесь они собраны в одной читалке: закладки, поиск по тексту, офлайн-режим и EPUB. Регистрации нет, а прогресс чтения хранится только в вашем браузере.",
+         "С 2011 года читатели VSplanet.net переводят автобиографии звёзд рестлинга. Здесь они собраны в одной читалке: закладки, поиск по тексту, офлайн-режим и EPUB. Регистрация не нужна, прогресс чтения хранится только в вашем браузере."),
+        ("Автобиографии рестлеров — в переводах, которые сделали фанаты для фанатов.",
+         "Автобиографии рестлеров — в любительских переводах читателей VSplanet.net."),
+        ("Недопереведённые книги ждут продолжения. Возьмите главу — и ваше имя появится в выходных данных книги.",
+         "Часть книг переведена не полностью. Возьмите главу — и ваше имя появится в выходных данных книги."),
+    ]
+    done = {a: 0 for a, _ in pairs}
+    for f in c.out.rglob("*.html"):
+        rel = f.relative_to(c.out).as_posix()
+        if rel == "legal/index.html":
+            continue
+        href = "../" * rel.count("/") + "legal/"
+        t = s = rd(f)
+        for a, b in pairs:
+            if a in t:
+                done[a] += t.count(a)
+                t = t.replace(a, b.replace("{L}", href))
+        if t != s:
+            wr(f, t)
+    miss = [a[:50] for a, n in done.items() if n == 0]
+    if miss:
+        raise SystemExit(f"optimize: не нашёл тексты для замены: {miss}")
+    c.note(f"правовая информация: страница, ссылки и пометка о статистике на {n_links} страницах, переписано {sum(done.values())} формулировок")
+
+
+GOALS_JS = (
+    "(()=>{var ID=%d,g=function(n){try{if(typeof ym==='function')ym(ID,'reachGoal',n)}catch(e){}},d=document;"
+    "d.addEventListener('click',function(e){var t=e.target&&e.target.closest&&e.target.closest('a,button');if(!t)return;"
+    "if(t.matches('a[href$=\".epub\"]'))g('epub_download');"
+    "else if(t.matches('[data-offline],[data-offline-all]'))g('offline_save');"
+    "else if(t.matches('.install-trigger,.ib-go'))g('install_click');"
+    "else if(t.matches('.book .actions a.btn,.book a.cover'))g('read_click');},true);"
+    "addEventListener('appinstalled',function(){g('app_installed')});"
+    "var r=d.getElementById('reader');if(r&&'MutationObserver'in window){var o=0;new MutationObserver(function(){if(!r.hidden&&!o){o=1;g('reader_open')}}).observe(r,{attributes:true,attributeFilter:['hidden']})}"
+    "})();\n" % METRIKA_ID)
 
 
 def plural(n, one, few, many):
@@ -582,7 +787,7 @@ def sw(c):
            "   const h2=alt!==r.url&&await caches.match(alt);if(h2)return h2;throw err;}\n"
            " })());")
     s = sub1(s, old, new, "обработчик fetch в sw.js")
-    s = sub1(s, '"icons/app-192.png", ', '"icons/app-192.png", "icons/app-128.webp", ', "список оболочки в sw.js")
+    s = sub1(s, '"icons/app-192.png", ', '"icons/app-192.png", "icons/app-128.webp", "shared/goals-000000000000.js", ', "список оболочки в sw.js")
     wr(f, s)
 
 
@@ -697,6 +902,7 @@ def run(out, base, state, src):
     shelf_pages(c)
     book_pages(c)
     vsplanet_links(c)
+    legal(c)
     logo_and_pwa(c)
     ui(c)
     metrika(c)

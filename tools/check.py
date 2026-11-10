@@ -11,7 +11,7 @@ import xml.etree.ElementTree as ET
 out = pathlib.Path(sys.argv[1]).resolve()
 BASE = sys.argv[2] if len(sys.argv) > 2 else "https://books.vsplanet.net/"
 BPATH = urllib.parse.urlparse(BASE).path          # "/" для поддомена, "/books/" для andreev.uz
-ALLOWED = {"books.vsplanet.net", "andreev.uz", "mc.yandex.ru", "vsplanet.net", "schema.org", "www.w3.org", "t.me", "www.sitemaps.org"}
+ALLOWED = {"books.vsplanet.net", "andreev.uz", "mc.yandex.ru", "yandex.ru", "vsplanet.net", "schema.org", "www.w3.org", "t.me", "www.sitemaps.org"}
 errors, warns = [], []
 err, warn = errors.append, warns.append
 

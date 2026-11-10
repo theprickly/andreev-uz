@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+"""Собирает сайт VSplanet Книги из исходника books-src/.
+
+  python3 tools/build-vsplanet.py                      # andreev.uz/books → папка books/ этого репозитория
+  python3 tools/build-vsplanet.py --vsplanet <папка>   # books.vsplanet.net → отдельная папка для заливки на сервер
+
+Исходник (books-src/) — результат prepare-release.py из архива проекта; его не трогаем.
+Сборка переписывает абсолютные адреса, кладёт серверные файлы и запускает optimize.py.
+"""
+import json, pathlib, re, shutil, sys
+
+TOOLS = pathlib.Path(__file__).resolve().parent
+ROOT = TOOLS.parent
+sys.path.insert(0, str(TOOLS))
+import optimize
+
+SRC = ROOT / "books-src"
+OLD = "https://andreev.uz/books/"
+VERSION = "1.16"
+TEXT = {".html", ".xml", ".json", ".js", ".css", ".webmanifest", ".txt", ".svg"}
+
+if "--vsplanet" in sys.argv:
+    out = pathlib.Path(sys.argv[sys.argv.index("--vsplanet") + 1]).resolve()
+    NEW, PREFIX, state = "https://books.vsplanet.net/", "/", TOOLS / "lastmod-vsplanet.json"
+else:
+    out = ROOT / "books"
+    NEW, PREFIX, state = OLD, "/books/", TOOLS / "lastmod-andreev.json"
+
+if out in (SRC, ROOT, TOOLS):
+    raise SystemExit("нельзя собирать в эту папку")
+if out.exists():
+    shutil.rmtree(out)
+shutil.copytree(SRC, out, ignore=shutil.ignore_patterns(".assetsignore", "_headers"))
+
+old_ver = json.loads((out / "version.json").read_text("utf-8"))["label"]
+changed = 0
+for f in out.rglob("*"):
+    if f.is_file() and f.suffix in TEXT and f.parent.name != "text":
+        s = f.read_text("utf-8")
+        t = s.replace(OLD, NEW).replace(OLD.rstrip("/"), NEW.rstrip("/"))
+        if f.name == "manifest.webmanifest":
+            t = t.replace('"/books/"', f'"{PREFIX}"')
+        if f.suffix == ".html":
+            t = t.replace(f'<em class="ver">v {old_ver}</em>', f'<em class="ver">v {VERSION}</em>')
+        if f.name == "version.json":
+            t = json.dumps({"version": VERSION, "name": "", "label": VERSION})
+        if t != s:
+            f.write_text(t, "utf-8")
+            changed += 1
+
+for f in (TOOLS / "vsplanet").iterdir():
+    if f.name == ".htaccess" and PREFIX != "/":
+        continue                       # andreev.uz — Cloudflare, правила в /_headers
+    s = f.read_text("utf-8")
+    if PREFIX != "/":                  # 404.html ссылается на ресурсы от корня сайта
+        s = re.sub(r'(src|href)="/', rf'\1="{PREFIX}', s).replace("url(/", f"url({PREFIX}")
+    (out / f.name).write_text(s, "utf-8")
+
+print(f"сборка {NEW} → {out}")
+print("оптимизация:")
+optimize.run(out, NEW, state, SRC)
+
+left = [str(f.relative_to(out)) for f in out.rglob("*")
+        if f.is_file() and f.suffix in TEXT and f.parent.name != "text"
+        and re.search(r"andreev\.uz" if PREFIX == "/" else r"books\.vsplanet\.net", f.read_text("utf-8"))]
+print(f"файлов с новым адресом/версией: {changed}; ссылок на чужой домен: {len(left)}", left[:5])

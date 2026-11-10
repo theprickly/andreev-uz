@@ -2,16 +2,3 @@ User-agent: *
 Allow: /
 
 Sitemap: https://andreev.uz/books/sitemap.xml
-Sitemap: https://andreev.uz/books/eddie/sitemap.xml
-Sitemap: https://andreev.uz/books/hart/sitemap.xml
-Sitemap: https://andreev.uz/books/jericho/sitemap.xml
-Sitemap: https://andreev.uz/books/wcw/sitemap.xml
-Sitemap: https://andreev.uz/books/heenan/sitemap.xml
-Sitemap: https://andreev.uz/books/lesnar/sitemap.xml
-Sitemap: https://andreev.uz/books/booker/sitemap.xml
-Sitemap: https://andreev.uz/books/flair/sitemap.xml
-Sitemap: https://andreev.uz/books/piper/sitemap.xml
-Sitemap: https://andreev.uz/books/holly/sitemap.xml
-Sitemap: https://andreev.uz/books/goldust/sitemap.xml
-Sitemap: https://andreev.uz/books/booker-royalty/sitemap.xml
-Sitemap: https://andreev.uz/books/copeland/sitemap.xml

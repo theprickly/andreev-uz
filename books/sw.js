@@ -1,8 +1,8 @@
 /* VSplanet Книги — единый service worker. Оболочка (полка) кэшируется сразу,
    книги — по кнопке «Скачать» (страница сама кладёт файлы в offline-book-<slug>@<версия>). */
 'use strict';
-const SHELL_CACHE='offline-shell-ee73b64c7e6d';
-const SHELL=["./", "unfinished/", "quotes/", "shared/shelf-3d944a092f2f.css", "pwa.js?v=33817714a48c", "shared/vsplanet-mark.svg", "shared/vsplanet-lockup.svg", "shared/fonts/geologica-cyr.woff2", "shared/fonts/geologica-lat.woff2", "shared/fonts/literata-cyrillic-normal.woff2", "shared/fonts/literata-cyrillic-italic.woff2", "shared/fonts/literata-latin-normal.woff2", "shared/fonts/literata-latin-italic.woff2", "shared/nav-d7760a54c5eb.css", "shared/nav-5c2122b0fe98.js", "icons/app-192.png", "shared/favicon.svg", "covers/heenan.webp", "covers/piper.webp", "covers/copeland.webp", "covers/flair.webp", "covers/wcw.webp", "covers/eddie.webp", "covers/hart.webp", "covers/goldust.webp", "covers/jericho.webp", "covers/lesnar.webp", "covers/booker.webp", "covers/holly.webp", "covers/booker-royalty.webp"];
+const SHELL_CACHE='offline-shell-d5a496e349de';
+const SHELL=["./", "unfinished/", "quotes/", "shared/shelf-5f26a69b2791.css", "pwa.js?v=4c6b43940610", "shared/vsplanet-mark.svg", "shared/vsplanet-lockup.svg", "shared/fonts/geologica-cyr-86c496e1.woff2", "shared/fonts/geologica-lat-fa028a6b.woff2", "shared/fonts/literata-cyrillic-normal-52568019.woff2", "shared/fonts/literata-cyrillic-italic-a69a17f1.woff2", "shared/fonts/literata-latin-normal-f0cd59cf.woff2", "shared/fonts/literata-latin-italic-ff91b80d.woff2", "shared/nav-939db81de6e6.css", "shared/nav-5c2122b0fe98.js", "icons/app-192.png", "icons/app-128.webp", "shared/favicon.svg", "covers/heenan.webp", "covers/piper.webp", "covers/copeland.webp", "covers/flair.webp", "covers/wcw.webp", "covers/eddie.webp", "covers/hart.webp", "covers/goldust.webp", "covers/jericho.webp", "covers/lesnar.webp", "covers/booker.webp", "covers/holly.webp", "covers/booker-royalty.webp"];
 const BOOKS='offline-book-';
 const base=new URL('./',self.registration.scope);
 self.addEventListener('install',e=>e.waitUntil((async()=>{
@@ -31,5 +31,10 @@ self.addEventListener('fetch',e=>{
  const u=new URL(r.url);if(u.origin!==location.origin||!u.pathname.startsWith(base.pathname))return;
  if(/\/(sw\.js|files\.json|version\.json|manifest\.webmanifest)$/.test(u.pathname))return;      // всегда из сети
  if(r.mode==='navigate'){e.respondWith(nav(r));return;}
- e.respondWith((async()=>{const hit=await caches.match(r);return hit||fetch(r);})());
+ e.respondWith((async()=>{const hit=await caches.match(r);if(hit)return hit;
+  try{return await fetch(r);}catch(err){
+   // офлайн: уменьшенного варианта картинки в кэше нет — отдаём полноразмерный, он скачан вместе с книгой
+   const alt=r.url.replace(/-(?:s|240|360)\.webp$/,'.webp');
+   const h2=alt!==r.url&&await caches.match(alt);if(h2)return h2;throw err;}
+ })());
 });

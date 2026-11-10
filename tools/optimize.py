@@ -446,6 +446,110 @@ def logo_and_pwa(c):
     c.note(f"логотип «знак + КНИГИ» на {n} страницах; в установленном приложении внешние ссылки скрыты")
 
 
+# ───────────────────────── 5d. Объёмные книги на стеклянной полке и единый вид страницы книги ─────────────────────────
+CSS_SHELF_3D = (
+    # книга — обычная ссылка; объём даёт поворот в перспективе, торец страниц (::before) и свет на обложке (::after)
+    ".grid{--gx:26px}"
+    ".stand{--ry:-21deg;--ryh:-4deg;--t:30px;position:relative;z-index:0;perspective:1400px;perspective-origin:50% 46%;margin:0 0 30px;padding:0 11% 0 7%}"
+    ".stand .cover{display:block;position:relative;perspective:none;z-index:2;transform-style:preserve-3d;transform-origin:50% 100%;"
+    "transform:rotateY(var(--ry)) translateZ(0);transition:transform .6s cubic-bezier(.2,.8,.2,1)}"
+    ".stand .cover img{display:block;width:100%;height:auto;aspect-ratio:2/3;object-fit:cover;border-radius:2px 4px 4px 2px;box-shadow:none!important;transform:none!important;transition:none}"
+    ".stand .cover::before{content:\"\";position:absolute;inset:.9% 0 .9% auto;width:var(--t);height:auto;opacity:1;filter:none;z-index:0;"
+    "transform-origin:100% 50%;transform:rotateY(-90deg);border-radius:0 1px 1px 0;"
+    "background:linear-gradient(90deg,#0003,#0000 18%,#0000 80%,#0002),repeating-linear-gradient(90deg,#f6f2e9 0 1px,#d9d3c5 1px 2px)}"
+    ".stand .cover::after{content:\"\";position:absolute;inset:0;height:auto;opacity:1;filter:none;z-index:1;border-radius:2px 4px 4px 2px;pointer-events:none;"
+    "background:linear-gradient(90deg,#0006 0,#fff3 1.1%,#0003 2.6%,#0000 5.5%),linear-gradient(105deg,#ffffff24 0,#fff0 34%,#0000 66%,#00000038 100%);"
+    "box-shadow:inset 0 0 0 1px #ffffff14}"
+    ".stand .ring,.stand .badge{z-index:3}"
+    # контактная тень и стеклянная кромка полки; кромка шире карточки на половину зазора — у соседних книг она смыкается
+    ".stand::before{content:\"\";position:absolute;z-index:1;left:6%;right:2%;bottom:-6px;height:22px;pointer-events:none;"
+    "background:radial-gradient(50% 50% at 46% 50%,#000d,#0008 45%,#0000 72%);transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .6s}"
+    ".stand::after{content:\"\";position:absolute;z-index:0;left:calc(var(--gx)/-2 - 1px);right:calc(var(--gx)/-2 - 1px);bottom:-9px;height:9px;border-radius:2px;pointer-events:none;"
+    "background:linear-gradient(180deg,#cfe6ff 0,#6f97cf 1px,#2a426e 2px,#14203b 55%,#0a1226 100%);box-shadow:0 26px 38px -14px #000,0 0 34px -4px #68a0d94d}"
+    ".book .meta{position:relative;z-index:1}"
+    "@media (hover:hover){.book:hover .stand .cover,.stand .cover:focus-visible{transform:rotateY(var(--ryh)) translateY(-12px) translateZ(34px)}"
+    ".book:hover .stand::before{transform:scale(.86) translateY(3px);opacity:.6}}"
+    ".stand .cover:active{transform:rotateY(var(--ryh)) translateY(-3px) scale(.985)}"
+    ".stand .cover:focus-visible{outline:2px solid #68a0d9;outline-offset:6px}"
+    "@media (max-width:720px){.grid{--gx:14px}.stand{--ry:-17deg;--t:16px;margin-bottom:24px;perspective:900px;padding:0 9% 0 5%}.stand::after{height:6px;bottom:-6px}}"
+    "@media (prefers-reduced-motion:reduce){.stand .cover,.stand::before{transition:none}}"
+    # большие мониторы: пять книг в ряд вместо пустых полей
+    "@media (min-width:1600px){.shelf-body .wrap{width:min(1480px,100% - 64px)}.shelf-body .navbar{padding-left:max(16px,calc((100% - 1480px)/2));padding-right:max(16px,calc((100% - 1480px)/2))}}"
+    # пустой результат фильтра
+    ".grid:not(:has(.book:not([hidden])))::after{content:\"Здесь пока пусто — откройте любую книгу, и она появится в этом списке.\";grid-column:1/-1;padding:28px 0;color:#8d95a3;font-size:15px}")
+CSS_UI_COMMON = (
+    "@view-transition{navigation:auto}"
+    "@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}"
+    # зоны касания не меньше 44 px на сенсорных экранах
+    "@media (pointer:coarse){.vs-back{height:44px;min-width:44px}header.top .chip{height:44px}"
+    ".footer-nav a,.cr-link,.sign a{display:inline-block;padding-top:11px;padding-bottom:11px}}"
+    "@media (pointer:coarse) and (max-width:600px){.navbar .vs-back,header.top .vs-back{width:44px}}")
+CSS_BOOK_PAGE = (
+    # шапка как на полке: чип слева, логотип по центру, действия справа
+    "header.top>.vs-brand{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}"
+    "header.top>nav{flex:1;justify-content:flex-end;min-height:36px}header.top>nav>.vs-back{margin-right:auto}"
+    "@media (max-width:600px){body.static header.top>.vs-brand{top:34px}body.static header.top>nav{justify-content:center;row-gap:10px}"
+    "body.static header.top>nav>.vs-back{margin-right:calc(100% - 44px)}}"
+    "@media (display-mode:standalone) and (max-width:600px){body.static header.top>.vs-brand{position:static;transform:none;flex-basis:100%;justify-content:center}}"
+    # книга стоит на той же стеклянной полке, что и в каталоге
+    ".hero-book .book-tilt{z-index:1}"
+    ".hero-book::after{content:\"\";position:absolute;z-index:0;left:calc(var(--bl,24%) - 9%);right:calc(100% - var(--br,75%) - 9%);top:calc(var(--bb,90%) - 1px);height:9px;border-radius:2px;pointer-events:none;"
+    "background:linear-gradient(180deg,#cfe6ff 0,#6f97cf 1px,#2a426e 2px,#14203b 55%,#0a1226 100%);box-shadow:0 26px 38px -14px #000,0 0 34px -4px #68a0d94d}"
+    ".hero-book .book-hint{bottom:auto;top:calc(var(--bb,90%) + 22px)}"
+    # меньше пустоты между первым экраном и остальным
+    "@media (min-width:861px){.hero{min-height:0;padding:28px 0 8px}.stats{margin-top:12px}}"
+    # подвал как на полке: выходные данные, ссылки, подпись — последней и по центру
+    ".site-footer{grid-template-columns:1fr;gap:20px}.site-footer .edition-credits{justify-content:flex-start;order:1}"
+    ".site-footer .footer-nav{order:2}.site-footer .sign{order:3;margin-top:8px}")
+
+
+def ui(c):
+    for page in ("index.html", "unfinished/index.html"):
+        f = c.out / page
+        s, k = re.subn(r'(<a class="cover" href="[^"]+">.*?</a>)', r'<div class="stand">\1</div>', rd(f), flags=re.S)
+        if k < 5:
+            raise SystemExit(f"optimize: обложки для полки на {page}: {k}")
+        wr(f, s)
+    sh = next((c.out / "shared").glob("shelf-*.css"))
+    wr(sh, rd(sh) + CSS_SHELF_3D)
+    for g in ("nav-*.css", "style-*.css"):
+        css = next((c.out / "shared").glob(g))
+        wr(css, rd(css) + CSS_UI_COMMON)
+    st = next((c.out / "shared").glob("style-*.css"))
+    wr(st, rd(st) + CSS_BOOK_PAGE)
+    for b in books(c):
+        # где у рендера книги низ и бока: по непрозрачной области картинки
+        im = Image.open(c.out / b / "assets/book-render.webp").convert("RGBA")
+        l, t, r, bt = im.split()[3].point(lambda v: 255 if v > 40 else 0).getbbox()
+        var = f"--bl:{l * 100 / im.width:.1f}%;--br:{r * 100 / im.width:.1f}%;--bb:{bt * 100 / im.height:.1f}%"
+        f = c.out / b / "index.html"
+        wr(f, sub1(rd(f), '<div class="hero-book">', f'<div class="hero-book" style="{var}">', f"рендер книги {b}"))
+    c.note("полка: объёмные книги на стеклянной кромке (CSS), 5 колонок на больших экранах; страница книги приведена к виду полки")
+
+
+# ───────────────────────── 5e. Яндекс Метрика ─────────────────────────
+METRIKA_ID = 114175725
+METRIKA = ('<!-- Yandex.Metrika counter --><script>(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};'
+           'm[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r){return;}}'
+           'k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})'
+           "(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=%d','ym');"
+           "ym(%d,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:\"dataLayer\",referrer:document.referrer,url:location.href,"
+           'accurateTrackBounce:true,trackLinks:true});</script>'
+           '<noscript><div><img src="https://mc.yandex.ru/watch/%d" style="position:absolute;left:-9999px" alt="" width="1" height="1"></div></noscript>'
+           '<!-- /Yandex.Metrika counter -->') % (METRIKA_ID, METRIKA_ID, METRIKA_ID)
+
+
+def metrika(c):
+    n = 0
+    for f in c.out.rglob("*.html"):
+        s = rd(f)
+        if "mc.yandex.ru" in s or "</body>" not in s or 'http-equiv="refresh"' in s:
+            continue
+        wr(f, s.replace("</body>", METRIKA + "</body>", 1))
+        n += 1
+    c.note(f"Яндекс Метрика {METRIKA_ID}: счётчик на {n} страницах")
+
+
 def plural(n, one, few, many):
     if n % 10 == 1 and n % 100 != 11:
         return one
@@ -594,6 +698,8 @@ def run(out, base, state, src):
     book_pages(c)
     vsplanet_links(c)
     logo_and_pwa(c)
+    ui(c)
+    metrika(c)
     fonts(c)
     sw(c)
     rehash(c)

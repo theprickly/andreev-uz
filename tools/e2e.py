@@ -26,9 +26,11 @@ def watch(page, tag, problems):
 async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch()
+        STUB = lambda r: r.fulfill(status=200, content_type='application/javascript', body='')   # Метрику в тестах не дёргаем
         for dev, opts in (("телефон", dict(viewport={"width": 390, "height": 844}, device_scale_factor=3, is_mobile=True, has_touch=True)),
                           ("компьютер", dict(viewport={"width": 1366, "height": 800}))):
             ctx = await b.new_context(**opts)
+            await ctx.route('**://mc.yandex.ru/**', STUB)
             for path in ("/", "/unfinished/", "/quotes/", "/lesnar/", "/lesnar/chapters/", "/hart/chapters/10.html", "/nope"):
                 pg = await ctx.new_page()
                 probs = []

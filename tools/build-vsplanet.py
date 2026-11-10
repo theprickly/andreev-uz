@@ -16,7 +16,7 @@ import optimize
 
 SRC = ROOT / "books-src"
 OLD = "https://andreev.uz/books/"
-VERSION = "1.16"
+VERSION = "1.17"
 TEXT = {".html", ".xml", ".json", ".js", ".css", ".webmanifest", ".txt", ".svg"}
 
 if "--vsplanet" in sys.argv:
@@ -39,7 +39,10 @@ for f in out.rglob("*"):
         s = f.read_text("utf-8")
         t = s.replace(OLD, NEW).replace(OLD.rstrip("/"), NEW.rstrip("/"))
         if f.name == "manifest.webmanifest":
-            t = t.replace('"/books/"', f'"{PREFIX}"')
+            m = json.loads(t.replace('"/books/"', f'"{PREFIX}"'))
+            m["categories"] = ["books", "entertainment"]
+            m["shortcuts"] = [{"name": "В работе", "url": PREFIX + "unfinished/"}, {"name": "Цитаты", "url": PREFIX + "quotes/"}]
+            t = json.dumps(m, ensure_ascii=False, indent=1)
         if f.suffix == ".html":
             t = t.replace(f'<em class="ver">v {old_ver}</em>', f'<em class="ver">v {VERSION}</em>')
         if f.name == "version.json":

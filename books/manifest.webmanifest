@@ -28,5 +28,19 @@
    "type": "image/png",
    "purpose": "maskable"
   }
+ ],
+ "categories": [
+  "books",
+  "entertainment"
+ ],
+ "shortcuts": [
+  {
+   "name": "В работе",
+   "url": "/books/unfinished/"
+  },
+  {
+   "name": "Цитаты",
+   "url": "/books/quotes/"
+  }
  ]
 }

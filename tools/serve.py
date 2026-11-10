@@ -7,9 +7,7 @@ mimetypes.add_type("application/manifest+json", ".webmanifest"); mimetypes.add_t
 mimetypes.add_type("image/webp", ".webp"); mimetypes.add_type("image/avif", ".avif"); mimetypes.add_type("application/epub+zip", ".epub")
 GZ = re.compile(r"\.(html|css|js|json|txt|xml|svg|webmanifest)$")
 IMM = re.compile(r"-[0-9a-f]{8,12}\.(js|css|json|epub|txt|woff2)$")
-CSP = ("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; "
-       "font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; "
-       "frame-ancestors 'self' https://vsplanet.net https://*.vsplanet.net")
+CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' https://mc.yandex.ru https://mc.yandex.com https://yastatic.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://mc.yandex.ru https://mc.yandex.com; font-src 'self'; connect-src 'self' https://mc.yandex.ru https://mc.yandex.com wss://mc.yandex.ru wss://mc.yandex.com; child-src blob: https://mc.yandex.ru; frame-src blob: https://mc.yandex.ru; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self' https://vsplanet.net https://*.vsplanet.net https://metrika.yandex.ru https://webvisor.com https://*.webvisor.com"
 class H(http.server.BaseHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
     def log_message(self, *a): pass

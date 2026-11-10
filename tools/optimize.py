@@ -406,6 +406,46 @@ def vsplanet_links(c):
     c.note(f"VSplanet: чип в шапке ({n_shelf} разделов, {n_book} книг, {n_ch} глав), меню для компьютера, ссылка в подвале, приглушённая подпись")
 
 
+# ───────────────────────── 5c. Единый логотип «[знак] КНИГИ» и PWA без внешних ссылок ─────────────────────────
+LOGO_TXT = '<span class="bk-t">Книги</span>'
+CSS_LOGO = (
+    # знак растёт вместе с размером шрифта надписи: так пропорция одинакова во всех шапках
+    ".bk-t{font-family:var(--ui,inherit);font-weight:800;font-size:1em;line-height:1;letter-spacing:.02em;"
+    "text-transform:uppercase;color:#fff;white-space:nowrap}"
+    ".vs-brand{font-size:31px;gap:.32em}.vs-brand>img.lock.mk{height:1.8em;width:auto}"
+    ".reader-header .vs-brand{font-size:21px}.reader-header .vs-brand .bk-t{display:inline}"
+    "@media (max-width:600px){.vs-brand{font-size:26px}.reader-header .vs-brand{font-size:21px}}"
+    ".nb-lock{display:flex;align-items:center;gap:.32em;font-size:29px}.nb-brand .nb-lock img{height:1.8em;width:auto}"
+    "@media (max-width:640px){.nb-lock{font-size:24px}}@media (max-width:380px){.nb-lock{font-size:22px}}"
+    # на компьютере у шапки есть подложка — логотип не нужно сворачивать до знака при прокрутке
+    "@media (min-width:721px) and (hover:hover) and (pointer:fine){.navbar.on .nb-lock{opacity:1;transform:none;pointer-events:auto}"
+    ".navbar.on .nb-mark{opacity:0}}")
+# установленное приложение (display-mode: standalone) — без переходов на другие сайты
+CSS_PWA = (
+    "@media (display-mode:standalone){.vs-back,.footer-nav a[href^='http'],p:has(>.cr-link),.cr-link,a.btn[href^='http']{display:none!important}"
+    "a[href^='http']{pointer-events:none;cursor:default;color:inherit!important;text-decoration:none!important}}")
+
+
+def logo_and_pwa(c):
+    n = 0
+    for f in c.out.rglob("*.html"):
+        s = t = rd(f)
+        t = re.sub(r'<img class="lock" src="([^"]*)vsplanet-lockup\.svg" alt="VSplanet" width="1686" height="430"><small class="bk">Книги</small>',
+                   r'<img class="lock mk" src="\1vsplanet-mark.svg" alt="VSplanet" width="512" height="366">' + LOGO_TXT, t)
+        t = re.sub(r'<img class="nb-lock" src="([^"]*)vsplanet-lockup\.svg" alt="VSplanet" width="1686" height="430">',
+                   r'<span class="nb-lock"><img src="\1vsplanet-mark.svg" alt="VSplanet" width="512" height="366">' + LOGO_TXT + "</span>", t)
+        if t != s:
+            wr(f, t)
+            n += 1
+    left = [str(f.relative_to(c.out)) for f in c.out.rglob("*.html") if "vsplanet-lockup.svg" in rd(f)]
+    if left:
+        raise SystemExit(f"optimize: старый логотип остался в {left[:3]}")
+    for g in ("nav-*.css", "style-*.css"):
+        css = next((c.out / "shared").glob(g))
+        wr(css, rd(css) + CSS_LOGO + CSS_PWA)
+    c.note(f"логотип «знак + КНИГИ» на {n} страницах; в установленном приложении внешние ссылки скрыты")
+
+
 def plural(n, one, few, many):
     if n % 10 == 1 and n % 100 != 11:
         return one
@@ -553,6 +593,7 @@ def run(out, base, state, src):
     shelf_pages(c)
     book_pages(c)
     vsplanet_links(c)
+    logo_and_pwa(c)
     fonts(c)
     sw(c)
     rehash(c)

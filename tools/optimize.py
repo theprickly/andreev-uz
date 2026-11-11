@@ -479,6 +479,27 @@ CSS_SHELF_3D = (
     # пустой результат фильтра
     ".grid:not(:has(.book:not([hidden])))::after{content:\"Здесь пока пусто — откройте любую книгу, и она появится в этом списке.\";grid-column:1/-1;padding:28px 0;color:#8d95a3;font-size:15px}")
 
+CSS_CALM = (
+    # ── логотип: целые пиксели, без слоёв и переходов на самой картинке (иначе WebKit растеризует знак мягко) ──
+    ".nb-brand img,.vs-brand>img,.nb-mark,.nb-lock{backface-visibility:visible;will-change:auto;transform:none;translate:none;transition:none;image-rendering:auto}"
+    ".nb-mark{width:56px!important;height:40px!important;object-fit:contain}"
+    "@media (max-width:640px){.nb-mark{width:52px!important;height:38px!important}}"
+    ".navbar{will-change:auto}"
+    # ── страницы переключаются мгновенно: кросс-фейд снимков размывал шапку и дёргал фиксированные панели ──
+    "@view-transition{navigation:none}"
+    # ── только opacity/transform: ширина, высота и отступы больше не анимируются ──
+    ".tb-pill,.tb-fab,.tb-tab,.tb-tab span,.reading-progress i,.match:before,.qbg,.cover img{transition:none!important}"
+    ".tb-tab:active,.tb-fab:active{transition:transform .12s ease-out}"
+    # ── без пружин: единая мягкая кривая ──
+    ".btn,.qarrow,.icon,#toast{transition:transform .2s cubic-bezier(.22,1,.36,1),opacity .2s ease,background-color .2s ease,border-color .2s ease}"
+    "@keyframes ib-in{0%{opacity:0;transform:translateY(-6px)}}"
+    ".ibanner,.upd{animation:ib-in .3s cubic-bezier(.22,1,.36,1) both}"
+    "@keyframes sheet-in{0%{transform:translateY(100%)}}"
+    "@keyframes pop{0%{opacity:0;transform:translateY(8px)}}"
+    "dialog[open],dialog.settings-dialog[open],dialog.install-dialog[open]{animation-timing-function:cubic-bezier(.22,1,.36,1)}"
+    "dialog.settling{transition:transform .25s cubic-bezier(.22,1,.36,1)}"
+    "@media (prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}")
+
 CSS_POLISH = (
     # ── шапка: без transform-центровки (дробные пиксели размывают вектор) и без масштаба в анимации ──
     ".nb-brand{left:0;right:0;top:env(safe-area-inset-top);height:74px;margin:0 auto;width:max-content;transform:none;display:flex;align-items:center;justify-content:center}"
@@ -504,7 +525,7 @@ CSS_POLISH = (
     "@keyframes ib-in{0%{opacity:0;transform:translateY(-6px)}}"
     ".ibanner{animation:ib-in .45s cubic-bezier(.22,1,.36,1) both}"
     "::view-transition-old(root),::view-transition-new(root){animation-duration:.18s;animation-timing-function:ease}"
-    "html.navigating:before{height:2px;box-shadow:none}")
+    "html.navigating:before{height:2px;box-shadow:none}") + CSS_CALM
 
 CSS_UI_COMMON = (
     "@view-transition{navigation:auto}"
@@ -607,7 +628,7 @@ LEGAL_BODY = f"""<main class="wrap legal" id="top">
 <li>Материалы предназначены для личного ознакомительного чтения. Коммерческое использование, перепродажа и публикация на других ресурсах без согласия переводчиков и правообладателей не допускаются.</li>
 </ul>
 <h3>Правообладателям</h3>
-<p>Если вы автор, издатель или иной правообладатель и считаете, что материал размещён без достаточных оснований, свяжитесь с редакцией: контакты указаны на <a href="{MAIN}" rel="noopener">VSplanet.net</a>. Укажите название книги, адрес страницы и сведения, подтверждающие ваши права. Обращение будет рассмотрено, а при обоснованном требовании материал будет удалён.</p></section>
+<p>Если вы автор, издатель или иной правообладатель и считаете, что материал размещён без достаточных оснований, напишите на <a href="mailto:support@vsplanet.net">support@vsplanet.net</a>. Укажите название книги, адрес страницы и сведения, подтверждающие ваши права. Обращение будет рассмотрено, а при обоснованном требовании материал будет удалён.</p></section>
 
 <section id="terms"><h2>Условия использования</h2>
 <ul>
@@ -627,7 +648,7 @@ LEGAL_BODY = f"""<main class="wrap legal" id="top">
 <p>Отключить сбор данных можно блокировщиком отслеживания или способом из <a href="{YA_OPTOUT}" rel="noopener">справки Яндекса</a>. Читалка продолжит работать без ограничений.</p></section>
 
 <section id="contacts"><h2>Связь с редакцией</h2>
-<p>По вопросам авторских прав, ошибок в тексте и работы сайта пишите редакции <a href="{MAIN}" rel="noopener">VSplanet.net</a>. Ошибку в тексте книги проще всего отправить из читалки: выделите фрагмент и нажмите «Нашли опечатку?».</p></section>
+<p>По вопросам авторских прав, ошибок в тексте и работы сайта пишите на <a href="mailto:support@vsplanet.net">support@vsplanet.net</a>. Ошибку в тексте книги проще всего отправить из читалки: выделите фрагмент и нажмите «Нашли опечатку?».</p></section>
 </main>"""
 
 CSS_LEGAL = (
@@ -945,6 +966,23 @@ def sitemaps(c):
     c.note(f"sitemap: индекс + {len(idx)} карт, {seen} страниц с lastmod; robots.txt → один sitemap.xml")
 
 
+def contacts(c):
+    """Единый способ связи — почта поддержки (подвал и блок «Помогите дописать»)."""
+    mail = "support@vsplanet.net"
+    envelope = ('<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6.5h16v11H4z"/><path d="m4.5 7 7.5 6 7.5-6"/></svg>')
+    for rel in ("index.html", "unfinished/index.html"):
+        f = c.out / rel
+        t = rd(f)
+        if rel == "index.html":
+            t = sub1(t, '<a class="cr-link" href="https://vsplanet.net/" rel="noopener">Редакция VSplanet.net →</a>',
+                     f'<a class="cr-link" href="mailto:{mail}">{mail}</a>', f"подвал {rel}")
+        if rel.startswith("unfinished"):
+            t = re.sub(r'<a class="btn big tg" href="https://t\.me/[^"]*".*?</a>',
+                       f'<a class="btn big tg" href="mailto:{mail}?subject=%D0%9F%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4%20%D0%BA%D0%BD%D0%B8%D0%B3%D0%B8">{envelope}{mail}</a>', t, flags=re.S)
+            t = t.replace("Напишите мне, какую главу берёте.", f"Напишите на {mail}, какую главу берёте.")
+        wr(f, t)
+
+
 def run(out, base, state, src):
     c = Ctx(out, base, state, src)
     images(c)
@@ -956,6 +994,7 @@ def run(out, base, state, src):
     logo_and_pwa(c)
     ui(c)
     simplify(c)
+    contacts(c)
     metrika(c)
     fonts(c)
     sw(c)

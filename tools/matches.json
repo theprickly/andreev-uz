@@ -112,5 +112,211 @@
    "ch_name": "UFC",
    "kind": "preview"
   }
+ ],
+ "hart": [
+  {
+   "ch": "27",
+   "anchor": "большие планы на SummerSlam 1992",
+   "label": "Харт — Бульдог, SummerSlam 1992",
+   "q": "Bret Hart British Bulldog SummerSlam 1992",
+   "yt": "ahSZxdpxsx0",
+   "dur": "28:23",
+   "ch_name": "WWE",
+   "kind": "full"
+  },
+  {
+   "ch": "31",
+   "anchor": "Кард на WrestleMania X",
+   "label": "Брет — Оуэн Харт, WrestleMania X",
+   "q": "Bret Hart Owen Hart WrestleMania X",
+   "yt": "rsY_MaBuzeY",
+   "dur": "24:42",
+   "ch_name": "WWE",
+   "kind": "full"
+  },
+  {
+   "ch": "34",
+   "anchor": "Я не был против проигрыша Шону на WrestleMania XII",
+   "label": "Харт — Майклз, Iron Man, WrestleMania XII",
+   "q": "Bret Hart Shawn Michaels Iron Man WrestleMania XII",
+   "yt": "0a6SUIvOw7A",
+   "dur": "1:17:02",
+   "ch_name": "WWE",
+   "kind": "full"
+  },
+  {
+   "ch": "37",
+   "anchor": "На Survivor Series мы со Стивом работали быстро и жестко",
+   "label": "Харт — Остин, Survivor Series 1996",
+   "q": "Bret Hart Steve Austin Survivor Series 1996",
+   "yt": "S-VmPlF_cto",
+   "dur": "3:58",
+   "ch_name": "WWE",
+   "kind": "clip"
+  },
+  {
+   "ch": "40",
+   "anchor": "встретимся в матче за пояс на Survivor Series",
+   "label": "Харт — Майклз, Survivor Series 1997",
+   "q": "Montreal Survivor Series 1997",
+   "yt": "4qWKl9wLS9U",
+   "dur": "3:07",
+   "ch_name": "WWE",
+   "kind": "clip"
+  }
+ ],
+ "jericho": [
+  {
+   "ch": "27",
+   "anchor": "в виде реванша против Игрока в матче Hell in a Cell",
+   "label": "Джерико — Triple H, Hell in a Cell, Judgment Day 2002",
+   "q": "Triple H Chris Jericho Hell in a Cell Judgment Day 2002",
+   "yt": "hncz7wfY4PE",
+   "dur": "2:08",
+   "ch_name": "WWE",
+   "kind": "clip"
+  },
+  {
+   "ch": "28",
+   "anchor": "Для Survivor Series 2002, Винс планировал придумать что-то особенное",
+   "label": "Elimination Chamber, Survivor Series 2002",
+   "q": "Elimination Chamber Survivor Series 2002",
+   "yt": "E2rzVdew3qY",
+   "dur": "3:11",
+   "ch_name": "WWE",
+   "kind": "clip"
+  },
+  {
+   "ch": "32",
+   "anchor": "На SummerSlam 2004 в Торонто я противостоял Батисте и Эджу",
+   "label": "Джерико — Батиста — Эдж, SummerSlam 2004",
+   "q": "SummerSlam 2004 Triple Threat Edge Batista Jericho",
+   "yt": "mCjnTVdLtLs",
+   "dur": "13:32",
+   "ch_name": "WWE",
+   "kind": "full"
+  }
+ ],
+ "holly": [
+  {
+   "ch": "17",
+   "anchor": "привела к их матчу в Монреале на Survivor Series",
+   "label": "Харт — Майклз, Survivor Series 1997 (Монреаль)",
+   "q": "Montreal Survivor Series 1997",
+   "yt": "4qWKl9wLS9U",
+   "dur": "3:07",
+   "ch_name": "WWE",
+   "kind": "clip"
+  }
+ ],
+ "piper": [
+  {
+   "ch": "00",
+   "anchor": "Уже позже на WrestleMania VIII он подарил мне",
+   "label": "Харт — Пайпер, WrestleMania VIII",
+   "q": "Bret Hart Roddy Piper WrestleMania VIII",
+   "yt": "lwZejxrwwHo",
+   "dur": "19:41",
+   "ch_name": "WWE",
+   "kind": "full"
+  },
+  {
+   "ch": "09",
+   "anchor": "А вскоре я узнал, как оценили мои усилия на WrestleMania",
+   "label": "Хоган и Мистер Ти — Пайпер и Орндорфф, WrestleMania I",
+   "q": "WrestleMania I main event",
+   "yt": "1-B_IAb6cfs",
+   "dur": "27:51",
+   "ch_name": "WWE",
+   "kind": "full"
+  },
+  {
+   "ch": "10",
+   "anchor": "Если мне предложат стереть из истории один мой матч",
+   "label": "Пайпер — Мистер Ти, бокс, WrestleMania 2",
+   "q": "Roddy Piper Mr. T boxing WrestleMania 2",
+   "yt": "wfTm_q5NMLg",
+   "dur": "2:38",
+   "ch_name": "WWE",
+   "kind": "clip"
+  },
+  {
+   "ch": "10",
+   "anchor": "матч на WrestleMania III станет моим последним",
+   "label": "Пайпер — Адонис, WrestleMania III",
+   "q": "Roddy Piper Adrian Adonis WrestleMania III",
+   "yt": "yzLjqFXPS2g",
+   "dur": "3:29",
+   "ch_name": "WWE",
+   "kind": "clip"
+  }
+ ],
+ "eddie": [
+  {
+   "ch": "19",
+   "anchor": "назначил на PPV Halloween Havoc на арене MGM Grand",
+   "label": "Эдди — Рей Мистерио, Halloween Havoc 1997",
+   "q": "Eddie Guerrero Rey Mysterio Halloween Havoc 1997",
+   "yt": "sqRYKCH8dUc",
+   "dur": "14:58",
+   "ch_name": "WWE",
+   "kind": "full"
+  },
+  {
+   "ch": "42",
+   "anchor": "На No Way Out все было по-другому. Это было по-настоящему.",
+   "label": "Герреро — Леснар, No Way Out 2004",
+   "q": "Eddie Guerrero Brock Lesnar No Way Out 2004",
+   "yt": "D8uVqJzqxDQ",
+   "dur": "31:51",
+   "ch_name": "WWE",
+   "kind": "full"
+  },
+  {
+   "ch": "43",
+   "anchor": "я защитил титул чемпиона WWE на WrestleMania, в Madison Square Garden",
+   "label": "Герреро — Энгл, WrestleMania XX",
+   "q": "Eddie Guerrero Kurt Angle WrestleMania XX",
+   "yt": "vNPLhM227yc",
+   "dur": "26:08",
+   "ch_name": "WWE",
+   "kind": "full"
+  }
+ ],
+ "heenan": [
+  {
+   "ch": "05",
+   "anchor": "в мэйн-ивенте WrestleMania 3, тогда им стал Гигант Андре",
+   "label": "Хоган — Андре, WrestleMania III",
+   "q": "Hulk Hogan Andre the Giant WrestleMania III",
+   "yt": "rz8q5ZjboXY",
+   "dur": "16:47",
+   "ch_name": "WWE",
+   "kind": "full"
+  }
+ ],
+ "copeland": [
+  {
+   "ch": "01",
+   "anchor": "включая матч на SummerSlam того года",
+   "label": "Hardy Boyz — Dudley Boyz — Edge и Christian, TLC, SummerSlam 2000",
+   "q": "TLC SummerSlam 2000",
+   "yt": "nKTN6JGp1Ro",
+   "dur": "17:26",
+   "ch_name": "WWE",
+   "kind": "full"
+  }
+ ],
+ "wcw": [
+  {
+   "ch": "03",
+   "anchor": "матч три на три на следующем PPV Bash at the Beach",
+   "label": "Bash at the Beach 1996: Хоган присоединяется к nWo",
+   "q": "Hulk Hogan Bash at the Beach 1996",
+   "yt": "sqTpZsZd5Xo",
+   "dur": "2:35",
+   "ch_name": "WWE",
+   "kind": "clip"
+  }
  ]
 }

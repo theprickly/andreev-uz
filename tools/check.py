@@ -136,9 +136,13 @@ for f in out.rglob("*"):
                     err(f"{f.relative_to(out)}: нет файла {u}")
 
 # sitemap / robots
-robots = (out / "robots.txt" if (out / "robots.txt").exists() else out.parent / "robots.txt").read_text()
-if f"Sitemap: {BASE}sitemap.xml" not in robots or "Disallow: /" in robots.replace("Disallow: /\n\n", "x") and "Disallow: /\n" in robots:
-    err("robots.txt: нет ссылки на sitemap или сайт закрыт")
+_rp = out / "robots.txt" if (out / "robots.txt").exists() else out.parent / "robots.txt"
+if not _rp.exists():
+    print("  предупреждение: robots.txt лежит в корне основного сайта — добавьте туда строку «Sitemap: " + BASE + "sitemap.xml»")
+else:
+    robots = _rp.read_text()
+    if f"Sitemap: {BASE}sitemap.xml" not in robots or "Disallow: /" in robots.replace("Disallow: /\n\n", "x") and "Disallow: /\n" in robots:
+        err("robots.txt: нет ссылки на sitemap или сайт закрыт")
 ns = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 locs = set()
 for sm in ET.parse(out / "sitemap.xml").getroot().findall("s:sitemap/s:loc", ns):

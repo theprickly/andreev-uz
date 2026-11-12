@@ -3,6 +3,7 @@
 
   python3 tools/build-vsplanet.py                      # andreev.uz/books → папка books/ этого репозитория
   python3 tools/build-vsplanet.py --vsplanet <папка>   # books.vsplanet.net → отдельная папка для заливки на сервер
+  python3 tools/build-vsplanet.py --vsplanet-path <папка>  # vsplanet.net/books/ → папка для заливки в <корень сайта>/books/
 
 Исходник (books-src/) — результат prepare-release.py из архива проекта; его не трогаем.
 Сборка переписывает абсолютные адреса, кладёт серверные файлы и запускает optimize.py.
@@ -19,13 +20,17 @@ OLD = "https://andreev.uz/books/"
 VERSION = "1.22"
 TEXT = {".html", ".xml", ".json", ".js", ".css", ".webmanifest", ".txt", ".svg"}
 
-if "--vsplanet" in sys.argv:
+if "--vsplanet-path" in sys.argv:
+    out = pathlib.Path(sys.argv[sys.argv.index("--vsplanet-path") + 1]).resolve()
+    NEW, PREFIX, state = "https://vsplanet.net/books/", "/books/", TOOLS / "lastmod-vsplanet-books.json"
+elif "--vsplanet" in sys.argv:
     out = pathlib.Path(sys.argv[sys.argv.index("--vsplanet") + 1]).resolve()
     NEW, PREFIX, state = "https://books.vsplanet.net/", "/", TOOLS / "lastmod-vsplanet.json"
 else:
     out = ROOT / "books"
     NEW, PREFIX, state = OLD, "/books/", TOOLS / "lastmod-andreev.json"
 
+PATH_MODE = "--vsplanet-path" in sys.argv
 if out in (SRC, ROOT, TOOLS):
     raise SystemExit("нельзя собирать в эту папку")
 if out.exists():
@@ -52,9 +57,15 @@ for f in out.rglob("*"):
             changed += 1
 
 for f in (TOOLS / "vsplanet").iterdir():
-    if f.name == ".htaccess" and PREFIX != "/":
+    if f.name == ".htaccess" and PREFIX != "/" and not PATH_MODE:
         continue                       # andreev.uz — Cloudflare, правила в /_headers
     s = f.read_text("utf-8")
+    if f.name == ".htaccess" and PATH_MODE:   # vsplanet.net/books/: тот же файл, но для подпапки
+        s = (s.replace("# books.vsplanet.net —", "# vsplanet.net/books/ —")
+              .replace("ErrorDocument 404 /404.html", "ErrorDocument 404 /books/404.html")
+              .replace("RewriteEngine On", "RewriteEngine On\n  RewriteBase /books/")
+              .replace("https://books.vsplanet.net%{REQUEST_URI}", "https://vsplanet.net%{REQUEST_URI}")
+              .replace("RewriteRule ^shelf/?$ / [R=301,L]", "RewriteRule ^shelf/?$ /books/ [R=301,L]"))
     if PREFIX != "/":                  # 404.html ссылается на ресурсы от корня сайта
         s = re.sub(r'(src|href)="/', rf'\1="{PREFIX}', s).replace("url(/", f"url({PREFIX}")
     (out / f.name).write_text(s, "utf-8")

@@ -1,0 +1,17 @@
+# Включить ПОСЛЕ запуска vsplanet.net/books: переименовать в /_redirects в корне репозитория andreev-uz.
+# 301 со старых адресов, чтобы не потерять закладки читателей и поисковый вес.
+/books/*  https://vsplanet.net/books/:splat  301
+/books    https://vsplanet.net/books/  301
+/eddie/*  https://vsplanet.net/books/eddie/:splat  301
+/hart/*  https://vsplanet.net/books/hart/:splat  301
+/jericho/*  https://vsplanet.net/books/jericho/:splat  301
+/wcw/*  https://vsplanet.net/books/wcw/:splat  301
+/heenan/*  https://vsplanet.net/books/heenan/:splat  301
+/lesnar/*  https://vsplanet.net/books/lesnar/:splat  301
+/booker/*  https://vsplanet.net/books/booker/:splat  301
+/flair/*  https://vsplanet.net/books/flair/:splat  301
+/piper/*  https://vsplanet.net/books/piper/:splat  301
+/holly/*  https://vsplanet.net/books/holly/:splat  301
+/goldust/*  https://vsplanet.net/books/goldust/:splat  301
+/booker-royalty/*  https://vsplanet.net/books/booker-royalty/:splat  301
+/copeland/*  https://vsplanet.net/books/copeland/:splat  301

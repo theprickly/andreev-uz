@@ -863,6 +863,71 @@ def sw(c):
 
 
 # ───────────────────────── 7. Хэши в именах, files.json, версия оболочки ─────────────────────────
+CSS_MATCH = (
+    ".mv-a{display:flex;align-items:center;gap:10px;margin:10px 0 4px;padding:2px 0 2px 12px;border-left:2px solid var(--accent,#68a0d9);"
+    "color:var(--accent,#68a0d9);text-decoration:none;font:500 14px/1.4 Geologica,system-ui,sans-serif;letter-spacing:0}"
+    ".mv-a svg{flex:none;width:14px;height:14px}.mv-a span{color:var(--muted,#aab4c4)}.mv-a b{color:var(--accent,#68a0d9);font-weight:600}"
+    ".mv-a:hover b{text-decoration:underline}.mv-a:focus-visible{outline:2px solid var(--accent,#68a0d9);outline-offset:3px;border-radius:4px}")
+
+MV_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>'
+
+
+def match_links(c):
+    """Ссылки «Смотреть матч»: вариант A — тонкая строка в конце абзаца. Ведут на поиск YouTube по названию официальной загрузки.
+    Данные — tools/matches.json. Ссылка лежит внутри абзаца, поэтому номера абзацев (место чтения) не сдвигаются."""
+    import urllib.parse
+    src = pathlib.Path(__file__).resolve().parent / "matches.json"
+    data = json.loads(rd(src))
+    total = 0
+    for slug, items in data.items():
+        d = c.out / slug
+        if not d.is_dir():
+            continue
+        by_ch = {}
+        for it in items:
+            by_ch.setdefault(it["ch"], []).append(it)
+        renames = {}
+        for ch, lst in by_ch.items():
+            txt = next((d / "text").glob(f"{ch}-*.txt"))
+            page = d / "chapters" / f"{ch}.html"
+            for f in (txt, page):
+                s = rd(f)
+                for it in lst:
+                    url = it.get("url") or "https://www.youtube.com/results?search_query=" + urllib.parse.quote_plus(it["q"])
+                    a = (f'<a class="mv-a" href="{html.escape(url)}" target="_blank" rel="noopener">{MV_PLAY}'
+                         f'<span><b>Смотреть матч</b> · {html.escape(it["label"])}</span></a>')
+                    pat = re.compile(r"(<p>(?:(?!</p>).)*?" + "[ \xa0]".join(map(re.escape, it["anchor"].split(" "))) + r"(?:(?!</p>).)*?)(</p>)", re.S)
+                    s, n = pat.subn(lambda m: m.group(1) + a + m.group(2), s, count=1)
+                    if n != 1:
+                        raise SystemExit(f"optimize: матч «{it['label']}»: абзац с фразой не найден в {f.relative_to(c.out)}")
+                    total += 1 if f == txt else 0
+                wr(f, s)
+            h8 = hashlib.sha256(txt.read_bytes()).hexdigest()[:8]
+            new = txt.with_name(f"{ch}-{h8}.txt")
+            if new != txt:
+                txt.rename(new)
+                renames[f"text/{txt.name}"] = f"text/{new.name}"
+        # имена с хэшем кэшируются на год: изменённые файлы получают новые имена
+        bj = next(d.glob("book-*.json"))
+        s = rd(bj)
+        for a_, b_ in renames.items():
+            s = s.replace(a_, b_)
+        wr(bj, s)
+        nb = bj.with_name(f"book-{h12(bj.read_bytes())}.json")
+        renames[bj.name] = nb.name
+        bj.rename(nb)
+        for f in c.out.rglob("*"):
+            if f.is_file() and f.suffix in {".html", ".json", ".js", ".xml"} and f.parent != d / "text":
+                t = u = rd(f)
+                for a_, b_ in renames.items():
+                    t = t.replace(a_, b_)
+                if t != u:
+                    wr(f, t)
+    css_f = next((c.out / "shared").glob("style-*.css"))
+    wr(css_f, rd(css_f) + CSS_MATCH)
+    c.note(f"ссылки «Смотреть матч»: {total} шт.")
+
+
 def rehash(c):
     ren = {}
     for f in sorted((c.out / "shared").iterdir()):
@@ -995,6 +1060,7 @@ def run(out, base, state, src):
     ui(c)
     simplify(c)
     contacts(c)
+    match_links(c)
     metrika(c)
     fonts(c)
     sw(c)

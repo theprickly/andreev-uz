@@ -901,6 +901,13 @@ CSS_TIMELINE = (
     ".vt .y{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent,#68a0d9)}"
     ".vt a{display:block;margin:2px 0;color:var(--reader-ink,var(--text,#e6e3de));text-decoration:none;font-size:15px;line-height:1.3;font-weight:600}"
     ".vt a:hover{text-decoration:underline}.vt a:focus-visible{outline:2px solid var(--accent,#68a0d9);outline-offset:3px;border-radius:4px}"
+    ".vb-b{padding-top:0!important;margin-top:18px}.vb-d summary{list-style:none;display:flex;align-items:center;gap:12px;padding:14px 16px;border:1px solid var(--line-2,#ffffff26);border-radius:18px;background:var(--surface,#0b111d);cursor:pointer;color:var(--text,#f5f5f7)}"
+    ".vb-d summary::-webkit-details-marker{display:none}.vb-d summary:focus-visible{outline:2px solid var(--accent,#68a0d9);outline-offset:3px}"
+    ".vb-d .ic{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--accent,#68a0d9) 16%,transparent);color:var(--accent,#68a0d9)}"
+    ".vb-d .ic svg{width:16px;height:16px}.vb-d summary b{display:block;font-size:16px;font-weight:600}.vb-d summary small{display:block;color:var(--muted,#9c9ca3);font-size:13px;margin-top:2px}"
+    ".vb-d .chev{margin-left:auto;width:10px;height:10px;border-right:2px solid var(--muted,#9c9ca3);border-bottom:2px solid var(--muted,#9c9ca3);transform:rotate(45deg);margin-top:-4px;transition:none}"
+    ".vb-d[open] .chev{transform:rotate(-135deg);margin-top:4px}.vb-in{padding:18px 6px 0}.vb-in .vt-s{margin-bottom:16px}"
+    ".vb-in .vt li{color:var(--muted,#9c9ca3)}.vb-in .vt a{color:var(--text,#f5f5f7)}"
     ".vt em{font-style:normal;font-size:11px;padding:1px 8px;border-radius:9px;margin-left:6px;background:color-mix(in srgb,var(--reader-ink,#e6e3de) 10%,transparent);color:var(--reader-ink,#e6e3de)}")
 
 _VOID = {"br", "img", "hr", "input", "meta", "link", "wbr"}
@@ -1003,6 +1010,29 @@ def match_links(c):
             if new != txt:
                 txt.rename(new)
                 renames[f"text/{txt.name}"] = f"text/{new.name}"
+        if placed:
+            placed.sort(key=lambda x: (x[0], x[1]))
+            li = []
+            for idx, para, cc, it in placed:
+                t = title_of[cc]
+                m_ = re.match(r"Глава (\d+)", t)
+                lab = f"гл. {m_.group(1)}" if m_ else t
+                kind = {"full": "целиком", "clip": "фрагмент", "preview": "превью"}[it["kind"]]
+                li.append(f'<li class="{"f" if it["kind"] == "full" else ""}"><span class="y">{html.escape(lab)}</span>'
+                          f'<a href="#read/{idx}/{para}">{html.escape(it["label"])}</a>{it["ch_name"]} · {it["dur"]}<em>{kind}</em></li>')
+            n = len(placed)
+            word = "матч" if n % 10 == 1 and n % 100 != 11 else ("матча" if 2 <= n % 10 <= 4 and not 12 <= n % 100 <= 14 else "матчей")
+            who = " и ".join(sorted({it["ch_name"] for _, _, _, it in placed}, key=lambda x: (x != "WWE", x)))
+            bblock = ('<section class="section vb-b"><details class="vb-d"><summary>'
+                      f'<span class="ic" aria-hidden="true">{MV_PLAY}</span><span><b>Видео из книги</b><small>{n} {word} {who}</small></span><span class="chev" aria-hidden="true"></span></summary>'
+                      '<div class="vb-in"><div class="vt-s">В порядке чтения. Заполненная точка — матч целиком. Нажмите на название, чтобы перейти к месту в тексте.</div>'
+                      f'<ol class="vt">{"".join(li)}</ol></div></details></section>')
+            ip = d / "index.html"
+            si = rd(ip)
+            anchor_ = '<section id="card" class="section"'
+            if si.count(anchor_) != 1:
+                raise SystemExit(f"optimize: нет места для блока видео в {ip.relative_to(c.out)}")
+            wr(ip, si.replace(anchor_, bblock + anchor_, 1))
         # имена с хэшем кэшируются на год: изменённые файлы получают новые имена
         bj = next(d.glob("book-*.json"))
         s = rd(bj)

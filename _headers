@@ -23,3 +23,9 @@
   Cache-Control: no-cache
 /books/version.json
   Cache-Control: no-cache
+/mave/*
+  X-Robots-Tag: noindex, nofollow
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: no-referrer
+  X-Frame-Options: DENY
+  Cache-Control: no-cache

@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Перенос подкаста из MAVE в Internet Archive</title>
+<style>
+:root{font:16px/1.55 "Inter",system-ui,sans-serif;color:#192620;background:#edf0ea;--muted:#516057;--border:#d6ddd5;--green:#20563f;--white:#fcfdf9}
+*{box-sizing:border-box}
+body{margin:0}
+main{width:min(1040px,calc(100% - 40px));margin:52px auto 64px}
+header{margin-bottom:30px}
+h1{font-size:clamp(30px,5.6vw,56px);line-height:1.08;letter-spacing:-.05em;margin:0 0 12px}
+h2{font-size:23px;letter-spacing:-.025em;margin:0 0 14px}
+p{margin:0 0 12px;color:var(--muted)}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+section{padding:23px;border-radius:17px;background:var(--white);border:1px solid var(--border);min-width:0}
+#progressPanel{grid-column:1 / -1}
+label{font-weight:650;display:block;margin-top:12px}
+input:not([type=checkbox]){width:100%;display:block;margin-top:5px;padding:10px 12px;border:1px solid #9faa9f;border-radius:8px;font:inherit;background:#fff;color:inherit}
+small{display:block;color:var(--muted);margin-top:6px}
+button{font:inherit;font-weight:650;color:white;background:var(--green);border:1px solid var(--green);border-radius:8px;padding:9px 13px;cursor:pointer}
+button.secondary{color:var(--green);background:#fff}
+button:disabled{opacity:.48;cursor:default}
+:focus-visible{outline:3px solid #b8622e;outline-offset:3px}
+a{color:var(--green);text-underline-offset:3px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.check{display:flex;align-items:baseline;gap:8px;font-size:14px;font-weight:500}
+.check input{accent-color:var(--green)}
+progress{display:block;width:100%;accent-color:var(--green);height:14px;margin:9px 0 13px}
+#notice{min-height:1.5em;margin-top:10px}
+#notice[data-error="true"]{color:#972e1c}
+#count{font-variant-numeric:tabular-nums;font-size:18px;font-weight:700}
+#speed{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px}
+#pages{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0}
+details{margin-top:17px}
+summary{cursor:pointer;font-weight:650}
+#episodes{max-height:300px;overflow:auto;padding-left:34px;margin-bottom:0}
+#episodes li{padding:5px 0;border-bottom:1px solid var(--border);overflow-wrap:anywhere}
+#episodes span{color:var(--muted);margin-right:6px}
+#episodes .error span{color:#972e1c}
+.warn{background:#fff6e5;border:1px solid #ecd3a3;border-radius:10px;padding:10px 12px;font-size:14px;color:#6a4a12;margin-top:12px}
+[hidden]{display:none!important}
+@media(max-width:690px){main{width:calc(100% - 24px);margin-top:26px}.layout{grid-template-columns:1fr}section{padding:17px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Перенос VS-Подкаста</h1>
+<p>Аудио попадает в Internet Archive напрямую с серверов MAVE, а одна RSS-лента объединяет все выпуски. Твой интернет при этом почти не нагружается.</p>
+</header>
+<div class="layout">
+<section>
+<h2>Подкаст в MAVE</h2>
+<form id="source">
+<label>Ссылка на RSS <input id="url" type="url" placeholder="https://cloud.mave.digital/…" value="https://cloud.mave.digital/34022" required></label>
+<small>В кабинете MAVE: «Настройки → RSS и дистрибуция».</small>
+<label>Число опубликованных выпусков <input id="expected" type="number" min="1" step="1" value="568" required></label>
+<label>Короткое имя архива <input id="prefix" minlength="5" maxlength="40" pattern="[A-Za-z0-9][A-Za-z0-9\-]{4,39}" value="vsplanet-podcast" required></label>
+<small>Латиница, цифры и дефисы. Войдёт в адреса страниц на archive.org.</small>
+<div class="actions"><button id="inspect">Прочитать RSS</button><button type="button" id="reset" class="secondary" hidden>Начать заново</button></div>
+</form>
+</section>
+<section>
+<h2>Internet Archive</h2>
+<p>Ключи нужны для загрузки. <a href="https://archive.org/account/s3.php" target="_blank" rel="noreferrer">Открыть страницу ключей</a></p>
+<form id="destination" autocomplete="off">
+<label>Access Key <input id="access" type="password" autocomplete="off" required></label>
+<label>Secret Key <input id="secret" type="password" autocomplete="off" required></label>
+<small>Ключи живут только в этой вкладке и уходят напрямую в Internet Archive. На сервере они не сохраняются.</small>
+<label class="check"><input id="rights" type="checkbox" required> У меня есть право опубликовать эти записи в открытом доступе.</label>
+<div class="actions">
+<button id="trial" class="secondary" disabled>Загрузить один выпуск</button>
+<button id="start" disabled>Перенести все</button>
+<button type="button" id="pause" class="secondary" hidden>Пауза после выпуска</button>
+</div>
+<div class="warn">Перенос идёт, пока эта вкладка открыта. Если закрыть её, прогресс сохранится: открой страницу снова, введи ключи и продолжи.</div>
+</form>
+</section>
+<section id="progressPanel">
+<h2 id="show">Ход переноса</h2>
+<div id="count">Прочитай RSS, чтобы увидеть список выпусков.</div>
+<progress id="bar" value="0" max="1" hidden></progress>
+<div id="speed"></div>
+<p id="notice" role="status"></p>
+<div id="pages" aria-label="Страницы Internet Archive"></div>
+<div class="actions">
+<button id="verify" class="secondary" hidden>Проверить файлы в Archive</button>
+<button id="retryErrors" class="secondary" hidden>Повторить выпуски с ошибкой</button>
+</div>
+<form id="export" hidden>
+<label>Будущий адрес ленты <input id="selfUrl" type="url" placeholder="Можно оставить пустым"></label>
+<div class="actions"><button>Скачать feed.xml</button></div>
+<small>В ленте остаются GUID, даты и описания, а аудио берётся с archive.org. Размести файл по публичному HTTPS-адресу.</small>
+</form>
+<details id="list" hidden><summary>Список выпусков</summary><ol id="episodes"></ol></details>
+</section>
+</div>
+</main>
+<script>
+'use strict';
+const $ = (n) => document.getElementById(n);
+const STORE = 'mave-transfer-plan-v1';
+const ATOM = 'http://www.w3.org/2005/Atom';
+const ITUNES = 'http://www.itunes.com/dtds/podcast-1.0.dtd';
+let plan = load();
+let running = false, paused = false, current = '', message = '', isError = false;
+let keys = null, wakeLock = null, sessionBytes = 0, sessionStart = 0;
+
+function load() { try { return JSON.parse(localStorage.getItem(STORE)); } catch { return null; } }
+function save() { try { localStorage.setItem(STORE, JSON.stringify(plan)); } catch {} }
+const fmtGB = (b) => (b / 1e9).toFixed(2) + ' ГБ';
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+const TR = {а:'a',б:'b',в:'v',г:'g',д:'d',е:'e',ё:'e',ж:'zh',з:'z',и:'i',й:'y',к:'k',л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'h',ц:'c',ч:'ch',ш:'sh',щ:'sch',ъ:'',ы:'y',ь:'',э:'e',ю:'yu',я:'ya'};
+const translit = (s) => s.toLowerCase().replace(/[а-яё]/g, (c) => TR[c] ?? '');
+async function sha(s) {
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return [...new Uint8Array(b)].map((x) => x.toString(16).padStart(2, '0')).join('');
+}
+
+async function getFeed(url) {
+  const r = await fetch('/mave/api/feed?url=' + encodeURIComponent(url));
+  if (!r.ok) throw Error((await r.json().catch(() => ({}))).error || `HTTP ${r.status}`);
+  const doc = new DOMParser().parseFromString(await r.text(), 'application/xml');
+  if (doc.querySelector('parsererror') || !doc.querySelector('rss > channel')) throw Error('По ссылке не RSS 2.0.');
+  return doc;
+}
+const childText = (el, tag) => { const n = [...el.children].find((c) => c.tagName === tag); return n ? n.textContent.trim() : ''; };
+
+async function inspect() {
+  const url = $('url').value.trim(), prefix = $('prefix').value.trim().toLowerCase();
+  const expected = parseInt($('expected').value, 10) || 0;
+  if (!/^[a-z0-9][a-z0-9-]{4,39}$/.test(prefix)) throw Error('Короткое имя: 5–40 символов, латиница, цифры, дефис.');
+  if (plan && plan.url === url && plan.prefix === prefix) { message = 'Открыт сохранённый перенос.'; return; }
+  if (plan && plan.episodes.some((e) => e.state === 'uploaded') && !confirm('Есть незавершённый перенос. Начать новый вместо него?')) return;
+  const doc = await getFeed(url);
+  const ch = doc.querySelector('rss > channel');
+  const items = [...ch.children].filter((c) => c.tagName === 'item');
+  if ([...ch.getElementsByTagNameNS(ATOM, 'link')].some((l) => l.getAttribute('rel') === 'next'))
+    throw Error('RSS разбит на страницы. Нужна полная лента.');
+  if (expected && items.length !== expected) throw Error(`В RSS ${items.length} выпусков, ожидалось ${expected}. Сверь число с кабинетом MAVE.`);
+  if (!items.length) throw Error('В RSS нет выпусков.');
+  const runId = [...crypto.getRandomValues(new Uint8Array(3))].map((x) => x.toString(16).padStart(2, '0')).join('');
+  const chrono = items.slice().reverse(); // 00001 — самый старый выпуск
+  const seen = new Set(), episodes = [];
+  for (let i = 0; i < chrono.length; i++) {
+    const it = chrono[i], n = i + 1;
+    const title = childText(it, 'title') || `Выпуск ${n}`;
+    const encl = [...it.children].find((c) => c.tagName === 'enclosure');
+    const aurl = encl?.getAttribute('url') || '';
+    const t = (encl?.getAttribute('type') || '').toLowerCase();
+    const ext = /\.m4a(\?|$)/i.test(aurl) || /mp4|m4a/.test(t) ? '.m4a' : '.mp3';
+    if (!aurl.startsWith('https://')) throw Error(`В выпуске «${title}» нет HTTPS-ссылки на аудио.`);
+    const guid = childText(it, 'guid') || aurl;
+    if (seen.has(guid)) throw Error(`Повторяется GUID у выпуска «${title}».`);
+    seen.add(guid);
+    const name = translit(title).replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 42).replace(/-+$/, '');
+    const batch = Math.floor(i / 100) + 1;
+    episodes.push({ guid, title, url: aurl, type: ext === '.m4a' ? 'audio/mp4' : 'audio/mpeg',
+      declared: parseInt(encl.getAttribute('length') || '0', 10) || 0,
+      bucket: `${prefix}-${runId}-${String(batch).padStart(3, '0')}`, batch,
+      file: `${String(n).padStart(5, '0')}-${name ? name + '-' : ''}${(await sha(guid)).slice(0, 10)}${ext}`,
+      state: 'queued' });
+  }
+  plan = { url, prefix, runId, created: new Date().toISOString(),
+    title: childText(ch, 'title') || prefix,
+    description: (childText(ch, 'description') || '').replace(/<[^>]+>/g, '').slice(0, 1500),
+    creator: [...ch.getElementsByTagNameNS(ITUNES, 'author')][0]?.textContent.trim() || '',
+    batches: Math.ceil(episodes.length / 100), episodes };
+  save();
+  message = `RSS прочитан: ${episodes.length} выпусков. Проверь число и начни с одного выпуска.`;
+}
+
+async function transferOne(e) {
+  const body = { url: e.url, bucket: e.bucket, file: e.file, type: e.type, ...keys,
+    title: `${plan.title} — архив, часть ${e.batch} из ${plan.batches}`,
+    description: `${plan.description}\n\nАрхив выпусков подкаста «${plan.title}». Часть ${e.batch}.`,
+    creator: plan.creator };
+  const waits = [5e3, 30e3, 120e3, 300e3];
+  for (let a = 0; ; a++) {
+    let res, data;
+    try {
+      res = await fetch('/mave/api/transfer', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      data = await res.json().catch(() => ({ error: `HTTP ${res.status}`, retry: res.status >= 500 }));
+    } catch { data = { error: 'Нет связи с andreev.uz.', retry: true }; }
+    if (res?.ok && data.ok) return data.bytes;
+    if (data.fatal || !data.retry || a >= waits.length) throw Error(data.error || 'Ошибка переноса.');
+    current = `${data.error} Повтор через ${waits[a] / 1000} с · ${e.title}`; render();
+    await sleep(waits[a]);
+    if (paused) throw Error('Пауза.');
+  }
+}
+
+async function run(limit) {
+  running = true; paused = false; isError = false; message = '';
+  sessionBytes = 0; sessionStart = Date.now();
+  try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {}
+  render();
+  try {
+    for (const e of plan.episodes) {
+      if (paused || limit <= 0) break;
+      if (e.state === 'uploaded') continue;
+      current = `Перенос · ${e.title}`; render();
+      try {
+        const bytes = await transferOne(e);
+        Object.assign(e, { state: 'uploaded', bytes }); delete e.error;
+        sessionBytes += bytes; limit--; save();
+      } catch (err) {
+        if (paused) break;
+        Object.assign(e, { state: 'error', error: err.message }); save();
+        message = `Остановлено на «${e.title}»: ${err.message}`; isError = true;
+        break;
+      }
+      render();
+    }
+    if (!isError) {
+      const left = plan.episodes.filter((e) => e.state !== 'uploaded').length;
+      message = paused ? 'Перенос на паузе.' : left ? `Готово. Осталось ${left}. Открой первую часть архива и проверь воспроизведение.`
+        : 'Internet Archive принял все файлы. Проверь их и скачай RSS.';
+    }
+  } finally {
+    running = false; current = '';
+    try { await wakeLock?.release(); } catch {}
+    render();
+  }
+}
+
+async function verify() {
+  const up = plan.episodes.filter((e) => e.state === 'uploaded');
+  const buckets = [...new Set(up.map((e) => e.bucket))], files = {};
+  for (const b of buckets) {
+    current = `Сверка ${b}…`; render();
+    const r = await fetch('/mave/api/meta?id=' + b);
+    const d = await r.json();
+    if (!r.ok) throw Error(d.error);
+    files[b] = Object.fromEntries((d.files || []).map((f) => [f.name, f.size]));
+  }
+  current = '';
+  const missing = up.filter((e) => files[e.bucket][e.file] === undefined);
+  const wrong = up.filter((e) => files[e.bucket][e.file] !== undefined && files[e.bucket][e.file] !== e.bytes);
+  isError = Boolean(missing.length || wrong.length);
+  message = isError
+    ? `Проверено ${up.length}. Ещё не видны в архиве: ${missing.length}, расходится размер: ${wrong.length}. Свежим загрузкам нужно время на обработку — проверь позже.${wrong.length ? ' Первые: ' + wrong.slice(0, 3).map((e) => e.title).join(', ') : ''}`
+    : `Все ${up.length} файлов на месте, размеры совпали.`;
+  for (const e of wrong) e.state = 'error', e.error = 'Размер в архиве не совпал';
+  save();
+}
+
+async function exportFeed() {
+  const doc = await getFeed(plan.url);
+  const ch = doc.querySelector('rss > channel');
+  const map = new Map(plan.episodes.filter((e) => e.state === 'uploaded').map((e) => [e.guid, e]));
+  for (const n of [...ch.children]) {
+    if ((n.namespaceURI === ATOM && n.localName === 'link' && ['self', 'next', 'prev'].includes(n.getAttribute('rel'))) ||
+        (n.namespaceURI === ITUNES && n.localName === 'new-feed-url')) n.remove();
+  }
+  const self = $('selfUrl').value.trim();
+  if (self) {
+    if (!/^https:\/\//.test(self)) throw Error('Адрес ленты должен начинаться с https://');
+    const l = doc.createElementNS(ATOM, 'atom:link');
+    l.setAttribute('href', self); l.setAttribute('rel', 'self'); l.setAttribute('type', 'application/rss+xml');
+    ch.insertBefore(l, ch.firstElementChild);
+  }
+  let kept = 0, dropped = 0;
+  for (const it of [...ch.children].filter((c) => c.tagName === 'item')) {
+    const encl = [...it.children].find((c) => c.tagName === 'enclosure');
+    const e = map.get(childText(it, 'guid') || encl?.getAttribute('url'));
+    if (!e || !encl) { it.remove(); dropped++; continue; }
+    encl.setAttribute('url', `https://archive.org/download/${e.bucket}/${e.file}`);
+    encl.setAttribute('length', String(e.bytes)); encl.setAttribute('type', e.type);
+    kept++;
+  }
+  const xml = '<?xml version="1.0" encoding="UTF-8"?>\n' + new XMLSerializer().serializeToString(doc.documentElement);
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([xml], { type: 'application/rss+xml' }));
+  a.download = 'feed.xml'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+  message = `Лента скачана: ${kept} выпусков${dropped ? `, ${dropped} новых выпусков ещё не перенесены и в неё не вошли` : ''}.`;
+}
+
+let lastSig = '';
+function render() {
+  const eps = plan?.episodes || [], total = eps.length;
+  const done = eps.filter((e) => e.state === 'uploaded').length;
+  const errors = eps.filter((e) => e.state === 'error').length;
+  const bytes = eps.reduce((s, e) => s + (e.state === 'uploaded' ? e.bytes : 0), 0);
+  const all = eps.reduce((s, e) => s + (e.bytes || e.declared || 0), 0);
+  if (plan && !running) { $('url').value = plan.url; $('prefix').value = plan.prefix; $('expected').value = total; }
+  $('show').textContent = plan?.title || 'Ход переноса';
+  $('count').textContent = total ? `${done} из ${total} загружено · ${fmtGB(bytes)} из ${fmtGB(all)}` : 'Прочитай RSS, чтобы увидеть список выпусков.';
+  $('bar').hidden = !total; $('bar').max = all || 1; $('bar').value = bytes;
+  const secs = (Date.now() - sessionStart) / 1000;
+  if (running && sessionBytes && secs > 5) {
+    const rate = sessionBytes / secs, left = (all - bytes) / rate;
+    $('speed').textContent = `${(rate / 1e6).toFixed(1)} МБ/с · осталось примерно ${left > 3600 ? (left / 3600).toFixed(1) + ' ч' : Math.ceil(left / 60) + ' мин'}`;
+  } else if (!running) $('speed').textContent = '';
+  $('inspect').disabled = running; $('reset').hidden = !plan || running;
+  $('start').disabled = $('trial').disabled = running || !total || done === total;
+  $('start').textContent = done ? 'Продолжить перенос' : 'Перенести все';
+  $('pause').hidden = !running; $('pause').disabled = paused;
+  $('verify').hidden = !done || running;
+  $('retryErrors').hidden = !errors || running;
+  $('export').hidden = !done || running;
+  $('notice').textContent = current || message;
+  $('notice').dataset.error = String(isError && !current);
+  const pages = [...new Set(eps.filter((e) => e.state === 'uploaded').map((e) => e.bucket))];
+  $('pages').replaceChildren(...pages.map((p, i) => Object.assign(document.createElement('a'),
+    { href: 'https://archive.org/details/' + p, target: '_blank', rel: 'noreferrer', textContent: 'Часть ' + (i + 1) })));
+  $('list').hidden = !total;
+  const sig = eps.map((e) => e.state[0]).join('');
+  if (sig !== lastSig) {
+    lastSig = sig;
+    const label = { queued: 'Ожидает', uploaded: 'Загружен', error: 'Ошибка' };
+    $('episodes').replaceChildren(...eps.map((e) => {
+      const li = document.createElement('li'); li.className = e.state;
+      const s = document.createElement('span'); s.textContent = label[e.state] + ' · ';
+      li.title = e.error || '';
+      li.append(s, document.createTextNode(e.title)); return li;
+    }));
+  }
+}
+
+async function guard(fn) {
+  try { isError = false; await fn(); } catch (e) { message = e.message || 'Ошибка.'; isError = true; current = ''; }
+  render();
+}
+$('source').onsubmit = (ev) => { ev.preventDefault(); guard(inspect); };
+$('reset').onclick = () => {
+  if (!confirm('Забыть сохранённый прогресс в этом браузере? Уже загруженное останется в Internet Archive.')) return;
+  localStorage.removeItem(STORE); plan = null; message = ''; lastSig = ''; render();
+};
+$('destination').onsubmit = (ev) => {
+  ev.preventDefault();
+  keys = { access: $('access').value.trim(), secret: $('secret').value.trim() };
+  if (!$('rights').checked) { message = 'Подтверди право на публикацию.'; isError = true; return render(); }
+  run(ev.submitter?.id === 'trial' ? 1 : Infinity);
+};
+$('pause').onclick = () => { paused = true; current = 'Пауза после текущего выпуска…'; render(); };
+$('verify').onclick = () => guard(verify);
+$('retryErrors').onclick = () => { for (const e of plan.episodes) if (e.state === 'error') e.state = 'queued'; save(); message = 'Выпуски с ошибкой снова в очереди. Нажми «Продолжить перенос».'; render(); };
+$('export').onsubmit = (ev) => { ev.preventDefault(); guard(exportFeed); };
+window.addEventListener('beforeunload', (ev) => { if (running) { ev.preventDefault(); ev.returnValue = ''; } });
+document.addEventListener('visibilitychange', async () => { if (running && document.visibilityState === 'visible') { try { wakeLock = await navigator.wakeLock?.request('screen'); } catch {} } });
+setInterval(() => running && render(), 2000);
+if (plan) message = 'Найден сохранённый перенос. Введи ключи и продолжи.';
+render();
+</script>
+</body>
+</html>

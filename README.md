@@ -18,3 +18,10 @@
 
   Подробности — `tools/README.md`. Нужны Python-пакеты pillow, fonttools, brotli (`pip install pillow fonttools brotli`).
 - Старые адреса `/eddie/`, `/hart/`… в корне — страницы-переадресации на `/books/…`.
+
+## Перенос подкаста MAVE → Internet Archive — /mave/
+
+- `mave/index.html` — интерфейс: читает RSS, ведёт очередь выпусков, хранит прогресс в localStorage браузера.
+- `worker.js` — Worker-обработчик только для `/mave/api/*` (`run_worker_first`), всё остальное — статика как раньше.
+  Перекачивает выпуск потоком `api.mave.digital` → `s3.us.archive.org`; источники ограничены `*.mave.digital`, ключи IA не сохраняются.
+- Перенос идёт, пока открыта вкладка andreev.uz/mave/.

@@ -4,3 +4,4 @@ wrangler.jsonc
 README.md
 books-src
 tools
+worker.js

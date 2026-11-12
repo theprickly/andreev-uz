@@ -885,6 +885,7 @@ CSS_MATCH = (
     ".ev-pl svg{width:24px;height:24px}"
     ".ev-t{position:absolute;left:14px;right:14px;bottom:12px;font-size:13px;line-height:1.3;color:#dbe3ef}.ev-t b{display:block;font-size:15px;color:#fff;font-weight:600}"
     ".ev-b:hover .ev-pl{background:#fff}.ev iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}"
+    "@media (display-mode:standalone){a.ev-b[href]{pointer-events:auto!important;cursor:pointer;color:#fff!important}.ev-o{display:none!important}}"
     ".ev-b.on{background:#000}.ev-c{display:block;margin-top:8px;color:var(--muted,#8fa0b8)}.ev-c a{color:var(--accent,#68a0d9)}")
 
 CSS_TIMELINE = (
@@ -961,7 +962,7 @@ def match_links(c):
                         a = (f'<span class="ev" data-yt="{it["yt"]}"><a class="ev-b" href="{yurl}" target="_blank" rel="noopener" aria-label="Смотреть: {html.escape(it["label"])}">'
                              f'<span class="ev-s">{it["ch_name"]} · YouTube</span><span class="ev-d">{it["dur"]}</span><span class="ev-pl">{MV_PLAY}</span>'
                              f'<span class="ev-t"><b>{html.escape(it["label"])}</b>{kind}</span></a>'
-                             f'<span class="ev-c">Видео загрузится после нажатия · официальный канал {it["ch_name"]} · <a href="{yurl}" target="_blank" rel="noopener">открыть на YouTube</a></span></span>')
+                             f'<span class="ev-c">Видео загрузится после нажатия · официальный канал {it["ch_name"]}<span class="ev-o"> · <a href="{yurl}" target="_blank" rel="noopener">открыть на YouTube</a></span></span></span>')
                     else:
                         a = (f'<a class="mv-a" href="{html.escape(url)}" target="_blank" rel="noopener">{MV_PLAY}'
                              f'<span><b>Смотреть матч</b> · {html.escape(it["label"])}</span></a>')

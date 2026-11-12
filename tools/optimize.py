@@ -887,6 +887,40 @@ CSS_MATCH = (
     ".ev-b:hover .ev-pl{background:#fff}.ev iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}"
     ".ev-b.on{background:#000}.ev-c{display:block;margin-top:8px;color:var(--muted,#8fa0b8)}.ev-c a{color:var(--accent,#68a0d9)}")
 
+CSS_TIMELINE = (
+    ".vt-b{margin:44px 0 12px;font-family:Geologica,system-ui,sans-serif;text-indent:0;hyphens:none}"
+    ".vt-b h3{margin:0 0 6px;font:700 22px/1.2 Geologica,system-ui,sans-serif;letter-spacing:0}"
+    ".vt-s{margin:0 0 18px;font-size:13px;line-height:1.45;color:var(--reader-dim,var(--muted,#8b8a88))}"
+    ".vt{position:relative;margin:0;padding:0 0 0 22px;list-style:none}"
+    ".vt:before{content:\"\";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:color-mix(in srgb,var(--accent,#68a0d9) 30%,transparent)}"
+    ".vt li{position:relative;margin:0;padding:0 0 18px;font-size:12px;line-height:1.4;color:var(--reader-dim,var(--muted,#8b8a88))}"
+    ".vt li:last-child{padding-bottom:0}"
+    ".vt li:before{content:\"\";position:absolute;left:-22px;top:4px;width:8px;height:8px;border-radius:50%;background:var(--reader-bg,var(--bg,#0b0b0c));border:2px solid var(--accent,#68a0d9)}"
+    ".vt li.f:before{background:var(--accent,#68a0d9)}"
+    ".vt .y{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent,#68a0d9)}"
+    ".vt a{display:block;margin:2px 0;color:var(--reader-ink,var(--text,#e6e3de));text-decoration:none;font-size:15px;line-height:1.3;font-weight:600}"
+    ".vt a:hover{text-decoration:underline}.vt a:focus-visible{outline:2px solid var(--accent,#68a0d9);outline-offset:3px;border-radius:4px}"
+    ".vt em{font-style:normal;font-size:11px;padding:1px 8px;border-radius:9px;margin-left:6px;background:color-mix(in srgb,var(--reader-ink,#e6e3de) 10%,transparent);color:var(--reader-ink,#e6e3de)}")
+
+_VOID = {"br", "img", "hr", "input", "meta", "link", "wbr"}
+
+
+def top_blocks_before(s, pos):
+    """Сколько блоков верхнего уровня (p, h2, h3, blockquote, figure) начинается до позиции pos: это номер абзаца для ссылки #read/глава/абзац."""
+    depth = n = 0
+    for m in re.finditer(r"<(/?)([a-zA-Z][a-zA-Z0-9]*)\b[^>]*?(/?)>", s[:pos]):
+        close, tag, selfc = m.group(1), m.group(2).lower(), m.group(3)
+        if tag in _VOID or selfc:
+            continue
+        if close:
+            depth = max(0, depth - 1)
+        else:
+            if depth == 0 and tag in {"p", "h2", "h3", "blockquote", "figure"}:
+                n += 1
+            depth += 1
+    return n
+
+
 MV_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>'
 
 
@@ -904,8 +938,17 @@ def match_links(c):
         by_ch = {}
         for it in items:
             by_ch.setdefault(it["ch"], []).append(it)
+        files = sorted(p.name.split("-")[0] for p in (d / "text").glob("*.txt"))
+        last = files[-1]
+        by_ch.setdefault(last, [])
+        bj0 = next(d.glob("book-*.json"))
+        chs = json.loads(rd(bj0))["chapters"]
+        idx_of = {e["f"].split("/")[1].split("-")[0]: i for i, e in enumerate(chs)}
+        title_of = {e["f"].split("/")[1].split("-")[0]: e["title"] for e in chs}
+        placed = []
         renames = {}
-        for ch, lst in by_ch.items():
+        for ch in sorted(by_ch):
+            lst = by_ch[ch]
             txt = next((d / "text").glob(f"{ch}-*.txt"))
             page = d / "chapters" / f"{ch}.html"
             for f in (txt, page):
@@ -923,10 +966,36 @@ def match_links(c):
                         a = (f'<a class="mv-a" href="{html.escape(url)}" target="_blank" rel="noopener">{MV_PLAY}'
                              f'<span><b>Смотреть матч</b> · {html.escape(it["label"])}</span></a>')
                     pat = re.compile(r"(<p>(?:(?!</p>).)*?" + "[ \xa0]".join(map(re.escape, it["anchor"].split(" "))) + r"(?:(?!</p>).)*?)(</p>)", re.S)
-                    s, n = pat.subn(lambda m: m.group(1) + a + m.group(2), s, count=1)
+                    pos = []
+                    s, n = pat.subn(lambda m: (pos.append(m.start()), m.group(1) + a + m.group(2))[1], s, count=1)
                     if n != 1:
                         raise SystemExit(f"optimize: матч «{it['label']}»: абзац с фразой не найден в {f.relative_to(c.out)}")
-                    total += 1 if f == txt else 0
+                    if f == txt:
+                        total += 1
+                        if it.get("yt"):
+                            placed.append((idx_of[ch], top_blocks_before(s, pos[0]), ch, it))
+                if ch == last and placed:
+                    placed.sort(key=lambda x: (x[0], x[1]))
+                    li = []
+                    for idx, para, cc, it in placed:
+                        t = title_of[cc]
+                        m_ = re.match(r"Глава (\d+)", t)
+                        lab = f"гл. {m_.group(1)}" if m_ else t
+                        kind = {"full": "целиком", "clip": "фрагмент", "preview": "превью"}[it["kind"]]
+                        href = f"#read/{idx}/{para}" if f == txt else f"../#read/{idx}/{para}"
+                        li.append(f'<li class="{"f" if it["kind"] == "full" else ""}"><span class="y">{html.escape(lab)}</span>'
+                                  f'<a href="{href}">{html.escape(it["label"])}</a>{it["ch_name"]} · {it["dur"]}<em>{kind}</em></li>')
+                    block = ('<section class="vt-b" aria-labelledby="vt-h"><h3 id="vt-h">Матчи этой книги</h3>'
+                             '<div class="vt-s">В порядке чтения. Заполненная точка — матч целиком. Нажмите на название, чтобы перейти к месту в тексте.</div>'
+                             f'<ol class="vt">{"".join(li)}</ol></section>')
+                    if f == txt:
+                        s = s + block
+                    else:
+                        tail = '</div><nav class="static-nav">'
+                        k = s.rfind(tail)
+                        if k < 0:
+                            raise SystemExit(f"optimize: нет места для блока матчей в {f.relative_to(c.out)}")
+                        s = s[:k] + block + s[k:]
                 wr(f, s)
             h8 = hashlib.sha256(txt.read_bytes()).hexdigest()[:8]
             new = txt.with_name(f"{ch}-{h8}.txt")
@@ -950,7 +1019,7 @@ def match_links(c):
                 if t != u:
                     wr(f, t)
     css_f = next((c.out / "shared").glob("style-*.css"))
-    wr(css_f, rd(css_f) + CSS_MATCH)
+    wr(css_f, rd(css_f) + CSS_MATCH + CSS_TIMELINE)
     c.note(f"ссылки «Смотреть матч»: {total} шт.")
 
 

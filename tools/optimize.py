@@ -643,7 +643,9 @@ LEGAL_BODY = f"""<main class="wrap legal" id="top">
 <p>Место чтения, закладки, настройки отображения и книги, скачанные для чтения без сети, хранятся только в памяти вашего браузера (localStorage и кэш). На сервер они не передаются. Удалить их можно очисткой данных сайта в настройках браузера, а перенести на другое устройство — через экспорт в настройках чтения.</p>
 <h3>Статистика посещаемости</h3>
 <p>Сайт использует сервис «Яндекс Метрика» (счётчик № {METRIKA_ID}), чтобы понимать, какие разделы и книги читают и где посетителям неудобно. Метрика получает обезличенные сведения: просмотренные страницы, источник перехода, тип устройства, браузер и размер экрана, примерное местоположение (по IP-адресу) и время на странице. Работают карта кликов и «Вебвизор» — он записывает действия на странице: движения указателя, клики и прокрутку. Значения, которые вы вводите в поля (например, поисковый запрос), не записываются.</p>
-<p>Метрика использует файлы cookie и аналогичные технологии; собственных cookie сайт не устанавливает. Данные обрабатывает Яндекс на условиях <a href="{YA_PRIVACY}" rel="noopener">Политики конфиденциальности</a> и <a href="{YA_TERMS}" rel="noopener">Условий использования сервиса «Яндекс Метрика»</a>. Мы не продаём данные и не передаём их третьим лицам, кроме Яндекса как оператора сервиса. Шрифты, скрипты и изображения сайта загружаются с него самого.</p>
+<p>Метрика использует файлы cookie и аналогичные технологии; собственных cookie сайт не устанавливает. Данные обрабатывает Яндекс на условиях <a href="{YA_PRIVACY}" rel="noopener">Политики конфиденциальности</a> и <a href="{YA_TERMS}" rel="noopener">Условий использования сервиса «Яндекс Метрика»</a>. Мы не продаём данные и не передаём их третьим лицам, кроме Яндекса как оператора сервиса (и YouTube — только если вы сами запустили видео, см. ниже). Шрифты, скрипты и изображения сайта загружаются с него самого.</p>
+<h3>Встроенное видео</h3>
+<p>В некоторых книгах рядом с текстом есть видео с официальных каналов WWE и UFC на YouTube. Пока вы не нажали на карточку, страница не обращается к YouTube. После нажатия плеер загружается с домена youtube-nocookie.com (режим повышенной конфиденциальности), и YouTube получает обычные технические данные запроса — IP-адрес и сведения о браузере — на условиях собственной политики конфиденциальности. Видео принадлежат правообладателям; сайт их не хранит и не копирует.</p>
 <h3>Как отказаться</h3>
 <p>Отключить сбор данных можно блокировщиком отслеживания или способом из <a href="{YA_OPTOUT}" rel="noopener">справки Яндекса</a>. Читалка продолжит работать без ограничений.</p></section>
 
@@ -775,6 +777,11 @@ GOALS_JS = (
     "else if(t.matches('.book .actions a.btn,.book a.cover'))g('read_click');},true);"
     "addEventListener('appinstalled',function(){g('app_installed')});"
     "var r=d.getElementById('reader');if(r&&'MutationObserver'in window){var o=0;new MutationObserver(function(){if(!r.hidden&&!o){o=1;g('reader_open')}}).observe(r,{attributes:true,attributeFilter:['hidden']})}"
+    "d.addEventListener('click',function(e){var b=e.target&&e.target.closest&&e.target.closest('.ev-b');if(!b||b.classList.contains('on'))return;"
+    "if(navigator.onLine===false)return;e.preventDefault();var w=b.parentNode,id=w.getAttribute('data-yt'),f=d.createElement('iframe');"
+    "f.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0&playsinline=1';f.title=b.getAttribute('aria-label')||'Видео';"
+    "f.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';f.setAttribute('allowfullscreen','');f.referrerPolicy='strict-origin-when-cross-origin';"
+    "b.classList.add('on');b.removeAttribute('href');b.removeAttribute('target');b.innerHTML='';b.appendChild(f);g('match_play')});"
     "})();\n" % METRIKA_ID)
 
 
@@ -867,7 +874,18 @@ CSS_MATCH = (
     ".mv-a{display:flex;align-items:center;gap:10px;margin:10px 0 4px;padding:2px 0 2px 12px;border-left:2px solid var(--accent,#68a0d9);"
     "color:var(--accent,#68a0d9);text-decoration:none;font:500 14px/1.4 Geologica,system-ui,sans-serif;letter-spacing:0}"
     ".mv-a svg{flex:none;width:14px;height:14px}.mv-a span{color:var(--muted,#aab4c4)}.mv-a b{color:var(--accent,#68a0d9);font-weight:600}"
-    ".mv-a:hover b{text-decoration:underline}.mv-a:focus-visible{outline:2px solid var(--accent,#68a0d9);outline-offset:3px;border-radius:4px}")
+    ".mv-a:hover b{text-decoration:underline}.mv-a:focus-visible{outline:2px solid var(--accent,#68a0d9);outline-offset:3px;border-radius:4px}"
+    ".ev{display:block;margin:14px 0 6px;font:400 13px/1.4 Geologica,system-ui,sans-serif;letter-spacing:0;text-indent:0;hyphens:none}"
+    ".ev-b{position:relative;display:block;aspect-ratio:16/9;border-radius:14px;overflow:hidden;color:#fff;text-decoration:none;"
+    "background:radial-gradient(120% 90% at 30% 20%,#27456f 0%,#0b1426 55%,#05080f 100%);border:1px solid rgba(255,255,255,.1)}"
+    ".ev-b:focus-visible{outline:2px solid var(--accent,#68a0d9);outline-offset:3px}"
+    ".ev-s{position:absolute;top:10px;left:12px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#9fb2cd}"
+    ".ev-d{position:absolute;top:10px;right:12px;font-size:12px;background:rgba(0,0,0,.55);padding:2px 8px;border-radius:8px}"
+    ".ev-pl{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.92);color:#05080f}"
+    ".ev-pl svg{width:24px;height:24px}"
+    ".ev-t{position:absolute;left:14px;right:14px;bottom:12px;font-size:13px;line-height:1.3;color:#dbe3ef}.ev-t b{display:block;font-size:15px;color:#fff;font-weight:600}"
+    ".ev-b:hover .ev-pl{background:#fff}.ev iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}"
+    ".ev-b.on{background:#000}.ev-c{display:block;margin-top:8px;color:var(--muted,#8fa0b8)}.ev-c a{color:var(--accent,#68a0d9)}")
 
 MV_PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>'
 
@@ -894,8 +912,16 @@ def match_links(c):
                 s = rd(f)
                 for it in lst:
                     url = it.get("url") or "https://www.youtube.com/results?search_query=" + urllib.parse.quote_plus(it["q"])
-                    a = (f'<a class="mv-a" href="{html.escape(url)}" target="_blank" rel="noopener">{MV_PLAY}'
-                         f'<span><b>Смотреть матч</b> · {html.escape(it["label"])}</span></a>')
+                    if it.get("yt"):
+                        kind = {"full": "матч целиком", "clip": "фрагмент матча", "preview": "превью боя"}[it["kind"]]
+                        yurl = "https://www.youtube.com/watch?v=" + it["yt"]
+                        a = (f'<span class="ev" data-yt="{it["yt"]}"><a class="ev-b" href="{yurl}" target="_blank" rel="noopener" aria-label="Смотреть: {html.escape(it["label"])}">'
+                             f'<span class="ev-s">{it["ch_name"]} · YouTube</span><span class="ev-d">{it["dur"]}</span><span class="ev-pl">{MV_PLAY}</span>'
+                             f'<span class="ev-t"><b>{html.escape(it["label"])}</b>{kind}</span></a>'
+                             f'<span class="ev-c">Видео загрузится после нажатия · официальный канал {it["ch_name"]} · <a href="{yurl}" target="_blank" rel="noopener">открыть на YouTube</a></span></span>')
+                    else:
+                        a = (f'<a class="mv-a" href="{html.escape(url)}" target="_blank" rel="noopener">{MV_PLAY}'
+                             f'<span><b>Смотреть матч</b> · {html.escape(it["label"])}</span></a>')
                     pat = re.compile(r"(<p>(?:(?!</p>).)*?" + "[ \xa0]".join(map(re.escape, it["anchor"].split(" "))) + r"(?:(?!</p>).)*?)(</p>)", re.S)
                     s, n = pat.subn(lambda m: m.group(1) + a + m.group(2), s, count=1)
                     if n != 1:

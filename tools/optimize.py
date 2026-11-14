@@ -888,6 +888,39 @@ def modern_web(c):
         wr(css, rd(css) + CSS_MODERN)
     c.note(f"Modern Web Guidance: Speculation Rules (prefetch, moderate) на {n} страницах, "
            "прокрутка под модальными окнами заблокирована, сбалансированные заголовки")
+    agent_tools(c)
+
+
+# WebMCP (guides webmcp, agentic-javascript-tools): ИИ-агенты браузера получают инструменты сайта —
+# каталог, оглавление, полнотекстовый поиск и открытие абзаца в читалке. Исходник: tools/src/agent-tools.js.
+# В браузерах без document.modelContext скрипт сразу выходит и ничего не делает.
+def agent_tools(c):
+    catalog = []
+    for b in books(c):
+        m = re.search(r'<script type="application/ld\+json">(.*?)</script>', rd(c.out / b / "index.html"), re.S)
+        graph = json.loads(m.group(1)).get("@graph", []) if m else []
+        book = next((x for x in graph if x.get("@type") == "Book"), None)
+        if not book:
+            raise SystemExit(f"optimize: нет JSON-LD Book у {b}")
+        authors = book.get("author") or []
+        authors = authors if isinstance(authors, list) else [authors]
+        catalog.append({"slug": b, "title": book["name"], "author": ", ".join(a["name"] for a in authors),
+                        "description": book.get("description", "")})
+    js = rd(pathlib.Path(__file__).parent / "src/agent-tools.js")
+    js = sub1(js, "__CATALOG__", json.dumps(catalog, ensure_ascii=False, separators=(",", ":")), "каталог в agent-tools.js")
+    name = f"agent-tools-{h12(js.encode())}.js"
+    for old in (c.out / "shared").glob("agent-tools-*.js"):
+        old.unlink()
+    wr(c.out / "shared" / name, js)
+    n = 0
+    for f in c.out.rglob("*.html"):
+        s = rd(f)
+        if "</body>" not in s or 'http-equiv="refresh"' in s or "agent-tools-" in s:
+            continue
+        rel = f.relative_to(c.out).as_posix()
+        wr(f, s.replace("</body>", f'<script src="{"../" * rel.count("/")}shared/{name}" defer></script></body>', 1))
+        n += 1
+    c.note(f"WebMCP: 4 инструмента для ИИ-агентов ({len(catalog)} книг) на {n} страницах")
 
 
 # ───────────────────────── 6. Service worker ─────────────────────────

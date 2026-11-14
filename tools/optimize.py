@@ -853,6 +853,43 @@ def chapter_images(c, ch, s):
     return re.sub(r"<img\b[^>]*>", fix, s)
 
 
+# ───────────────────────── 5h. Modern Web Guidance (developer.chrome.com/docs/modern-web-guidance) ─────────────────────────
+# improve-next-page-load-performance: сайт многостраничный (полка → книга → глава), страницы статичны и
+# кэшируются на краю — идеальный случай для Speculation Rules. Только prefetch (а не prerender): при
+# prerender скрипты страницы, включая счётчик Метрики, выполнялись бы для страниц, которые человек может
+# так и не открыть. eagerness «moderate» — загрузка по наведению/началу касания, без лишнего трафика.
+# Файлы книг (assets/: EPUB, картинки), загрузки и внешние ссылки исключены.
+CSS_MODERN = (
+    # prevent-page-scroll-under-modal-dialog: колесо/жест над подложкой или внутри короткого окна
+    # больше не прокручивает книгу под ним (без overflow:hidden на <html> — позиция чтения не прыгает)
+    "dialog:modal{overscroll-behavior:contain}"
+    "dialog::backdrop{overflow:hidden;overscroll-behavior:contain}"
+    # improve-text-layout-and-legibility: ровные строки в коротких заголовках, без «висячих» слов
+    "h1,h2,h3{text-wrap:balance}")
+
+
+def modern_web(c):
+    import urllib.parse
+    path = urllib.parse.urlsplit(c.base).path or "/"
+    rules = {"prefetch": [{"tag": "vsplanet-books", "eagerness": "moderate", "where": {"and": [
+        {"href_matches": path + "*"},
+        {"not": {"href_matches": path + "*/assets/*"}},
+        {"not": {"selector_matches": "[download], [target=_blank], [rel~=nofollow]"}}]}}]}
+    tag = '<script type="speculationrules">' + json.dumps(rules, separators=(",", ":")) + "</script>"
+    n = 0
+    for f in c.out.rglob("*.html"):
+        s = rd(f)
+        if "</head>" not in s or 'http-equiv="refresh"' in s or "speculationrules" in s:
+            continue
+        wr(f, s.replace("</head>", tag + "</head>", 1))
+        n += 1
+    for g in ("nav-*.css", "style-*.css", "shelf-*.css"):
+        css = next((c.out / "shared").glob(g))
+        wr(css, rd(css) + CSS_MODERN)
+    c.note(f"Modern Web Guidance: Speculation Rules (prefetch, moderate) на {n} страницах, "
+           "прокрутка под модальными окнами заблокирована, сбалансированные заголовки")
+
+
 # ───────────────────────── 6. Service worker ─────────────────────────
 def sw(c):
     f = c.out / "sw.js"
@@ -1188,6 +1225,7 @@ def run(out, base, state, src):
     contacts(c)
     match_links(c)
     metrika(c)
+    modern_web(c)
     fonts(c)
     sw(c)
     rehash(c)

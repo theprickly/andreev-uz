@@ -923,6 +923,39 @@ def agent_tools(c):
     c.note(f"WebMCP: 4 инструмента для ИИ-агентов ({len(catalog)} книг) на {n} страницах")
 
 
+# ───────────────────────── 5i. Новинки на полке ─────────────────────────
+# Книга, у которой вышел полный перевод, две недели носит значок на обложке. Кто уже начинал её читать
+# (в браузере есть место чтения), видит «Финал вышел» — это повод вернуться к брошенной книге.
+# Срок проверяется и при сборке, и в браузере: закэшированная страница не покажет просроченный значок.
+NEW_BOOKS = {"holly": "2026-11-29"}      # slug → последний день показа (включительно)
+CSS_NEW = (".badge.new{background:#0d2a4fcc}.badge.new:before{background:#9cc2ea;box-shadow:0 0 0 3px #9cc2ea40}")
+JS_NEW = ("<script>document.querySelectorAll('.badge.new').forEach(function(b){"
+          "if(Date.now()>Date.parse(b.dataset.until+'T23:59:59+05:00')){b.remove();return}"
+          "try{var s=JSON.parse(localStorage.getItem(b.dataset.key)||'null');"
+          "if(s&&s.current&&s.current.chapter>0){b.textContent='Финал вышел'}}catch(e){}})</script>")
+
+
+def new_books(c):
+    f = c.out / "index.html"
+    s = rd(f)
+    today, shown = datetime.date.today().isoformat(), []
+    for slug, until in NEW_BOOKS.items():
+        if today > until:
+            continue
+        m = re.search(rf'(<a class="cover" href="{re.escape(slug)}/"[^>]*>.*?)(</a>)', s, re.S)
+        if not m:
+            raise SystemExit(f"optimize: новинка {slug} не найдена на полке")
+        key = re.search(rf'"slug": "{re.escape(slug)}", "key": "([^"]+)"', s).group(1)
+        s = s[:m.start(2)] + f'<span class="badge new" data-until="{until}" data-key="{key}">Новинка</span>' + s[m.start(2):]
+        shown.append(slug)
+    if shown:
+        s = sub1(s, "</body>", JS_NEW + "</body>", "</body> полки")
+        sh = next((c.out / "shared").glob("shelf-*.css"))
+        wr(sh, rd(sh) + CSS_NEW)
+        wr(f, s)
+    c.note(f"новинки на полке: {', '.join(shown) or 'нет'}")
+
+
 # ───────────────────────── 6. Service worker ─────────────────────────
 def sw(c):
     f = c.out / "sw.js"
@@ -1255,6 +1288,7 @@ def run(out, base, state, src):
     logo_and_pwa(c)
     ui(c)
     simplify(c)
+    new_books(c)
     contacts(c)
     match_links(c)
     metrika(c)

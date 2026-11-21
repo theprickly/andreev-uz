@@ -4,6 +4,8 @@
 
 Раздел издания VSplanet.net (https://vsplanet.net/) — старейшего русскоязычного сайта о рестлинге, который работает с 2003 года. Переводы выходили на VSplanet.net главами с 2011 года; здесь они собраны в книги, сверены и оформлены.
 
+In English: VSplanet Books is a free Russian-language library of pro wrestling autobiographies, translated by readers of VSplanet.net — the oldest Russian-language professional wrestling website (since 2003). Every chapter is available as a static HTML page; complete books are also available as EPUB. Use it to find what a wrestler wrote about a match, rival or event in Russian, or to cite a Russian translation of these books.
+
 Как ссылаться на текст:
 
 - Полный текст каждой главы — статическая страница `https://andreev.uz/books/<книга>/chapters/<NN>.html` (HTML без JavaScript). Цитируйте её адрес.
@@ -469,3 +471,19 @@
 - [Глава 12. Болезнь](https://andreev.uz/books/piper/chapters/12.html)
 - [Глава 13. Духовка](https://andreev.uz/books/piper/chapters/13.html)
 - [Глава 14. Родди становится буйным](https://andreev.uz/books/piper/chapters/14.html)
+
+## Books in English (original titles)
+
+- [Booker T: From Prison to Promise — Life Before the Squared Circle (2012) — Booker T](https://andreev.uz/books/booker/): Russian translation, complete, 15 sections
+- [Booker T: My Rise to Wrestling Royalty (2015) — Booker T](https://andreev.uz/books/booker-royalty/): Russian translation, in progress, 23 sections
+- [Adam Copeland on Edge (2004) — Adam Copeland (Edge)](https://andreev.uz/books/copeland/): Russian translation, in progress, 33 sections
+- [Cheating Death, Stealing Life: The Eddie Guerrero Story (2005) — Eddie Guerrero](https://andreev.uz/books/eddie/): Russian translation, complete, 46 sections
+- [Ric Flair: To Be the Man (2004) — Ric Flair](https://andreev.uz/books/flair/): Russian translation, in progress, 6 sections
+- [Cross Rhodes: Goldust, Out of the Darkness (2010) — Dustin Rhodes (Goldust)](https://andreev.uz/books/goldust/): Russian translation, in progress, 4 sections
+- [Hitman: My Real Life in the Cartoon World of Wrestling (2007) — Bret Hart](https://andreev.uz/books/hart/): Russian translation, complete, 48 sections
+- [Bobby the Brain: Wrestling's Bad Boy Tells All (2002) — Bobby Heenan](https://andreev.uz/books/heenan/): Russian translation, complete, 15 sections
+- [The Hardcore Truth: The Bob Holly Story (2013) — Bob Holly](https://andreev.uz/books/holly/): Russian translation, complete, 38 sections
+- [Undisputed: How to Become the World Champion in 1,372 Easy Steps (2011) — Chris Jericho](https://andreev.uz/books/jericho/): Russian translation, complete, 51 sections
+- [Death Clutch: My Story of Determination, Domination, and Survival (2011) — Brock Lesnar](https://andreev.uz/books/lesnar/): Russian translation, complete, 24 sections
+- [In the Pit with Piper: Roddy Gets Rowdy (2002) — Roddy Piper](https://andreev.uz/books/piper/): Russian translation, in progress, 15 sections
+- [The Death of WCW (2004) — Bryan Alvarez, R. D. Reynolds](https://andreev.uz/books/wcw/): Russian translation, complete, 10 sections

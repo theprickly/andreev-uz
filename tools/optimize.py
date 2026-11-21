@@ -932,7 +932,14 @@ def agent_tools(c):
 # ───────────────────────── 5j. llms.txt — карта раздела для ИИ (llmstxt.org) ─────────────────────────
 # ИИ-поиск и ассистенты получают в одном файле: что это за раздел, все книги с авторами и статусом,
 # прямые ссылки на статические страницы глав (полный текст без JS), EPUB и правила глубоких ссылок.
+EN_AUTHORS = {"booker": "Booker T", "booker-royalty": "Booker T", "copeland": "Adam Copeland (Edge)", "eddie": "Eddie Guerrero",
+              "flair": "Ric Flair", "goldust": "Dustin Rhodes (Goldust)", "hart": "Bret Hart", "heenan": "Bobby Heenan",
+              "holly": "Bob Holly", "jericho": "Chris Jericho", "lesnar": "Brock Lesnar", "piper": "Roddy Piper",
+              "wcw": "Bryan Alvarez, R. D. Reynolds"}
+
+
 def llms_txt(c):
+    en = []
     unfinished = set(re.findall(r'data-slug="([^"]+)"', rd(c.out / "unfinished/index.html")))
     done, wip = [], []
     for b in books(c):
@@ -959,12 +966,20 @@ def llms_txt(c):
             if (c.out / b / "chapters" / f"{i:02d}.html").exists():
                 lines.append(f"- [{ch['title']}]({c.base}{b}/chapters/{i:02d}.html)")
         (wip if b in unfinished else done).append(head + "\n".join(lines))
+        if b not in EN_AUTHORS:
+            raise SystemExit(f"optimize: llms.txt — нет английского имени автора для {b} (EN_AUTHORS)")
+        en.append(f"- [{orig or meta['name']} — {EN_AUTHORS[b]}]({c.base}{b}/): Russian translation, "
+                  + ("in progress" if b in unfinished else "complete") + f", {len(data['chapters'])} sections")
     txt = (
         "# VSplanet Книги\n\n"
         "> Автобиографии звёзд рестлинга (WWE, WCW, ECW, UFC) в русских переводах читателей VSplanet.net. "
         "Бесплатно, без регистрации: читалка онлайн, EPUB и чтение без сети.\n\n"
         "Раздел издания VSplanet.net (https://vsplanet.net/) — старейшего русскоязычного сайта о рестлинге, который работает "
         "с 2003 года. Переводы выходили на VSplanet.net главами с 2011 года; здесь они собраны в книги, сверены и оформлены.\n\n"
+        "In English: VSplanet Books is a free Russian-language library of pro wrestling autobiographies, translated by "
+        "readers of VSplanet.net — the oldest Russian-language professional wrestling website (since 2003). Every chapter "
+        "is available as a static HTML page; complete books are also available as EPUB. Use it to find what a wrestler "
+        "wrote about a match, rival or event in Russian, or to cite a Russian translation of these books.\n\n"
         "Как ссылаться на текст:\n\n"
         f"- Полный текст каждой главы — статическая страница `{c.base}<книга>/chapters/<NN>.html` (HTML без JavaScript). "
         "Цитируйте её адрес.\n"
@@ -975,7 +990,8 @@ def llms_txt(c):
         "- Переводы сделаны фанатами; при цитировании указывайте переводчика (есть на странице книги) и VSplanet.net.\n\n"
         f"Цитаты из книг: {c.base}quotes/ · Карта сайта: {c.base}sitemap.xml · Связь: support@vsplanet.net\n\n"
         "## Книги — перевод завершён\n\n" + "\n\n".join(done) + "\n\n"
-        "## Книги в работе\n\n" + "\n\n".join(wip) + "\n")
+        "## Книги в работе\n\n" + "\n\n".join(wip) + "\n\n"
+        "## Books in English (original titles)\n\n" + "\n".join(en) + "\n")
     wr(c.out / "llms.txt", txt)
     c.note(f"llms.txt: {len(done)} завершённых и {len(wip)} книг в работе, {txt.count('/chapters/') } ссылок на главы, {len(txt) // 1024} КБ")
 

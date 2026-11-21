@@ -13,7 +13,13 @@ import datetime, hashlib, html, io, json, pathlib, re, subprocess
 from PIL import Image
 
 MAIN = "https://vsplanet.net/"
-ORG_ID = MAIN + "#organization"
+ORG_ID = MAIN + "#/schema/Organization"      # тот же @id, что в разметке основного сайта vsplanet.net: одна организация, а не две
+ORG = {"@type": "Organization", "@id": ORG_ID, "name": "VSplanet.net", "alternateName": "VSplanet",
+       "url": MAIN, "foundingDate": "2003", "inLanguage": "ru",
+       "description": "Старейшее русскоязычное издание о рестлинге: новости и результаты WWE, AEW, TNA, ROH и независимых "
+                      "промоушенов с 2003 года, авторские колонки, интервью, профили рестлеров и переводы автобиографий звёзд рестлинга.",
+       "knowsAbout": ["Рестлинг", "Professional wrestling", "WWE", "AEW", "TNA Wrestling", "Ring of Honor", "WCW", "ECW",
+                      "Независимый рестлинг", "Lucha libre", "Пурорэсу", "ММА"]}
 TEXT = {".html", ".xml", ".json", ".js", ".css", ".webmanifest", ".txt", ".svg"}
 BANNER_KEY = "vs-install-banner-off"
 DEAD = ("assets/cover.jpg", "assets/icons/cover-icon-192.png")
@@ -215,7 +221,7 @@ def shelf_pages(c):
             graph = {"@context": "https://schema.org", "@graph": [
                 {"@type": "WebSite", "@id": c.base + "#website", "url": c.base, "name": "VSplanet Книги",
                  "alternateName": "Книги VSplanet", "inLanguage": "ru", "publisher": {"@id": ORG_ID}},
-                {"@type": "Organization", "@id": ORG_ID, "name": "VSplanet", "url": MAIN, "logo": c.base + "icons/app-512.png"}]}
+                {**ORG, "logo": c.base + "icons/app-512.png"}]}
             s = sub1(s, "</head>", ld(graph) + "</head>", "</head>")
             s = s.replace('"@type": "CollectionPage", "name"', '"@type": "CollectionPage", "isPartOf": {"@id": "' + c.base + '#website"}, "name"')
         if page == "quotes/index.html":
@@ -266,7 +272,7 @@ def book_pages(c):
             book["translationOfWork"] = orig
         graph = {"@context": "https://schema.org", "@graph": [
             {k: v for k, v in book.items() if k != "@context"},
-            {"@type": "Organization", "@id": ORG_ID, "name": "VSplanet", "url": MAIN},
+            ORG,
             crumbs([("Книги", c.base), (title, url)])]}
         s = s.replace(m.group(0), ld(graph))
         # значок в закрытом окне установки: маленький и только по требованию
@@ -957,6 +963,8 @@ def llms_txt(c):
         "# VSplanet Книги\n\n"
         "> Автобиографии звёзд рестлинга (WWE, WCW, ECW, UFC) в русских переводах читателей VSplanet.net. "
         "Бесплатно, без регистрации: читалка онлайн, EPUB и чтение без сети.\n\n"
+        "Раздел издания VSplanet.net (https://vsplanet.net/) — старейшего русскоязычного сайта о рестлинге, который работает "
+        "с 2003 года. Переводы выходили на VSplanet.net главами с 2011 года; здесь они собраны в книги, сверены и оформлены.\n\n"
         "Как ссылаться на текст:\n\n"
         f"- Полный текст каждой главы — статическая страница `{c.base}<книга>/chapters/<NN>.html` (HTML без JavaScript). "
         "Цитируйте её адрес.\n"

@@ -1,0 +1,469 @@
+# VSplanet Книги
+
+> Автобиографии звёзд рестлинга (WWE, WCW, ECW, UFC) в русских переводах читателей VSplanet.net. Бесплатно, без регистрации: читалка онлайн, EPUB и чтение без сети.
+
+Как ссылаться на текст:
+
+- Полный текст каждой главы — статическая страница `https://andreev.uz/books/<книга>/chapters/<NN>.html` (HTML без JavaScript). Цитируйте её адрес.
+- Читалка открывает нужное место по адресу `https://andreev.uz/books/<книга>/#read/<номер главы>/<номер абзаца>`: абзац подсвечивается. Номера считаются с нуля.
+- На страницах раздела браузерным ИИ-агентам доступны инструменты WebMCP: list_books, get_table_of_contents, search_book_text (полнотекстовый поиск по всем книгам) и open_in_reader.
+- Переводы сделаны фанатами; при цитировании указывайте переводчика (есть на странице книги) и VSplanet.net.
+
+Цитаты из книг: https://andreev.uz/books/quotes/ · Карта сайта: https://andreev.uz/books/sitemap.xml · Связь: support@vsplanet.net
+
+## Книги — перевод завершён
+
+### От тюрьмы к успеху — Букер Т, Эндрю Уильям Райт
+
+Первая автобиография Букера Т «От тюрьмы к успеху» на русском. Перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.
+
+Оригинал: Booker T: From Prison to Promise — Life Before the Squared Circle (2012); 15 разделов, ≈42 тыс. слов; перевод завершён.
+
+- [Страница книги и читалка](https://andreev.uz/books/booker/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/booker/chapters/)
+- [EPUB](https://andreev.uz/books/booker/assets/book-679a78cb2007.epub): вся книга одним файлом
+- [От переводчика](https://andreev.uz/books/booker/chapters/00.html)
+- [Предисловие](https://andreev.uz/books/booker/chapters/01.html)
+- [Глава 1. С улиц за решетку](https://andreev.uz/books/booker/chapters/02.html)
+- [Глава 2. Букер с рождения](https://andreev.uz/books/booker/chapters/03.html)
+- [Глава 3. Уличное образование](https://andreev.uz/books/booker/chapters/04.html)
+- [Глава 4. Сам по себе](https://andreev.uz/books/booker/chapters/05.html)
+- [Глава 5. Из огня да в полымя](https://andreev.uz/books/booker/chapters/06.html)
+- [Глава 6. Непрекращающаяся борьба](https://andreev.uz/books/booker/chapters/07.html)
+- [Глава 7. Рождение Сына](https://andreev.uz/books/booker/chapters/08.html)
+- [Глава 8. Бандиты Wendy’s](https://andreev.uz/books/booker/chapters/09.html)
+- [Глава 9. Внутри системы](https://andreev.uz/books/booker/chapters/10.html)
+- [Глава 10. Долгожданная свобода](https://andreev.uz/books/booker/chapters/11.html)
+- [Глава 11. Все на своих местах](https://andreev.uz/books/booker/chapters/12.html)
+- [Глава 12. Создание персонажа](https://andreev.uz/books/booker/chapters/13.html)
+- [Глава 13. Только вперед!](https://andreev.uz/books/booker/chapters/14.html)
+
+### Обмани смерть. Укради жизнь — Эдди Герреро, Майкл Кругман
+
+Книжный спецпроект VSplanet: «Обмани смерть. Укради жизнь» — история Эдди Герреро. Перевод Александра Суменко для VSplanet.net.
+
+Оригинал: Cheating Death, Stealing Life: The Eddie Guerrero Story (2005); 46 разделов, ≈85 тыс. слов; перевод завершён.
+
+- [Страница книги и читалка](https://andreev.uz/books/eddie/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/eddie/chapters/)
+- [EPUB](https://andreev.uz/books/eddie/assets/book-4a788e902944.epub): вся книга одним файлом
+- [Вступление](https://andreev.uz/books/eddie/chapters/00.html)
+- [Глава 1](https://andreev.uz/books/eddie/chapters/01.html)
+- [Глава 2](https://andreev.uz/books/eddie/chapters/02.html)
+- [Глава 3](https://andreev.uz/books/eddie/chapters/03.html)
+- [Глава 4](https://andreev.uz/books/eddie/chapters/04.html)
+- [Глава 5](https://andreev.uz/books/eddie/chapters/05.html)
+- [Глава 6](https://andreev.uz/books/eddie/chapters/06.html)
+- [Глава 7](https://andreev.uz/books/eddie/chapters/07.html)
+- [Глава 8](https://andreev.uz/books/eddie/chapters/08.html)
+- [Глава 9](https://andreev.uz/books/eddie/chapters/09.html)
+- [Глава 10](https://andreev.uz/books/eddie/chapters/10.html)
+- [Глава 11](https://andreev.uz/books/eddie/chapters/11.html)
+- [Глава 12](https://andreev.uz/books/eddie/chapters/12.html)
+- [Глава 13](https://andreev.uz/books/eddie/chapters/13.html)
+- [Глава 14](https://andreev.uz/books/eddie/chapters/14.html)
+- [Глава 15](https://andreev.uz/books/eddie/chapters/15.html)
+- [Глава 16](https://andreev.uz/books/eddie/chapters/16.html)
+- [Глава 17](https://andreev.uz/books/eddie/chapters/17.html)
+- [Глава 18](https://andreev.uz/books/eddie/chapters/18.html)
+- [Глава 19](https://andreev.uz/books/eddie/chapters/19.html)
+- [Глава 20](https://andreev.uz/books/eddie/chapters/20.html)
+- [Глава 21](https://andreev.uz/books/eddie/chapters/21.html)
+- [Глава 22](https://andreev.uz/books/eddie/chapters/22.html)
+- [Глава 23](https://andreev.uz/books/eddie/chapters/23.html)
+- [Глава 24](https://andreev.uz/books/eddie/chapters/24.html)
+- [Глава 25](https://andreev.uz/books/eddie/chapters/25.html)
+- [Глава 26](https://andreev.uz/books/eddie/chapters/26.html)
+- [Глава 27](https://andreev.uz/books/eddie/chapters/27.html)
+- [Глава 28](https://andreev.uz/books/eddie/chapters/28.html)
+- [Глава 29](https://andreev.uz/books/eddie/chapters/29.html)
+- [Глава 30](https://andreev.uz/books/eddie/chapters/30.html)
+- [Глава 31](https://andreev.uz/books/eddie/chapters/31.html)
+- [Глава 32](https://andreev.uz/books/eddie/chapters/32.html)
+- [Глава 33](https://andreev.uz/books/eddie/chapters/33.html)
+- [Глава 34](https://andreev.uz/books/eddie/chapters/34.html)
+- [Глава 35](https://andreev.uz/books/eddie/chapters/35.html)
+- [Глава 36](https://andreev.uz/books/eddie/chapters/36.html)
+- [Глава 37](https://andreev.uz/books/eddie/chapters/37.html)
+- [Глава 38](https://andreev.uz/books/eddie/chapters/38.html)
+- [Глава 39](https://andreev.uz/books/eddie/chapters/39.html)
+- [Глава 40](https://andreev.uz/books/eddie/chapters/40.html)
+- [Глава 41](https://andreev.uz/books/eddie/chapters/41.html)
+- [Глава 42](https://andreev.uz/books/eddie/chapters/42.html)
+- [Глава 43](https://andreev.uz/books/eddie/chapters/43.html)
+- [Эпилог](https://andreev.uz/books/eddie/chapters/44.html)
+- [Благодарности, послесловие](https://andreev.uz/books/eddie/chapters/45.html)
+
+### Хитман — Брет Харт
+
+Автобиография Брета Харта «Хитман» на русском. Перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.
+
+Оригинал: Hitman: My Real Life in the Cartoon World of Wrestling (2007); 48 разделов, ≈194 тыс. слов; перевод завершён.
+
+- [Страница книги и читалка](https://andreev.uz/books/hart/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/hart/chapters/)
+- [EPUB](https://andreev.uz/books/hart/assets/book-4a306e0d0542.epub): вся книга одним файлом
+- [От автора и переводчика](https://andreev.uz/books/hart/chapters/00.html)
+- [Глава 1. Паренек Харт](https://andreev.uz/books/hart/chapters/01.html)
+- [Глава 2. Loves me like Rock](https://andreev.uz/books/hart/chapters/02.html)
+- [Глава 3. Обучение ремеслу](https://andreev.uz/books/hart/chapters/03.html)
+- [Глава 4. Пуэрто-Рико…](https://andreev.uz/books/hart/chapters/04.html)
+- [Глава 5. Великодушный громила](https://andreev.uz/books/hart/chapters/05.html)
+- [Глава 6. Недостаточно громкое имя](https://andreev.uz/books/hart/chapters/06.html)
+- [Глава 7. Все по-настоящему](https://andreev.uz/books/hart/chapters/07.html)
+- [Глава 8. Япония и повзрослевший сын](https://andreev.uz/books/hart/chapters/08.html)
+- [Глава 9. О, дорогой, только не нос!](https://andreev.uz/books/hart/chapters/09.html)
+- [Глава 10. Ковбой видит мир](https://andreev.uz/books/hart/chapters/10.html)
+- [Глава 11. Кольцо-загадка](https://andreev.uz/books/hart/chapters/11.html)
+- [Глава 12. Брак и Отцовство](https://andreev.uz/books/hart/chapters/12.html)
+- [Глава 13. Самые глубокие карманы](https://andreev.uz/books/hart/chapters/13.html)
+- [Глава 14. Началась война](https://andreev.uz/books/hart/chapters/14.html)
+- [Глава 15. Пан или пропал](https://andreev.uz/books/hart/chapters/15.html)
+- [Глава 16. Начало работы в WWF](https://andreev.uz/books/hart/chapters/16.html)
+- [Глава 17. Сделайте нас хилами и назовите Организацией Хартов](https://andreev.uz/books/hart/chapters/17.html)
+- [Глава 18. Братья Пуши](https://andreev.uz/books/hart/chapters/18.html)
+- [Глава 19. Брошенные косточки](https://andreev.uz/books/hart/chapters/19.html)
+- [Глава 20. Шрамы на голове, как прорезь в копилке](https://andreev.uz/books/hart/chapters/20.html)
+- [Глава 21. Больше писем, чем у Хогана](https://andreev.uz/books/hart/chapters/21.html)
+- [Глава 22. У каждой собаки есть свой день](https://andreev.uz/books/hart/chapters/22.html)
+- [Глава 23. Возмездие за грех](https://andreev.uz/books/hart/chapters/23.html)
+- [Глава 24. Разбитый и без денег](https://andreev.uz/books/hart/chapters/24.html)
+- [Глава 25. Настоящий пуш](https://andreev.uz/books/hart/chapters/25.html)
+- [Глава 26. Ты популярен, брат!](https://andreev.uz/books/hart/chapters/26.html)
+- [Глава 27. Слушай меня, я вытащу](https://andreev.uz/books/hart/chapters/27.html)
+- [Глава 28. Вперед и вверх](https://andreev.uz/books/hart/chapters/28.html)
+- [Глава 29. Брат, ты не знаешь всей истории!](https://andreev.uz/books/hart/chapters/29.html)
+- [Глава 30. Одинокий волк](https://andreev.uz/books/hart/chapters/30.html)
+- [Глава 31. Каин и Авель](https://andreev.uz/books/hart/chapters/31.html)
+- [Глава 32. Настаясий миловой семпион](https://andreev.uz/books/hart/chapters/32.html)
+- [Глава 33. Больше, чем я мог себе представить](https://andreev.uz/books/hart/chapters/33.html)
+- [Глава 34. Клика](https://andreev.uz/books/hart/chapters/34.html)
+- [Глава 35. Змеи послушны](https://andreev.uz/books/hart/chapters/35.html)
+- [Глава 36. У тебя не будет причин даже захотеть уйти](https://andreev.uz/books/hart/chapters/36.html)
+- [Глава 37. Весь мир ненавидит американцев](https://andreev.uz/books/hart/chapters/37.html)
+- [Глава 38. Лев и Гиена](https://andreev.uz/books/hart/chapters/38.html)
+- [Глава 39. Что бы ни случилось, ты можешь на меня рассчитывать](https://andreev.uz/books/hart/chapters/39.html)
+- [Глава 40. Думай головой, а не сердцем](https://andreev.uz/books/hart/chapters/40.html)
+- [Глава 41. Монреальская подстава](https://andreev.uz/books/hart/chapters/41.html)
+- [Глава 42. Жертвы войны](https://andreev.uz/books/hart/chapters/42.html)
+- [Глава 43. Если в твоих руках окажется моя жизнь, ты не уронишь ее?](https://andreev.uz/books/hart/chapters/43.html)
+- [Глава 44. Следи за ногой!](https://andreev.uz/books/hart/chapters/44.html)
+- [Глава 45. Последний Танец](https://andreev.uz/books/hart/chapters/45.html)
+- [Глава 46. Раздражая Бога](https://andreev.uz/books/hart/chapters/46.html)
+- [Глава 47. Лебединая Песня](https://andreev.uz/books/hart/chapters/47.html)
+
+### Плохиш из мира рестлинга — Бобби Хинан, Стив Андерсон
+
+Автобиография Бобби Хинана «Плохиш из мира рестлинга» на русском. Перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.
+
+Оригинал: Bobby the Brain: Wrestling's Bad Boy Tells All (2002); 15 разделов, ≈50 тыс. слов; перевод завершён.
+
+- [Страница книги и читалка](https://andreev.uz/books/heenan/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/heenan/chapters/)
+- [EPUB](https://andreev.uz/books/heenan/assets/book-aeab674087c0.epub): вся книга одним файлом
+- [Вступительное слово и предисловие](https://andreev.uz/books/heenan/chapters/00.html)
+- [Глава 1. Триумфальное возвращение](https://andreev.uz/books/heenan/chapters/01.html)
+- [Глава 2. Ранние годы](https://andreev.uz/books/heenan/chapters/02.html)
+- [Глава 3. Рождение «Мозга»](https://andreev.uz/books/heenan/chapters/03.html)
+- [Глава 4. Возвращение в AWA](https://andreev.uz/books/heenan/chapters/04.html)
+- [Глава 5. Переход в WWF](https://andreev.uz/books/heenan/chapters/05.html)
+- [Глава 6. Из менеджера в комментаторы](https://andreev.uz/books/heenan/chapters/06.html)
+- [Глава 7. Трудные решения](https://andreev.uz/books/heenan/chapters/07.html)
+- [Глава 8. WCW](https://andreev.uz/books/heenan/chapters/08.html)
+- [Глава 9. Работа в территориях](https://andreev.uz/books/heenan/chapters/09.html)
+- [Глава 10. Работа со знаменитостями](https://andreev.uz/books/heenan/chapters/10.html)
+- [Глава 11. Семья и Фанаты](https://andreev.uz/books/heenan/chapters/11.html)
+- [Глава 12. Раскидывая мозгами](https://andreev.uz/books/heenan/chapters/12.html)
+- [Глава 13. Я просто хотел увидеть его лицо](https://andreev.uz/books/heenan/chapters/13.html)
+- [Эпилог](https://andreev.uz/books/heenan/chapters/14.html)
+
+### Хардкорная правда — Боб Холли, Росс Уильямс
+
+Автобиография Боба Холли «Хардкорная правда» на русском. Перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.
+
+Оригинал: The Hardcore Truth: The Bob Holly Story (2013); 38 разделов, ≈100 тыс. слов; перевод завершён.
+
+- [Страница книги и читалка](https://andreev.uz/books/holly/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/holly/chapters/)
+- [EPUB](https://andreev.uz/books/holly/assets/book-74ae72d1bd82.epub): вся книга одним файлом
+- [От переводчика](https://andreev.uz/books/holly/chapters/00.html)
+- [Предисловие](https://andreev.uz/books/holly/chapters/01.html)
+- [Глава 1. Хлеб, подлива и детское питание](https://andreev.uz/books/holly/chapters/02.html)
+- [Глава 2. Первый звонок](https://andreev.uz/books/holly/chapters/03.html)
+- [Глава 3. Жажда скорости](https://andreev.uz/books/holly/chapters/04.html)
+- [Глава 4. Взрослея на скоростной полосе](https://andreev.uz/books/holly/chapters/05.html)
+- [Глава 5. Борьба за еду и подгузники](https://andreev.uz/books/holly/chapters/06.html)
+- [Глава 6. В погоне за мечтой](https://andreev.uz/books/holly/chapters/07.html)
+- [Глава 7. Кладбище рестлинга](https://andreev.uz/books/holly/chapters/08.html)
+- [Глава 8. Жажда Скорости](https://andreev.uz/books/holly/chapters/09.html)
+- [Глава 9. Политизированная гонка](https://andreev.uz/books/holly/chapters/10.html)
+- [Глава 10. Что нахрен за Турман Плагг?](https://andreev.uz/books/holly/chapters/11.html)
+- [Глава 11. Запуск двигателя](https://andreev.uz/books/holly/chapters/12.html)
+- [Глава 12. Человек с татуировкой пламени](https://andreev.uz/books/holly/chapters/13.html)
+- [Глава 13. Топтаться на месте](https://andreev.uz/books/holly/chapters/14.html)
+- [Глава 14. Клика рвётся к власти](https://andreev.uz/books/holly/chapters/15.html)
+- [Глава 15. И началась война](https://andreev.uz/books/holly/chapters/16.html)
+- [Глава 16. Монреаль](https://andreev.uz/books/holly/chapters/17.html)
+- [Глава 17. И пробил час](https://andreev.uz/books/holly/chapters/18.html)
+- [Глава 18. Моя Аттитуда](https://andreev.uz/books/holly/chapters/19.html)
+- [Глава 19. Оуэн Харт](https://andreev.uz/books/holly/chapters/20.html)
+- [Глава 20. Большая Шишка и Семьянин](https://andreev.uz/books/holly/chapters/21.html)
+- [Глава 21. Рок-звезда и Девятое чудо света](https://andreev.uz/books/holly/chapters/22.html)
+- [Глава 22. Золотые времена](https://andreev.uz/books/holly/chapters/23.html)
+- [Глава 23. Несчастливый перерыв](https://andreev.uz/books/holly/chapters/24.html)
+- [Глава 24. Конец войны](https://andreev.uz/books/holly/chapters/25.html)
+- [Глава 25. Тяжёлые времена](https://andreev.uz/books/holly/chapters/26.html)
+- [Глава 26. Пуш через болевой барьер](https://andreev.uz/books/holly/chapters/27.html)
+- [Глава 27. Возвращение за Броком](https://andreev.uz/books/holly/chapters/28.html)
+- [Глава 28. Снова вниз](https://andreev.uz/books/holly/chapters/29.html)
+- [Глава 29. Билет на бой](https://andreev.uz/books/holly/chapters/30.html)
+- [Глава 30. Эдди](https://andreev.uz/books/holly/chapters/31.html)
+- [Глава 31. Стероиды](https://andreev.uz/books/holly/chapters/32.html)
+- [Глава 32. Спина Боба…. Нужны 25 швов](https://andreev.uz/books/holly/chapters/33.html)
+- [Глава 33. Крис Бенуа](https://andreev.uz/books/holly/chapters/34.html)
+- [Глава 34. Предательство](https://andreev.uz/books/holly/chapters/35.html)
+- [Глава 35. Флирт с Инди](https://andreev.uz/books/holly/chapters/36.html)
+- [Глава 36. Как я вам теперь нравлюсь?](https://andreev.uz/books/holly/chapters/37.html)
+
+### Неоспоримый — Крис Джерико, Питер Томас Форнатале
+
+Автобиография Криса Джерико «Неоспоримый» на русском. Перевод Артёма Розанова для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.
+
+Оригинал: Undisputed: How to Become the World Champion in 1,372 Easy Steps (2011); 51 разделов, ≈120 тыс. слов; перевод завершён.
+
+- [Страница книги и читалка](https://andreev.uz/books/jericho/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/jericho/chapters/)
+- [EPUB](https://andreev.uz/books/jericho/assets/book-0da3416a5f17.epub): вся книга одним файлом
+- [Предисловие](https://andreev.uz/books/jericho/chapters/00.html)
+- [Бонусное предисловие](https://andreev.uz/books/jericho/chapters/01.html)
+- [Вступление](https://andreev.uz/books/jericho/chapters/02.html)
+- [Глава 1. Заносчивый придурок](https://andreev.uz/books/jericho/chapters/03.html)
+- [Глава 2. «Проклятье Джерико»](https://andreev.uz/books/jericho/chapters/04.html)
+- [Глава 3. Шизо-Делюкс](https://andreev.uz/books/jericho/chapters/05.html)
+- [Глава 4. Работаю за еду!](https://andreev.uz/books/jericho/chapters/06.html)
+- [Глава 5. Молодо-зелено](https://andreev.uz/books/jericho/chapters/07.html)
+- [Глава 6. Интерконтинентальные проблемы](https://andreev.uz/books/jericho/chapters/08.html)
+- [Глава 7. Пипл не схавает!](https://andreev.uz/books/jericho/chapters/09.html)
+- [Глава 8. Долгожданный успех](https://andreev.uz/books/jericho/chapters/10.html)
+- [Глава 9. Мангуст и Дайсмен](https://andreev.uz/books/jericho/chapters/11.html)
+- [Глава 10. Винс любит обезьян](https://andreev.uz/books/jericho/chapters/12.html)
+- [Глава 11. Be Froot](https://andreev.uz/books/jericho/chapters/13.html)
+- [Глава 12. WTF](https://andreev.uz/books/jericho/chapters/14.html)
+- [Глава 13. Любовь на полную громкость](https://andreev.uz/books/jericho/chapters/15.html)
+- [Глава 14. Забанен на Бродвее](https://andreev.uz/books/jericho/chapters/16.html)
+- [Глава 15. Больше никаких бород](https://andreev.uz/books/jericho/chapters/17.html)
+- [Глава 16. Город, в котором все началось…](https://andreev.uz/books/jericho/chapters/18.html)
+- [Глава 17. Канадский Иисус](https://andreev.uz/books/jericho/chapters/19.html)
+- [Глава 18. MC Hammered](https://andreev.uz/books/jericho/chapters/20.html)
+- [Глава 19. Никогда не доверяй Лох-несскому чудовищу](https://andreev.uz/books/jericho/chapters/21.html)
+- [Глава 20. Рок-н-ролл – опасная игра](https://andreev.uz/books/jericho/chapters/22.html)
+- [Глава 21. Неоспоримый Чемпион Мира](https://andreev.uz/books/jericho/chapters/23.html)
+- [Глава 22. Арахисовое масло и сельдерей](https://andreev.uz/books/jericho/chapters/24.html)
+- [Глава 23. Полоскание виски](https://andreev.uz/books/jericho/chapters/25.html)
+- [Глава 24. Запасное колесо](https://andreev.uz/books/jericho/chapters/26.html)
+- [Глава 25. Клуб Любителей Желе](https://andreev.uz/books/jericho/chapters/27.html)
+- [Глава 26. Мистер Сворачивание](https://andreev.uz/books/jericho/chapters/28.html)
+- [Глава 27. Украсть шоу](https://andreev.uz/books/jericho/chapters/29.html)
+- [Глава 28. Большая Битва](https://andreev.uz/books/jericho/chapters/30.html)
+- [Глава 29. Соломенная шляпа](https://andreev.uz/books/jericho/chapters/31.html)
+- [Глава 30. АО Джерико](https://andreev.uz/books/jericho/chapters/32.html)
+- [Глава 31. Сегодня Fozzy Геи](https://andreev.uz/books/jericho/chapters/33.html)
+- [Глава 32. Мощь Малины](https://andreev.uz/books/jericho/chapters/34.html)
+- [Глава 33. Real Steel](https://andreev.uz/books/jericho/chapters/35.html)
+- [Глава 34. Скамейка запасных](https://andreev.uz/books/jericho/chapters/36.html)
+- [Глава 35. Самый работящий человек в шоу-бизнесе](https://andreev.uz/books/jericho/chapters/37.html)
+- [Глава 36. Буфетный наци](https://andreev.uz/books/jericho/chapters/38.html)
+- [Глава 37. Динкус](https://andreev.uz/books/jericho/chapters/39.html)
+- [Глава 38. Милая Лоретта Модерн](https://andreev.uz/books/jericho/chapters/40.html)
+- [Глава 39. Место преступления — Шебойган](https://andreev.uz/books/jericho/chapters/41.html)
+- [Глава 40. Убийца с лицом ребенка](https://andreev.uz/books/jericho/chapters/42.html)
+- [Глава 41. Да, но…](https://andreev.uz/books/jericho/chapters/43.html)
+- [Глава 42. Заливная рыба](https://andreev.uz/books/jericho/chapters/44.html)
+- [Глава 43. Блюз Хилл Стрит](https://andreev.uz/books/jericho/chapters/45.html)
+- [Глава 44. Чудесные крошки](https://andreev.uz/books/jericho/chapters/46.html)
+- [Глава 45. Говард Хьюз Рок-н-Ролла!](https://andreev.uz/books/jericho/chapters/47.html)
+- [Глава 46. Бенуа](https://andreev.uz/books/jericho/chapters/48.html)
+- [Глава 47. «Пол Мертв» в рестлинге](https://andreev.uz/books/jericho/chapters/49.html)
+- [Благодарности и Бонусный фотосет](https://andreev.uz/books/jericho/chapters/50.html)
+
+### Тиски смерти — Брок Леснар, Пол Хейман
+
+Автобиография Брока Леснара «Тиски смерти» на русском. Перевод для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.
+
+Оригинал: Death Clutch: My Story of Determination, Domination, and Survival (2011); 24 разделов, ≈46 тыс. слов; перевод завершён.
+
+- [Страница книги и читалка](https://andreev.uz/books/lesnar/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/lesnar/chapters/)
+- [EPUB](https://andreev.uz/books/lesnar/assets/book-1d33097b98eb.epub): вся книга одним файлом
+- [Предисловие](https://andreev.uz/books/lesnar/chapters/00.html)
+- [Глава 1. Рос, чтобы быть чемпионом](https://andreev.uz/books/lesnar/chapters/01.html)
+- [Глава 2. Борьба с моим будущим](https://andreev.uz/books/lesnar/chapters/02.html)
+- [Глава 3. Новичок с фермы](https://andreev.uz/books/lesnar/chapters/03.html)
+- [Глава 4. Крюк на пути к чемпионству NCAA](https://andreev.uz/books/lesnar/chapters/04.html)
+- [Глава 5. Четвертый год в колледже](https://andreev.uz/books/lesnar/chapters/05.html)
+- [Глава 6. Введение в рестлинг](https://andreev.uz/books/lesnar/chapters/06.html)
+- [Глава 7. Луисвилл](https://andreev.uz/books/lesnar/chapters/07.html)
+- [Глава 8. Следующая звезда](https://andreev.uz/books/lesnar/chapters/08.html)
+- [Глава 9. Рок и Гробовщик](https://andreev.uz/books/lesnar/chapters/09.html)
+- [Глава 10. Биг Шоу, водка и викодин](https://andreev.uz/books/lesnar/chapters/10.html)
+- [Глава 11. Моя первая Wrestlemania](https://andreev.uz/books/lesnar/chapters/11.html)
+- [Глава 12. Мясорубка](https://andreev.uz/books/lesnar/chapters/12.html)
+- [Глава 13. Брок против Рока в Майами](https://andreev.uz/books/lesnar/chapters/13.html)
+- [Глава 14. Уход из WWE](https://andreev.uz/books/lesnar/chapters/14.html)
+- [Глава 15. Меч у горла](https://andreev.uz/books/lesnar/chapters/15.html)
+- [Глава 16. Брок Леснар против WWE](https://andreev.uz/books/lesnar/chapters/16.html)
+- [Глава 17. New Japan Pro Wrestling](https://andreev.uz/books/lesnar/chapters/17.html)
+- [Глава 18. Начало карьеры в смешанных единоборствах](https://andreev.uz/books/lesnar/chapters/18.html)
+- [Глава 19. Внимание Даны Уайта](https://andreev.uz/books/lesnar/chapters/19.html)
+- [Глава 20. UFC 91: Я против Рэнди Кутюра](https://andreev.uz/books/lesnar/chapters/20.html)
+- [Глава 21. Искупление](https://andreev.uz/books/lesnar/chapters/21.html)
+- [Глава 22. Что со мной не так?](https://andreev.uz/books/lesnar/chapters/22.html)
+- [Глава 23. Окончание](https://andreev.uz/books/lesnar/chapters/23.html)
+
+### Смерть WCW — Р. Д. Рейнольдс и Брайан Альварес
+
+Книга о закате World Championship Wrestling «Смерть WCW» на русском. Перевод Александра Суменко для VSplanet.net. Читайте онлайн, без регистрации, или скачайте EPUB.
+
+Оригинал: The Death of WCW (2004); 10 разделов, ≈82 тыс. слов; перевод завершён.
+
+- [Страница книги и читалка](https://andreev.uz/books/wcw/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/wcw/chapters/)
+- [EPUB](https://andreev.uz/books/wcw/assets/book-9f622f977445.epub): вся книга одним файлом
+- [Предисловие](https://andreev.uz/books/wcw/chapters/00.html)
+- [Введение](https://andreev.uz/books/wcw/chapters/01.html)
+- [Глава 1. 1988-1996: Малыш Мистера Тернера](https://andreev.uz/books/wcw/chapters/02.html)
+- [Глава 2. 1996: И началась война](https://andreev.uz/books/wcw/chapters/03.html)
+- [Глава 3. 1997, Выжидательная тактика](https://andreev.uz/books/wcw/chapters/04.html)
+- [Глава 4. 1998: Инерция — сила](https://andreev.uz/books/wcw/chapters/05.html)
+- [Глава 5. 1999, В поисках спасителя](https://andreev.uz/books/wcw/chapters/06.html)
+- [Глава 6. Все рушится](https://andreev.uz/books/wcw/chapters/07.html)
+- [Глава 7. 2001, Все рушится](https://andreev.uz/books/wcw/chapters/08.html)
+- [Эпилог: Плевок в могилу](https://andreev.uz/books/wcw/chapters/09.html)
+
+## Книги в работе
+
+### Моё восхождение к вершинам рестлинга — Букер Т, Эндрю Уильям Райт
+
+Вторая автобиография Букера Т «Моё восхождение к вершинам рестлинга» на русском — неполный перевод для VSplanet.net. Читайте онлайн, без регистрации.
+
+Оригинал: Booker T: My Rise to Wrestling Royalty (2015); 23 разделов, ≈74 тыс. слов; перевод не закончен.
+
+- [Страница книги и читалка](https://andreev.uz/books/booker-royalty/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/booker-royalty/chapters/)
+- [Предисловие](https://andreev.uz/books/booker-royalty/chapters/00.html)
+- [Глава 1. Невероятная возможность](https://andreev.uz/books/booker-royalty/chapters/01.html)
+- [Глава 2. Чикагская неудача](https://andreev.uz/books/booker-royalty/chapters/02.html)
+- [Глава 3. Разгорается Пекло Гарлема](https://andreev.uz/books/booker-royalty/chapters/03.html)
+- [Глава 4. Ухо Кактуса Джека](https://andreev.uz/books/booker-royalty/chapters/04.html)
+- [Глава 5. Командное золото](https://andreev.uz/books/booker-royalty/chapters/05.html)
+- [Глава 6. NWO объявляет войну](https://andreev.uz/books/booker-royalty/chapters/06.html)
+- [Глава 7. Уход Сестры](https://andreev.uz/books/booker-royalty/chapters/07.html)
+- [Глава 8. Шанс посреди хаоса](https://andreev.uz/books/booker-royalty/chapters/08.html)
+- [Глава 9. До четырех побед](https://andreev.uz/books/booker-royalty/chapters/09.html)
+- [Глава 10. Крутое пике](https://andreev.uz/books/booker-royalty/chapters/10.html)
+- [Глава 11. Домашняя трагедия](https://andreev.uz/books/booker-royalty/chapters/11.html)
+- [Глава 12. Чемпион волею случая](https://andreev.uz/books/booker-royalty/chapters/12.html)
+- [Глава 13. Крах Империи](https://andreev.uz/books/booker-royalty/chapters/13.html)
+- [Глава 14. Вторжение](https://andreev.uz/books/booker-royalty/chapters/14.html)
+- [Глава 15. Дорога на WrestleMania](https://andreev.uz/books/booker-royalty/chapters/15.html)
+- [Глава 16. Большая Сцена](https://andreev.uz/books/booker-royalty/chapters/16.html)
+- [Глава 17. Вместе с NWO](https://andreev.uz/books/booker-royalty/chapters/17.html)
+- [Глава 18. Заперт в клетке](https://andreev.uz/books/booker-royalty/chapters/18.html)
+- [Глава 19. За золотом](https://andreev.uz/books/booker-royalty/chapters/19.html)
+- [Глава 20. Возвращение Брэндона](https://andreev.uz/books/booker-royalty/chapters/20.html)
+- [Глава 21. Плохой парень](https://andreev.uz/books/booker-royalty/chapters/21.html)
+- [Глава 26. Зал Славы](https://andreev.uz/books/booker-royalty/chapters/22.html)
+
+### На грани — Адам Коупленд (Эдж)
+
+Автобиография Адама Коупленда (Эджа) «На грани» на русском: главы 1–30 в переводе Тани (Dark Bird) для VSplanet.net. Читайте онлайн, без регистрации.
+
+Оригинал: Adam Copeland on Edge (2004); 33 разделов, ≈31 тыс. слов; перевод не закончен.
+
+- [Страница книги и читалка](https://andreev.uz/books/copeland/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/copeland/chapters/)
+- [От переводчика](https://andreev.uz/books/copeland/chapters/00.html)
+- [Предисловие Мика Фоли](https://andreev.uz/books/copeland/chapters/01.html)
+- [Пролог](https://andreev.uz/books/copeland/chapters/02.html)
+- [Глава 1](https://andreev.uz/books/copeland/chapters/03.html)
+- [Глава 2](https://andreev.uz/books/copeland/chapters/04.html)
+- [Глава 3](https://andreev.uz/books/copeland/chapters/05.html)
+- [Глава 4](https://andreev.uz/books/copeland/chapters/06.html)
+- [Глава 5](https://andreev.uz/books/copeland/chapters/07.html)
+- [Глава 6](https://andreev.uz/books/copeland/chapters/08.html)
+- [Глава 7](https://andreev.uz/books/copeland/chapters/09.html)
+- [Глава 8](https://andreev.uz/books/copeland/chapters/10.html)
+- [Глава 9](https://andreev.uz/books/copeland/chapters/11.html)
+- [Глава 10](https://andreev.uz/books/copeland/chapters/12.html)
+- [Глава 11](https://andreev.uz/books/copeland/chapters/13.html)
+- [Глава 12](https://andreev.uz/books/copeland/chapters/14.html)
+- [Глава 13](https://andreev.uz/books/copeland/chapters/15.html)
+- [Глава 14](https://andreev.uz/books/copeland/chapters/16.html)
+- [Глава 15](https://andreev.uz/books/copeland/chapters/17.html)
+- [Глава 16](https://andreev.uz/books/copeland/chapters/18.html)
+- [Глава 17](https://andreev.uz/books/copeland/chapters/19.html)
+- [Глава 18](https://andreev.uz/books/copeland/chapters/20.html)
+- [Глава 19](https://andreev.uz/books/copeland/chapters/21.html)
+- [Глава 20](https://andreev.uz/books/copeland/chapters/22.html)
+- [Глава 21](https://andreev.uz/books/copeland/chapters/23.html)
+- [Глава 22](https://andreev.uz/books/copeland/chapters/24.html)
+- [Глава 23](https://andreev.uz/books/copeland/chapters/25.html)
+- [Глава 24](https://andreev.uz/books/copeland/chapters/26.html)
+- [Глава 25](https://andreev.uz/books/copeland/chapters/27.html)
+- [Глава 26](https://andreev.uz/books/copeland/chapters/28.html)
+- [Глава 27](https://andreev.uz/books/copeland/chapters/29.html)
+- [Глава 28](https://andreev.uz/books/copeland/chapters/30.html)
+- [Глава 29](https://andreev.uz/books/copeland/chapters/31.html)
+- [Глава 30](https://andreev.uz/books/copeland/chapters/32.html)
+
+### Быть мужчиной — Рик Флэр, Кит Эллиот Гринберг
+
+Автобиография Рика Флэра «Быть мужчиной» на русском: главы 1–6 в переводе Евгения Лайдера для VSplanet.net. Читайте онлайн, без регистрации.
+
+Оригинал: Ric Flair: To Be the Man (2004); 6 разделов, ≈15 тыс. слов; перевод не закончен.
+
+- [Страница книги и читалка](https://andreev.uz/books/flair/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/flair/chapters/)
+- [Глава 1. Дитя черного рынка](https://andreev.uz/books/flair/chapters/00.html)
+- [Глава 2. Врываясь в бизнес](https://andreev.uz/books/flair/chapters/01.html)
+- [Глава 3. Мистер Харизма](https://andreev.uz/books/flair/chapters/02.html)
+- [Глава 4. Человек, который спас рестлинг](https://andreev.uz/books/flair/chapters/03.html)
+- [Глава 5. Как такой придурок, как ты, вписывается в мои планы?](https://andreev.uz/books/flair/chapters/04.html)
+- [Глава 6. Я не настолько глуп](https://andreev.uz/books/flair/chapters/05.html)
+
+### Кросс-Роудс — Дастин Роудс (Голдаст), Марк Вансил
+
+Автобиография Дастина Роудса (Голдаста) «Кросс-Роудс» на русском — неполный перевод для VSplanet.net. Читайте онлайн, без регистрации.
+
+Оригинал: Cross Rhodes: Goldust, Out of the Darkness (2010); 4 разделов, ≈10 тыс. слов; перевод не закончен.
+
+- [Страница книги и читалка](https://andreev.uz/books/goldust/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/goldust/chapters/)
+- [Предисловие, вводные слова](https://andreev.uz/books/goldust/chapters/00.html)
+- [Глава 1. Болезнь](https://andreev.uz/books/goldust/chapters/01.html)
+- [Глава 2. Обучение](https://andreev.uz/books/goldust/chapters/02.html)
+- [Глава 3. По стопам](https://andreev.uz/books/goldust/chapters/03.html)
+
+### В яме с Пайпером — Родди Пайпер, Роберт Пикарелло
+
+Автобиография Родди Пайпера «В яме с Пайпером» на русском — неполный перевод для VSplanet.net. Читайте онлайн, без регистрации.
+
+Оригинал: In the Pit with Piper: Roddy Gets Rowdy (2002); 15 разделов, ≈71 тыс. слов; перевод не закончен.
+
+- [Страница книги и читалка](https://andreev.uz/books/piper/)
+- [Оглавление: все главы текстом](https://andreev.uz/books/piper/chapters/)
+- [Предисловие](https://andreev.uz/books/piper/chapters/00.html)
+- [Глава 1](https://andreev.uz/books/piper/chapters/01.html)
+- [Глава 2. Лос Анджелесские годы](https://andreev.uz/books/piper/chapters/02.html)
+- [Глава 3. Внутряк](https://andreev.uz/books/piper/chapters/03.html)
+- [Глава 4. Портлендские годы](https://andreev.uz/books/piper/chapters/04.html)
+- [Глава 5. Шарлотт](https://andreev.uz/books/piper/chapters/05.html)
+- [Глава 6. Работа за пределами США](https://andreev.uz/books/piper/chapters/06.html)
+- [Глава 7. Годы в Нью Йорке](https://andreev.uz/books/piper/chapters/07.html)
+- [Глава 8. the War to Settle the Score](https://andreev.uz/books/piper/chapters/08.html)
+- [Глава 9. WrestleMania](https://andreev.uz/books/piper/chapters/09.html)
+- [Глава 10. WrestleMania 2](https://andreev.uz/books/piper/chapters/10.html)
+- [Глава 11. Суд Присяжных](https://andreev.uz/books/piper/chapters/11.html)
+- [Глава 12. Болезнь](https://andreev.uz/books/piper/chapters/12.html)
+- [Глава 13. Духовка](https://andreev.uz/books/piper/chapters/13.html)
+- [Глава 14. Родди становится буйным](https://andreev.uz/books/piper/chapters/14.html)

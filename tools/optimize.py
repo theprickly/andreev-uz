@@ -923,6 +923,55 @@ def agent_tools(c):
     c.note(f"WebMCP: 4 инструмента для ИИ-агентов ({len(catalog)} книг) на {n} страницах")
 
 
+# ───────────────────────── 5j. llms.txt — карта раздела для ИИ (llmstxt.org) ─────────────────────────
+# ИИ-поиск и ассистенты получают в одном файле: что это за раздел, все книги с авторами и статусом,
+# прямые ссылки на статические страницы глав (полный текст без JS), EPUB и правила глубоких ссылок.
+def llms_txt(c):
+    unfinished = set(re.findall(r'data-slug="([^"]+)"', rd(c.out / "unfinished/index.html")))
+    done, wip = [], []
+    for b in books(c):
+        page = rd(c.out / b / "index.html")
+        graph = json.loads(re.search(r'<script type="application/ld\+json">(.*?)</script>', page, re.S).group(1)).get("@graph", [])
+        meta = next(x for x in graph if x.get("@type") == "Book")
+        authors = meta.get("author") or []
+        authors = ", ".join(a["name"] for a in (authors if isinstance(authors, list) else [authors]))
+        data = json.loads(rd(next((c.out / b).glob("book-*.json"))))
+        cfg = re.search(r'"original": (\{[^}]*\})', page)
+        orig = json.loads(cfg.group(1)) if cfg else {}
+        orig = f"{orig['title']} ({orig['year']})" if orig.get("title") else ""
+        epub = next((c.out / b / "assets").glob("book-*.epub"), None)
+        words = sum(ch["words"] for ch in data["chapters"])
+        head = f"### {meta['name']} — {authors}\n\n"
+        head += f"{meta.get('description', '').strip()}\n\n"
+        facts = [f"Оригинал: {orig}" if orig else "", f"{len(data['chapters'])} разделов, ≈{round(words / 1000)} тыс. слов",
+                 "перевод не закончен" if b in unfinished else "перевод завершён"]
+        head += "; ".join(x for x in facts if x) + ".\n\n"
+        lines = [f"- [Страница книги и читалка]({c.base}{b}/)", f"- [Оглавление: все главы текстом]({c.base}{b}/chapters/)"]
+        if epub:
+            lines.append(f"- [EPUB]({c.base}{b}/assets/{epub.name}): вся книга одним файлом")
+        for i, ch in enumerate(data["chapters"]):
+            if (c.out / b / "chapters" / f"{i:02d}.html").exists():
+                lines.append(f"- [{ch['title']}]({c.base}{b}/chapters/{i:02d}.html)")
+        (wip if b in unfinished else done).append(head + "\n".join(lines))
+    txt = (
+        "# VSplanet Книги\n\n"
+        "> Автобиографии звёзд рестлинга (WWE, WCW, ECW, UFC) в русских переводах читателей VSplanet.net. "
+        "Бесплатно, без регистрации: читалка онлайн, EPUB и чтение без сети.\n\n"
+        "Как ссылаться на текст:\n\n"
+        f"- Полный текст каждой главы — статическая страница `{c.base}<книга>/chapters/<NN>.html` (HTML без JavaScript). "
+        "Цитируйте её адрес.\n"
+        f"- Читалка открывает нужное место по адресу `{c.base}<книга>/#read/<номер главы>/<номер абзаца>`: "
+        "абзац подсвечивается. Номера считаются с нуля.\n"
+        "- На страницах раздела браузерным ИИ-агентам доступны инструменты WebMCP: list_books, get_table_of_contents, "
+        "search_book_text (полнотекстовый поиск по всем книгам) и open_in_reader.\n"
+        "- Переводы сделаны фанатами; при цитировании указывайте переводчика (есть на странице книги) и VSplanet.net.\n\n"
+        f"Цитаты из книг: {c.base}quotes/ · Карта сайта: {c.base}sitemap.xml · Связь: support@vsplanet.net\n\n"
+        "## Книги — перевод завершён\n\n" + "\n\n".join(done) + "\n\n"
+        "## Книги в работе\n\n" + "\n\n".join(wip) + "\n")
+    wr(c.out / "llms.txt", txt)
+    c.note(f"llms.txt: {len(done)} завершённых и {len(wip)} книг в работе, {txt.count('/chapters/') } ссылок на главы, {len(txt) // 1024} КБ")
+
+
 # ───────────────────────── 5i. Новинки на полке ─────────────────────────
 # Книга, у которой вышел полный перевод, две недели носит значок на обложке. Кто уже начинал её читать
 # (в браузере есть место чтения), видит «Финал вышел» — это повод вернуться к брошенной книге.
@@ -1297,4 +1346,5 @@ def run(out, base, state, src):
     sw(c)
     rehash(c)
     sitemaps(c)
+    llms_txt(c)
     return c

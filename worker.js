@@ -18,6 +18,10 @@ const UA = 'andreev.uz podcast archive transfer (owner-initiated)';
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === '/ubweb' || url.pathname.startsWith('/ubweb/')) {
+      const denied = await ubwebAuth(request, env);
+      if (denied) return denied;
+    }
     if (url.pathname.startsWith('/mave/api/')) {
       try {
         return await api(request, url);
@@ -28,6 +32,33 @@ export default {
     return env.ASSETS.fetch(request);
   },
 };
+
+// /ubweb/ — конструктор страниц Uzum Bank, закрыт паролем (HTTP Basic).
+// В коде хранится только SHA-256 от «логин:пароль». Чтобы сменить пароль, задайте секрет
+// UBWEB_AUTH_SHA256 в настройках Worker (sha256 от строки «логин:пароль» в hex) — он важнее значения ниже.
+const UBWEB_AUTH_SHA256 = '0215ed26618c4df68bc426e2db3b65204c41e9b23dde377449e94d3c66855e97';
+
+async function ubwebAuth(request, env) {
+  const expected = (env.UBWEB_AUTH_SHA256 || UBWEB_AUTH_SHA256).toLowerCase();
+  const header = request.headers.get('Authorization') || '';
+  if (header.startsWith('Basic ')) {
+    let pair = '';
+    try { pair = new TextDecoder().decode(Uint8Array.from(atob(header.slice(6)), (c) => c.charCodeAt(0))); } catch (e) { pair = ''; }
+    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pair));
+    const hex = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('');
+    if (hex.length === expected.length && timingSafe(hex, expected)) return null;
+  }
+  return new Response('Нужен логин и пароль.', {
+    status: 401,
+    headers: { 'WWW-Authenticate': 'Basic realm="Uzum Bank builder", charset="UTF-8"', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow', 'Content-Type': 'text/plain; charset=utf-8' },
+  });
+}
+
+function timingSafe(a, b) {
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {

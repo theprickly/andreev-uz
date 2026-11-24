@@ -6,6 +6,6 @@
     "directory": "./",
     "binding": "ASSETS",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/mave/api/*"]
+    "run_worker_first": ["/mave/api/*", "/ubweb", "/ubweb/*"]
   }
 }

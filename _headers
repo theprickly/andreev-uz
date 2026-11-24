@@ -29,3 +29,12 @@
   Referrer-Policy: no-referrer
   X-Frame-Options: DENY
   Cache-Control: no-cache
+/ubweb/*
+  X-Robots-Tag: noindex, nofollow
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Cache-Control: no-cache
+/ubweb/site/fonts/*
+  Cache-Control: public, max-age=2592000
+/ubweb/site/chrome/*
+  Cache-Control: public, max-age=2592000

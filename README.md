@@ -25,3 +25,8 @@
 - `worker.js` — Worker-обработчик только для `/mave/api/*` (`run_worker_first`), всё остальное — статика как раньше.
   Перекачивает выпуск потоком `api.mave.digital` → `s3.us.archive.org`; источники ограничены `*.mave.digital`, ключи IA не сохраняются.
 - Перенос идёт, пока открыта вкладка andreev.uz/mave/.
+
+## Конструктор страниц Uzum Bank — /ubweb/
+
+- `ubweb/` — статическое приложение без сборки: `index.html`, `app.js`, `blocks.js`, `chrome.js`, `icons.js`, `app.css` и `site/` (CSS, JS, шрифты и картинки, которые попадают в выгружаемый сайт).
+- Проекты хранятся в браузере (IndexedDB), сервер не нужен. Закрыт от поисковиков (`X-Robots-Tag: noindex`).

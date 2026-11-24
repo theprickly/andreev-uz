@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Ревью блоков · Конструктор Uzum Bank</title>
+<style>
+:root{--bg:#131316;--panel:#1C1C20;--inner:#26262B;--surf:#2A2A30;--line:#2C2C32;--text:#F4F4F5;--body:#C9C9D1;--muted:#8E8E99;--accent:#3B82F6;--ok:#22C55E;--fix:#F59E0B;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:72px}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,textarea,select{font:inherit;color:inherit}
+.top{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 24px;background:rgba(19,19,22,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top h1{margin:0;font-size:16px;font-weight:650;white-space:nowrap}
+.top a{color:var(--body);text-decoration:none}
+.top a:hover{color:var(--text)}
+.prog{display:flex;align-items:center;gap:10px;color:var(--muted);white-space:nowrap}
+.bar{width:140px;height:6px;border-radius:3px;background:var(--inner);overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.seg{display:inline-flex;padding:3px;border-radius:10px;background:var(--inner);gap:2px}
+.seg button{border:0;background:transparent;padding:6px 10px;border-radius:7px;cursor:pointer;color:var(--body);white-space:nowrap}
+.seg button[aria-pressed=true]{background:var(--surf);color:var(--text);box-shadow:inset 0 0 0 1px #3A3A42}
+.seg button:focus-visible,.btn:focus-visible,.chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sp{flex:1}
+.btn{display:inline-flex;align-items:center;gap:6px;border:0;border-radius:9px;padding:8px 14px;background:var(--surf);color:var(--text);cursor:pointer;box-shadow:inset 0 0 0 1px #3A3A42;text-decoration:none;white-space:nowrap}
+.btn:hover{background:#34343B}
+.btn--p{background:var(--accent);box-shadow:none;color:#fff}
+.btn--p:hover{background:#2F6FE0}
+.btn:disabled{opacity:.5;cursor:default}
+.intro{max-width:980px;margin:24px 24px 8px;color:var(--body)}
+.intro b{color:var(--text)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px;padding:24px;border-bottom:1px solid var(--line)}
+.row[hidden]{display:none}
+.stage{min-width:0}
+.head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.head h2{margin:0;font-size:18px;font-weight:650}
+.cat{color:var(--muted)}
+.ctl{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.ctl label{display:flex;align-items:center;gap:6px;color:var(--muted)}
+.canvas{position:relative;border-radius:12px;background:#0E0E11 radial-gradient(#26262B 1px,transparent 1px) 0 0/16px 16px;padding:16px;overflow:hidden}
+.frame{position:relative;margin:0 auto;transform-origin:0 0}
+.frame iframe{display:block;border:0;background:#F3F1F8;border-radius:6px}
+.ph{display:flex;align-items:center;justify-content:center;height:240px;color:var(--muted)}
+.disc{position:sticky;top:72px;align-self:start;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 96px);overflow:auto;padding:16px;border-radius:12px;background:var(--panel);border:1px solid var(--line)}
+.st{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:0;border-radius:999px;padding:6px 12px;background:var(--inner);color:var(--body);cursor:pointer}
+.chip[aria-pressed=true][data-s=ok]{background:rgba(34,197,94,.18);color:#4ADE80}
+.chip[aria-pressed=true][data-s=fix]{background:rgba(245,158,11,.18);color:#FBBF24}
+.chip[aria-pressed=true][data-s=new]{background:var(--surf);color:var(--text)}
+.who{color:var(--muted);font-size:12px}
+.list{display:flex;flex-direction:column;gap:10px}
+.cm{padding:12px;border-radius:10px;background:var(--inner)}
+.cm.is-done{opacity:.55}
+.cm p{margin:4px 0 0;white-space:pre-wrap;word-break:break-word;color:var(--body)}
+.cm .k{color:var(--muted);font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:8px;display:block}
+.cm header{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted)}
+.cm header b{color:var(--text);font-weight:600}
+.cm label{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:var(--muted);cursor:pointer}
+.empty{color:var(--muted)}
+form{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--line)}
+form label{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:12px}
+input,textarea{width:100%;padding:9px 11px;border-radius:9px;border:1px solid #3A3A42;background:var(--bg);color:var(--text);resize:vertical}
+input:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:transparent}
+.ctxl{font-size:12px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);padding:10px 16px;border-radius:10px;background:#F4F4F5;color:#18181B;opacity:0;transition:opacity .2s;pointer-events:none;z-index:50}
+.toast.on{opacity:1}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin:0 24px 8px}
+.nav a{font-size:12px;padding:4px 8px;border-radius:6px;background:var(--inner);color:var(--body);text-decoration:none}
+.nav a.ok{color:#4ADE80}.nav a.fix{color:#FBBF24}
+@media (max-width:1100px){.row{grid-template-columns:minmax(0,1fr)}.disc{position:static;max-height:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a href="./" aria-label="В конструктор">← Конструктор</a>
+  <h1>Ревью блоков</h1>
+  <div class="prog" id="prog"></div>
+  <div class="seg" role="group" aria-label="Показать" id="flt">
+    <button type="button" data-f="all" aria-pressed="true">Все</button>
+    <button type="button" data-f="new" aria-pressed="false">Без ревью</button>
+    <button type="button" data-f="fix" aria-pressed="false">Нужны правки</button>
+    <button type="button" data-f="ok" aria-pressed="false">Приняты</button>
+  </div>
+  <span class="sp"></span>
+  <label class="who" for="me">Вы</label><input id="me" placeholder="Имя" style="width:150px" autocomplete="name">
+  <button class="btn" id="exp" type="button">Скачать замечания</button>
+</header>
+<p class="intro">Посмотрите каждый блок на трёх ширинах и во всех вариантах. Если что-то свёрстано не так — опишите <b>что не так</b> и, если можете, <b>правило</b>, как должно быть всегда (отступы, размеры, шрифты, поведение на телефоне). Когда блок в порядке — нажмите <b>«Принят»</b>. Замечания видят все, кто открывает эту страницу.</p>
+<nav class="nav" id="nav" aria-label="Блоки"></nav>
+<main id="rows"></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="icons.js"></script>
+<script src="chrome.js"></script>
+<script src="blocks.js"></script>
+<script src="review.js"></script>
+</body>
+</html>

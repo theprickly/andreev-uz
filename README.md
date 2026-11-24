@@ -31,3 +31,4 @@
 - `ubweb/` — статическое приложение без сборки: `index.html`, `app.js`, `blocks.js`, `chrome.js`, `icons.js`, `app.css` и `site/` (CSS, JS, шрифты и картинки, которые попадают в выгружаемый сайт).
 - Проекты хранятся в браузере (IndexedDB), сервер не нужен. Закрыт от поисковиков (`X-Robots-Tag: noindex`).
 - Закрыт паролем (HTTP Basic) в `worker.js`: в коде хранится только SHA-256 от «логин:пароль». Сменить пароль — секрет `UBWEB_AUTH_SHA256` у Worker (`printf 'логин:пароль' | sha256sum`).
+- Ревью блоков дизайнерами: `/ubweb/review.html`. Замечания хранятся в Durable Object `UbwebReview` (SQLite, привязка `UBWEB_REVIEW` в `wrangler.jsonc`), API — `/ubweb/api/*` в `worker.js`, за тем же паролем.

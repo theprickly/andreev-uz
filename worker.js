@@ -1,3 +1,5 @@
+import { DurableObject } from 'cloudflare:workers';
+
 // andreev.uz — Worker.
 // Всё, кроме /mave/api/*, отдаётся как статика (env.ASSETS).
 // /mave/api/* — серверная часть переноса подкаста MAVE → Internet Archive:
@@ -21,6 +23,14 @@ export default {
     if (url.pathname === '/ubweb' || url.pathname.startsWith('/ubweb/')) {
       const denied = await ubwebAuth(request, env);
       if (denied) return denied;
+      if (url.pathname.startsWith('/ubweb/api/')) {
+        try {
+          const stub = env.UBWEB_REVIEW.get(env.UBWEB_REVIEW.idFromName('blocks'));
+          return await stub.fetch(request);
+        } catch (error) {
+          return json({ error: error.message || 'Внутренняя ошибка.' }, 500);
+        }
+      }
     }
     if (url.pathname.startsWith('/mave/api/')) {
       try {
@@ -203,4 +213,58 @@ async function transfer(d) {
     return json({ error: lastError }, 502);
   }
   return json({ error: lastError || 'Не удалось перенести выпуск.', retry: true }, 503);
+}
+
+
+// Ревью блоков конструктора дизайнерами: /ubweb/api/*.
+// Одно хранилище (Durable Object на SQLite) на все комментарии. Доступ — тот же пароль, что у /ubweb/.
+//   GET  /ubweb/api/review            — все комментарии и статусы
+//   POST /ubweb/api/comment           — { block, author, issue, rule, width, variant }
+//   POST /ubweb/api/resolve           — { id, resolved }
+//   POST /ubweb/api/status            — { block, status: 'new' | 'fix' | 'ok', author }
+const REVIEW_STATUS = new Set(['new', 'fix', 'ok']);
+const clip = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
+
+export class UbwebReview extends DurableObject {
+  constructor(ctx, env) {
+    super(ctx, env);
+    this.sql = ctx.storage.sql;
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS comments (id INTEGER PRIMARY KEY AUTOINCREMENT, block TEXT NOT NULL, author TEXT, issue TEXT, rule TEXT, width TEXT, variant TEXT, resolved INTEGER DEFAULT 0, created TEXT)`);
+    this.sql.exec(`CREATE TABLE IF NOT EXISTS status (block TEXT PRIMARY KEY, status TEXT, author TEXT, updated TEXT)`);
+  }
+
+  async fetch(request) {
+    const url = new URL(request.url);
+    const route = url.pathname.replace(/^\/ubweb\/api\//, '');
+    if (request.method === 'GET' && route === 'review') return json(this.dump());
+    if (request.method !== 'POST') return json({ error: 'Метод не поддерживается.' }, 405);
+    let body;
+    try { body = await request.json(); } catch (e) { return json({ error: 'Нужен JSON.' }, 400); }
+    const now = new Date().toISOString();
+    if (route === 'comment') {
+      const block = clip(body.block, 60), issue = clip(body.issue, 4000), rule = clip(body.rule, 4000);
+      if (!block || (!issue && !rule)) return json({ error: 'Опишите, что не так, или правило.' }, 400);
+      this.sql.exec('INSERT INTO comments (block, author, issue, rule, width, variant, resolved, created) VALUES (?, ?, ?, ?, ?, ?, 0, ?)', block, clip(body.author, 80), issue, rule, clip(body.width, 10), clip(body.variant, 300), now);
+      if (!this.sql.exec('SELECT 1 FROM status WHERE block = ?', block).toArray().length) this.sql.exec('INSERT INTO status (block, status, author, updated) VALUES (?, ?, ?, ?)', block, 'fix', clip(body.author, 80), now);
+      return json(this.dump());
+    }
+    if (route === 'resolve') {
+      this.sql.exec('UPDATE comments SET resolved = ? WHERE id = ?', body.resolved ? 1 : 0, Number(body.id) || 0);
+      return json(this.dump());
+    }
+    if (route === 'status') {
+      const block = clip(body.block, 60), status = clip(body.status, 10);
+      if (!block || !REVIEW_STATUS.has(status)) return json({ error: 'Неверный статус.' }, 400);
+      this.sql.exec('INSERT INTO status (block, status, author, updated) VALUES (?, ?, ?, ?) ON CONFLICT(block) DO UPDATE SET status = excluded.status, author = excluded.author, updated = excluded.updated', block, status, clip(body.author, 80), now);
+      return json(this.dump());
+    }
+    return json({ error: 'Не найдено.' }, 404);
+  }
+
+  dump() {
+    return {
+      comments: this.sql.exec('SELECT id, block, author, issue, rule, width, variant, resolved, created FROM comments ORDER BY id').toArray(),
+      status: this.sql.exec('SELECT block, status, author, updated FROM status').toArray(),
+    };
+  }
 }

@@ -5,3 +5,5 @@ README.md
 books-src
 tools
 worker.js
+.wrangler
+.gitignore

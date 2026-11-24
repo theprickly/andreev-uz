@@ -3,7 +3,7 @@
   color-scheme:dark;
   --bg:#131316;--panel:#1C1C20;--inner:#26262B;--surf:#2A2A30;--soft:rgba(59,130,246,.16);--soft-2:rgba(59,130,246,.28);--purple:#3B82F6;--purple-h:#2563EB;--ink:#93C5FD;
   --text:#F4F4F5;--body:#D4D4D8;--muted:#9F9FA9;--line:#2C2C32;--line-2:#3D3D45;--danger:#F87171;--warn-bg:#33290F;
-  --f-ui:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;--f-body:var(--f-ui);--f-display:var(--f-ui);--f-sub:var(--f-ui);
+  --f-ui:system-ui,-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;--f-body:var(--f-ui);--f-display:var(--f-ui);--f-sub:var(--f-ui);
   --shadow:0 0 0 1px #2C2C32;--pop:0 20px 48px -12px rgba(0,0,0,.6),0 0 0 1px #3D3D45;
   --ease:cubic-bezier(.22,1,.36,1);
 }

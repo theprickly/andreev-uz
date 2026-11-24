@@ -5,10 +5,6 @@
 @font-face{font-family:"TT Uzum DemiBold";font-weight:400;font-style:normal;font-display:swap;src:url("chrome/TT-Uzum-DemiBold.ttf")}
 @font-face{font-family:"Rubik-Regular";font-weight:400;font-style:normal;font-display:swap;src:url("chrome/Rubik-Regular.ttf")}
 @font-face{font-family:"icomoon";font-weight:400;font-style:normal;font-display:swap;src:url("chrome/icomoon.woff")}
-@font-face{font-family:Roboto;font-weight:400;font-style:normal;font-display:swap;src:url("chrome/roboto-cyrillic-ext-400-normal.woff2")}
-@font-face{font-family:Roboto;font-weight:400;font-style:normal;font-display:swap;src:url("chrome/roboto-cyrillic-400-normal.woff2")}
-@font-face{font-family:Roboto;font-weight:400;font-style:normal;font-display:swap;src:url("chrome/roboto-latin-ext-400-normal.woff2")}
-@font-face{font-family:Roboto;font-weight:400;font-style:normal;font-display:swap;src:url("chrome/roboto-latin-400-normal.woff2")}
 .v-application a { cursor: pointer; }
 * { font-family: Rubik-Regular; }
 p { font-family: "TT Uzum Regular"; }

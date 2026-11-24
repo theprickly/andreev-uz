@@ -167,8 +167,28 @@
       if (alts2.length < 2) return;
       alts2.forEach(function (l) { var a = document.createElement('a'); a.href = l.getAttribute('href'); a.lang = l.hreflang; a.textContent = { ru: 'Русский', uz: "O'zbekcha", en: 'English' }[l.hreflang] || l.hreflang; if (l.hreflang === document.documentElement.lang) a.setAttribute('aria-current', 'true'); box.appendChild(a); });
     });
+    /* выпадающие разделы меню */
+    function closeDD(except) { Array.prototype.forEach.call(document.querySelectorAll('.u-hd__top[aria-expanded=true]'), function (b) { if (b !== except) { b.setAttribute('aria-expanded', 'false'); var dd = document.getElementById(b.getAttribute('aria-controls')); if (dd) dd.hidden = true; } }); }
+    function setDD(b, open) { closeDD(open ? b : null); b.setAttribute('aria-expanded', open ? 'true' : 'false'); var dd = document.getElementById(b.getAttribute('aria-controls')); if (dd) dd.hidden = !open; }
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('button.u-hd__top');
+      if (b) { setDD(b, b.getAttribute('aria-expanded') !== 'true'); return; }
+      if (!(e.target.closest && e.target.closest('.u-hd__dd'))) closeDD(null);
+    });
+    var fine = window.matchMedia && matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (fine) Array.prototype.forEach.call(document.querySelectorAll('.u-hd__item'), function (li) {
+      var b = li.querySelector('button.u-hd__top'), t; if (!b) return;
+      li.addEventListener('mouseenter', function () { clearTimeout(t); setDD(b, true); });
+      li.addEventListener('mouseleave', function () { t = setTimeout(function () { setDD(b, false); }, 180); });
+    });
+    /* версия для слабовидящих: крупнее весь сайт, запоминается */
+    var big = false; try { big = localStorage.getItem('u-large') === '1'; } catch (e) {}
+    function applyBig() { document.documentElement.classList.toggle('u-large', big); Array.prototype.forEach.call(document.querySelectorAll('.u-hd__a11y'), function (x) { x.setAttribute('aria-pressed', big ? 'true' : 'false'); }); }
+    applyBig();
+    document.addEventListener('click', function (e) { var x = e.target.closest && e.target.closest('.u-hd__a11y'); if (!x) return; big = !big; try { localStorage.setItem('u-large', big ? '1' : '0'); } catch (err) {} applyBig(); });
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
+      var open = document.querySelector('.u-hd__top[aria-expanded=true]'); if (open) { setDD(open, false); open.focus(); return; }
       var p = document.querySelector('.u-hd__panel.is-open'); if (!p) return;
       var b = document.querySelector('[aria-controls="' + p.id + '"]'); if (b) { b.click(); b.focus(); }
     });

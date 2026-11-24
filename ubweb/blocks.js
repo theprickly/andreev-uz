@@ -87,6 +87,28 @@
     if (ctx.edit) html = html.replace(/<a /g, '<a tabindex="-1" ').replace(/<img[^>]*cnt0\.www\.uz[^>]*>/g, '');
     return '<div class="uz-app v-application v-application--is-ltr theme--light" data-app="true"><div class="v-application--wrap"><div data-v-f50fa9bc="">' + html + '</div></div></div>';
   }
+  B.header2 = {
+    name: 'Шапка — новая', cat: 'Структура', bleed: 'top',
+    variants: [{ key: 'aud', label: 'Активный раздел', options: [['private', 'Частным лицам'], ['business', 'Бизнесу'], ['off', 'Без переключателя']], def: 'private' }, { key: 'sticky', label: 'При прокрутке', options: [['on', 'Остаётся сверху'], ['off', 'Уезжает']], def: 'on' }, { key: 'lang', label: 'Выбор языка', options: [['on', 'Есть'], ['off', 'Нет']], def: 'on' }],
+    fields: [{ key: 'audPrivate', label: 'Частным лицам — подпись', t: 'text', when: { aud: ['private', 'business'] } }, { key: 'audPrivateHref', label: 'Частным лицам — ссылка', t: 'link', when: { aud: ['private', 'business'] } }, { key: 'audBusiness', label: 'Бизнесу — подпись', t: 'text', when: { aud: ['private', 'business'] } }, { key: 'audBusinessHref', label: 'Бизнесу — ссылка', t: 'link', when: { aud: ['private', 'business'] } },
+      { key: 'items', label: 'Меню (3–5 пунктов)', t: 'items', item: [{ key: 'label', label: 'Пункт', t: 'text' }, { key: 'href', label: 'Ссылка', t: 'link' }], add: { label: 'Пункт', href: '#' } }, { key: 'button', label: 'Главная кнопка', t: 'button' }, { key: 'ctaShort', label: 'Короткая подпись кнопки на телефоне', t: 'text' }, { key: 'menuLabel', label: 'Подпись кнопки меню (для скринридера)', t: 'text' }],
+    example: function () { return { audPrivate: 'Частным лицам', audPrivateHref: 'https://uzumbank.uz/ru/', audBusiness: 'Бизнесу', audBusinessHref: 'https://uzumbank.uz/ru/business/', items: [{ label: 'Карты', href: 'https://uzumbank.uz/ru/card/' }, { label: 'Переводы', href: '#' }, { label: 'Кредиты', href: '#' }, { label: 'Вклады', href: '#' }], button: { label: 'Скачать приложение', href: '#', style: 'primary' }, ctaShort: 'Скачать', menuLabel: 'Меню' }; },
+    thumb: thumb([[0, 0, 120, 72, 0, G], [6, 8, 108, 18, 9, Wt], [12, 13, 16, 8, 4, P], [32, 13, 24, 8, 4, L], [60, 15, 26, 4, 1, D], [92, 12, 18, 10, 5, P]]),
+    render: function (d, v, ctx) {
+      var ed = ctx.edit, ti = ed ? ' tabindex="-1"' : '', id = 'hd-' + ctx.bid;
+      var aud = v.aud !== 'off' ? '<nav class="u-hd__aud" aria-label="' + esc(d.audPrivate && d.audBusiness ? d.audPrivate + ' / ' + d.audBusiness : 'Раздел') + '">' +
+        [['private', 'audPrivate'], ['business', 'audBusiness']].map(function (a) { var on = v.aud === a[0]; return '<a href="' + href(ctx, d[a[1] + 'Href']) + '"' + ti + (on ? ' aria-current="page"' : '') + '><span' + F(ctx, a[1], 'text') + '>' + esc(d[a[1]] || '') + '</span></a>'; }).join('') + '</nav>' : '';
+      var nav = (d.items || []).map(function (it, i) { return '<li><a href="' + href(ctx, it.href) + '"' + ti + (ctx.isCurrent(it.href) ? ' aria-current="page"' : '') + '><span' + F(ctx, 'items.' + i + '.label', 'text') + '>' + esc(it.label || '') + '</span></a></li>'; }).join('');
+      var code = (ctx.lang || 'ru').toUpperCase();
+      var lang = v.lang !== 'off' ? '<button type="button" class="u-hd__lang"' + ti + ' aria-label="' + esc({ ru: 'Язык', uz: 'Til', en: 'Language' }[ctx.lang] || 'Язык') + '">' + icon('globe') + '<span class="value">' + code + '</span></button>' : '';
+      var cta = d.button && d.button.label ? '<a class="u-btn u-btn--primary u-hd__cta" href="' + href(ctx, d.button.href) + '"' + ti + '><span class="u-hd__cl"' + F(ctx, 'button.label', 'text') + '>' + esc(d.button.label) + '</span>' + (d.ctaShort ? '<span class="u-hd__cs" aria-hidden="true">' + esc(d.ctaShort) + '</span>' : '') + '</a>' : '';
+      var logo = '<a class="u-hd__logo" href="' + href(ctx, ctx.homeHref()) + '"' + ti + '><img src="' + esc(ctx.img('lib:logo-purple.svg')) + '" alt="Uzum Bank" width="108" height="40"></a>';
+      var burger = '<button type="button" class="u-burger u-hd__burger" aria-expanded="false" aria-controls="' + id + '-m" aria-label="' + esc(d.menuLabel || 'Меню') + '"' + ti + '><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>';
+      var mob = '<div class="u-hd__panel" id="' + id + '-m">' + aud + '<ul class="u-hd__mnav">' + nav + '</ul>' + (v.lang !== 'off' ? '<div class="u-hd__langs" data-langlinks></div>' : '') + (cta ? '<div class="u-hd__mcta">' + cta + '</div>' : '') + '</div>';
+      return '<header class="u-hd' + (v.sticky !== 'off' && !ed ? ' u-hd--sticky' : '') + '"><div class="u-hd__bar">' + logo + aud + '<ul class="u-hd__nav">' + nav + '</ul><span class="u-hd__sp"></span>' + lang + cta + burger + '</div>' + mob + '</header>';
+    }
+  };
+
   B.header = {
     name: 'Шапка сайта', cat: 'Структура', bleed: 'top', locked: true,
     note: 'Шапка uzumbank.uz без изменений. Её содержимое правится на основном сайте.',
@@ -782,7 +804,7 @@
 
   /* ---------- каталог (с пресетами) ---------- */
   var CATALOG = [
-    { id: 'header', type: 'header' }, { id: 'hero', type: 'hero' }, { id: 'hero-image', type: 'hero', name: 'Первый экран с картинкой', v: { media: 'image', bg: 'white', fit: 'bottom' }, d: { eyebrow: '', title: 'Добавьте карту Uzum в Apple Pay', lead: 'Платите телефоном как картой — в магазинах, приложениях и в интернете', buttons: [{ label: 'Подробнее об Apple Pay', href: 'https://uzumbank.uz/ru/apple-pay/', style: 'primary' }] } },
+    { id: 'header', type: 'header' }, { id: 'header2', type: 'header2' }, { id: 'hero', type: 'hero' }, { id: 'hero-image', type: 'hero', name: 'Первый экран с картинкой', v: { media: 'image', bg: 'white', fit: 'bottom' }, d: { eyebrow: '', title: 'Добавьте карту Uzum в Apple Pay', lead: 'Платите телефоном как картой — в магазинах, приложениях и в интернете', buttons: [{ label: 'Подробнее об Apple Pay', href: 'https://uzumbank.uz/ru/apple-pay/', style: 'primary' }] } },
     { id: 'heading', type: 'heading' }, { id: 'maint', type: 'maint' }, { id: 'promo', type: 'promo' }, { id: 'calc', type: 'calc' }, { id: 'calc-loan', type: 'calc', name: 'Кредитный калькулятор', v: { kind: 'loan', comp: 'on', bg: 'white' }, d: { title: 'Рассчитайте платёж', lead: 'Платёж одинаковый каждый месяц', aLabel: 'Сумма', aMin: 1000000, aMax: 50000000, aStep: 500000, aDef: 5000000, tLabel: 'Срок', tMin: 3, tMax: 36, tDef: 12, rate: 28, cap: 0, r1: 'Ежемесячный платёж', r2: 'Переплата за весь срок', button: { label: 'Оформить', href: '#', style: 'primary' }, legal: '<p>Расчёт предварительный. Ставка зависит от вашей кредитной истории.</p>' } }, { id: 'calc-cb', type: 'calc', name: 'Калькулятор кэшбэка', v: { kind: 'cashback', comp: 'on', bg: 'purple' }, d: { title: 'Сколько вернётся кэшбэком', lead: '', aLabel: 'Траты в месяц', aMin: 500000, aMax: 20000000, aStep: 100000, aDef: 3000000, tLabel: '', tMin: 1, tMax: 12, tDef: 12, rate: 7, cap: 100000, r1: 'Кэшбэк в месяц', r2: 'За год', button: { label: '', href: '#', style: 'primary' }, legal: '' } }, { id: 'docs', type: 'docs' }, { id: 'counter', type: 'counter' }, { id: 'partners', type: 'partners' }, { id: 'tip', type: 'tip' }, { id: 'rating', type: 'rating' }, { id: 'reviews', type: 'reviews' }, { id: 'footer', type: 'footer' }, { id: 'divider', type: 'divider' },
     { id: 'text', type: 'text' }, { id: 'text2', type: 'text2' }, { id: 'quote', type: 'quote' }, { id: 'note', type: 'note' }, { id: 'legal', type: 'note', name: 'Юридический текст', v: { tone: 'legal', cols: '1' }, d: { body: '<p>Микрозайм выдается Uzum Nasiya (ООО «UZUM FINTECH HUB» и МФО ООО «TEZCOIN»).</p>' } },
     { id: 'list-ul', type: 'list', name: 'Маркированный список', v: { kind: 'ul' } },
@@ -834,7 +856,7 @@
       var def = B[b.type];
       if (!def) return;
       var html;
-      ctx.bid = b.id; ctx.eager = i < 3 || def.bleed; ctx.lcp = !ctx.edit && !ctx.lcpUsed && b.type !== 'header' && (ctx.lcpUsed = true);
+      ctx.bid = b.id; ctx.eager = i < 3 || def.bleed; ctx.lcp = !ctx.edit && !ctx.lcpUsed && b.type !== 'header' && b.type !== 'header2' && (ctx.lcpUsed = true);
       try { html = def.render(b.d || {}, b.v || {}, ctx, b.id); } catch (e) { html = '<div class="u-c"><p class="u-small">Ошибка блока: ' + esc(e.message) + '</p></div>'; }
       if (ctx.edit) {
         out += '<div class="ed-ins" data-ins="' + i + '"><button type="button" tabindex="-1" aria-label="Вставить блок">+</button></div>';

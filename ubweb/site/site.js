@@ -157,4 +157,20 @@
     Array.prototype.forEach.call(bar.querySelectorAll('.u-pchip'), function (c) { c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'); });
     if (list) Array.prototype.forEach.call(list.children, function (li) { li.hidden = !!cat && li.getAttribute('data-pcat') !== cat; });
   });
+
+  /* Новая шапка: сжимается при прокрутке; ссылки языков в мобильном меню */
+  (function () {
+    var hd = document.querySelectorAll('.u-hd--sticky');
+    if (hd.length) { var on = function () { var s = window.scrollY > 8; Array.prototype.forEach.call(hd, function (h) { h.classList.toggle('is-scrolled', s); }); }; window.addEventListener('scroll', on, { passive: true }); on(); }
+    var alts2 = Array.prototype.slice.call(document.querySelectorAll('link[rel=alternate][hreflang]')).filter(function (l) { return l.hreflang !== 'x-default'; });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-langlinks]'), function (box) {
+      if (alts2.length < 2) return;
+      alts2.forEach(function (l) { var a = document.createElement('a'); a.href = l.getAttribute('href'); a.lang = l.hreflang; a.textContent = { ru: 'Русский', uz: "O'zbekcha", en: 'English' }[l.hreflang] || l.hreflang; if (l.hreflang === document.documentElement.lang) a.setAttribute('aria-current', 'true'); box.appendChild(a); });
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      var p = document.querySelector('.u-hd__panel.is-open'); if (!p) return;
+      var b = document.querySelector('[aria-controls="' + p.id + '"]'); if (b) { b.click(); b.focus(); }
+    });
+  })();
 })();

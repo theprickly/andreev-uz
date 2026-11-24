@@ -1,7 +1,7 @@
 {
 "https://andreev.uz/books/": [
-"20ceccca8b76",
-"2026-11-15"
+"84f820cbfec9",
+"2026-11-24"
 ],
 "https://andreev.uz/books/booker-royalty/": [
 "491b88dc669e",
@@ -1430,5 +1430,37 @@
 "https://andreev.uz/books/wcw/chapters/09.html": [
 "6a9cb8dd856c",
 "2026-11-13"
+],
+"https://andreev.uz/books/ya-koreets/": [
+"2ba870c28b69",
+"2026-11-24"
+],
+"https://andreev.uz/books/ya-koreets/chapters/": [
+"6fc403b7bef9",
+"2026-11-24"
+],
+"https://andreev.uz/books/ya-koreets/chapters/00.html": [
+"edd97b52201c",
+"2026-11-24"
+],
+"https://andreev.uz/books/ya-koreets/chapters/01.html": [
+"9105bb78fcf6",
+"2026-11-24"
+],
+"https://andreev.uz/books/ya-koreets/chapters/02.html": [
+"51ecee4c8ab8",
+"2026-11-24"
+],
+"https://andreev.uz/books/ya-koreets/chapters/03.html": [
+"4bce6a152fc4",
+"2026-11-24"
+],
+"https://andreev.uz/books/ya-koreets/chapters/04.html": [
+"124587b6ec4d",
+"2026-11-24"
+],
+"https://andreev.uz/books/ya-koreets/chapters/05.html": [
+"c95066a84205",
+"2026-11-24"
 ]
 }

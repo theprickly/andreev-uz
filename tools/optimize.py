@@ -927,7 +927,7 @@ def agent_tools(c):
 # Книга, у которой вышел полный перевод, две недели носит значок на обложке. Кто уже начинал её читать
 # (в браузере есть место чтения), видит «Финал вышел» — это повод вернуться к брошенной книге.
 # Срок проверяется и при сборке, и в браузере: закэшированная страница не покажет просроченный значок.
-NEW_BOOKS = {"holly": "2026-11-29"}      # slug → последний день показа (включительно)
+NEW_BOOKS = {"holly": "2026-11-29", "ya-koreets": "2026-12-08"}      # slug → последний день показа (включительно)
 CSS_NEW = (".badge.new{background:#0d2a4fcc}.badge.new:before{background:#9cc2ea;box-shadow:0 0 0 3px #9cc2ea40}")
 JS_NEW = ("<script>document.querySelectorAll('.badge.new').forEach(function(b){"
           "if(Date.now()>Date.parse(b.dataset.until+'T23:59:59+05:00')){b.remove();return}"
@@ -991,6 +991,8 @@ CSS_MATCH = (
     "@media (display-mode:standalone){a.ev-b[href]{pointer-events:auto!important;cursor:pointer;color:#fff!important}.ev-o{display:none!important}}"
     ".ev-b.on{background:#000}.ev-c{display:block;margin-top:8px;color:var(--muted,#8fa0b8)}.ev-c a{color:var(--accent,#68a0d9)}")
 
+CSS_FIGURE = (".book-prose figure{margin:1.9em 0;text-align:center}.book-prose figure img{display:block;margin:0 auto;border-radius:6px;max-height:80vh;width:auto}"
+              ".book-prose figcaption{margin:.8em auto 0;max-width:34em;font-family:var(--ui);font-size:15px;line-height:1.5;color:var(--reader-dim);hyphens:none;text-wrap:balance}")
 CSS_TIMELINE = (
     ".vt-b{margin:44px 0 12px;font-family:Geologica,system-ui,sans-serif;text-indent:0;hyphens:none}"
     ".vt-b h3{margin:0 0 6px;font:700 22px/1.2 Geologica,system-ui,sans-serif;letter-spacing:0}"
@@ -1153,7 +1155,7 @@ def match_links(c):
                 if t != u:
                     wr(f, t)
     css_f = next((c.out / "shared").glob("style-*.css"))
-    wr(css_f, rd(css_f) + CSS_MATCH + CSS_TIMELINE)
+    wr(css_f, rd(css_f) + CSS_MATCH + CSS_TIMELINE + CSS_FIGURE)
     c.note(f"ссылки «Смотреть матч»: {total} шт.")
 
 

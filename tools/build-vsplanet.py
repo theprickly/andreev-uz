@@ -17,7 +17,7 @@ import optimize
 
 SRC = ROOT / "books-src"
 OLD = "https://andreev.uz/books/"
-VERSION = "1.28"
+VERSION = "1.29"
 TEXT = {".html", ".xml", ".json", ".js", ".css", ".webmanifest", ".txt", ".svg"}
 
 if "--vsplanet-path" in sys.argv:
